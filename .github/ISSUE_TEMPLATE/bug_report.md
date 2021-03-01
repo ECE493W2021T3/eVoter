@@ -7,21 +7,28 @@ assignees: ''
 
 ---
 
-**Describe the bug**
-A clear and concise description of what the bug is.
+[//]: # (These are comments and are used for reference and will not show up in the issue)
 
-**To Reproduce**
-Steps to reproduce the behavior:
-1. Go to '...'
-2. Click on '....'
-3. Scroll down to '....'
-4. See error
+**Describe the bug:**
 
-**Expected behavior**
-A clear and concise description of what you expected to happen.
+[//]: # (A clear and concise description of what the bug is.)
 
-**Screenshots**
-If applicable, add screenshots to help explain your problem.
 
-**Additional context**
-Add any other context about the problem here.
+**To Reproduce:**
+
+[//]: # (Numbered steps to reproduce the behavior)
+
+
+**Expected behavior:**
+
+[//]: # (A clear and concise description of what you expected to happen.)
+
+
+**Screenshots:**
+
+[//]: # (If applicable, add screenshots to help explain your problem.)
+
+
+**Additional context:**
+
+[//]: # (Add any other context about the problem here.)
