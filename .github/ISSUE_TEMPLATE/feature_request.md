@@ -8,8 +8,7 @@ assignees: ''
 ---
 
 **Related Functional Requirement(s)**
-Please add the appropriate FR label.
-Ex. #<issue id>
+Ex. #<issue id>. Moreover, please add the appropriate FR label.
 
 **Description**
 A clear and concise description of what you want to happen.
