@@ -19,6 +19,11 @@ assignees: ''
 [//]: # (Ex. #<issue id>. Moreover, please add the appropriate FR label.)
 
 
+**Related WBS Block Number(s):**
+
+[//]: # (Ex. [1.1], [1.2], etc.)
+
+
 **Additional context:**
 
 [//]: # (Add any other context or screenshots about the feature request here.)
