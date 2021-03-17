@@ -1,19 +1,17 @@
 # Group 3:
-Run with command:
+
+### Server
 ```
-git clone git@github.com:ECE493W2021T3/task-manager-mean-stack.git
-cd task-manager-mean-stack/
-cd api/
-npm install
+cd backend/
+npm install     ** can be ran once on initial clone (unless dependencies have been updated)
+nodemon index.js
+```
+
+### Client
+```
 cd frontend/
-npm install
+npm install     ** can be ran once on initial clone (unless dependencies have been updated)
 ng serve
-```
-```
-cd task-manager-mean-stack/
-cd api/
-npm install
-nodemon app.js
 ```
 # Task Manager App
 
