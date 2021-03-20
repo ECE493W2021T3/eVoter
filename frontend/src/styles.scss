@@ -1,41 +1,37 @@
 /* You can add global styles to this file, and also import other style files */
 
-@import '../node_modules/bulma/bulma.sass';
+// @import '../node_modules/bulma/bulma.sass';
 
 // Import Fonts (Lato and Nunito)
 @import url('https://fonts.googleapis.com/css?family=Lato:400,700|Nunito:400,700');
 
 $turquoise: #44ddd0;
-$green: #27d7a1;
-$light-green: #45f69e; 
+// $green: #27d7a1;
+// $light-green: #45f69e;
 $dark-green: rgb(0, 100, 80);
 
 $light: #f8f8f8;
 
 
-// Update Bulma's global variables
-$family-sans-serif: "Nunito", sans-serif;
-$primary: $green;
+// // Update Bulma's global variables
+// $family-sans-serif: "Nunito", sans-serif;
+// $primary: $green;
 
-$link: $turquoise;
-
-
-// Update some of Bulma's component variables
-
-$control-border-width: 2px;
-$input-border-color: transparent;
-$input-shadow: none;
+// $link: $turquoise;
 
 
-// Set custom global styles (will be applied to whole app)
+// // Update some of Bulma's component variables
 
-html {
-    background: linear-gradient(to right top, $turquoise, $green);
-}
+// $control-border-width: 2px;
+// $input-border-color: transparent;
+// $input-shadow: none;
 
-html, body {
-    height: 100%;
-}
+
+// // Set custom global styles (will be applied to whole app)
+
+// html {
+//     background: linear-gradient(to right top, $turquoise, $green);
+// }
 
 .centered-content {
     display: flex;
@@ -69,4 +65,30 @@ html, body {
     width: 350px;
     max-width: 350px;
     
+}
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+mat-nav-list mat-icon {
+    margin: 0 10px
+}
+
+.mat-drawer-inner-container::-webkit-scrollbar {
+    display: none;
+}
+
+.link-active {
+    color: $turquoise !important;
+}
+
+.side-nav-shadow {
+    box-shadow: 2px 0 8px 0 rgba(0,0,0,.3);
+}
+
+.content {
+    flex-shrink: 1;
+    flex-grow: 1;
+    position: relative;
+    overflow-y: auto;
 }
