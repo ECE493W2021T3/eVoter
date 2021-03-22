@@ -6,7 +6,7 @@ function setKey(){
 }
 setKey();
 const schema = Joi.object({
-    intention:Joi.string().valid('Invitation', 'F2A', 'Access Code').required(),
+    intention:Joi.string().valid('Invitation', '2FA', 'Access Code').required(),
     to: Joi.string().email().required(),
     from: Joi.object({
         email: Joi.string().email().required(),
