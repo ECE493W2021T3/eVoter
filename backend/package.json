@@ -9,9 +9,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@sendgrid/mail": "^7.4.2",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.18.3",
     "express": "^4.16.4",
+    "joi": "^17.4.0",
     "jsonwebtoken": "^8.5.0",
     "lodash": "^4.17.11",
     "mongoose": "^5.4.11"
