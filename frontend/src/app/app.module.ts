@@ -9,13 +9,8 @@ import { AppComponent } from './app.component';
 import { TokenInterceptor } from './helpers/token.interceptor';
 import { MaterialModule } from './helpers/material.module';
 import { AuthGuard } from './helpers/auth.guard';
-import { TaskViewComponent } from './components/task-view/task-view.component';
-import { NewListComponent } from './components/new-list/new-list.component';
-import { NewTaskComponent } from './components/new-task/new-task.component';
 import { LoginPageComponent } from './components/login-page/login-page.component';
 import { SignupPageComponent } from './components/signup-page/signup-page.component';
-import { EditListComponent } from './components/edit-list/edit-list.component';
-import { EditTaskComponent } from './components/edit-task/edit-task.component';
 import { TopNavBarComponent } from './components/top-nav-bar/top-nav-bar.component';
 import { NewPollComponent } from './components/new-poll/new-poll.component';
 import { HostedPollsComponent } from './components/hosted-polls/hosted-polls.component';
@@ -26,13 +21,8 @@ import { SettingsComponent } from './components/settings/settings.component';
 @NgModule({
     declarations: [
         AppComponent,
-        TaskViewComponent,
-        NewListComponent,
-        NewTaskComponent,
         LoginPageComponent,
         SignupPageComponent,
-        EditListComponent,
-        EditTaskComponent,
         TopNavBarComponent,
         NewPollComponent,
         HostedPollsComponent,

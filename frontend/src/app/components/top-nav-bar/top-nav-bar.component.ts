@@ -10,7 +10,7 @@ import { AuthService } from 'src/app/services/auth.service';
 })
 export class TopNavBarComponent implements OnInit, OnDestroy {
     private subscription: Subscription = new Subscription();
-    public title: string;
+    public title: string = "Welcome to eVoter";
 
     constructor(
         private router: Router,
@@ -21,13 +21,12 @@ export class TopNavBarComponent implements OnInit, OnDestroy {
         // Get title from routes in app-routing-module
         this.subscription.add(this.router.events.subscribe(event => {
             if (event instanceof NavigationEnd) {
-                this.title = this.getDeepestTitle(this.router.routerState.snapshot.root);
+                this.title = this.getDeepestTitle(this.router.routerState.snapshot.root) || this.title;
             }
         }));
 
-        // Subscription above does not trigger upon login, hence we manually set the toolbar title to the default page.
         if (this.title == null || this.title == '') {
-            this.title = "My Hosted Polls";
+            console.log("DEBUG: this.title == null || this.title == ''")
         }
     }
 
