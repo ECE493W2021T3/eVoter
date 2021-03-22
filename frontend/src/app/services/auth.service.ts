@@ -3,12 +3,22 @@ import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { shareReplay, tap } from 'rxjs/operators';
 import { BaseService } from './base.service';
+import { BehaviorSubject, Observable } from 'rxjs';
 
 @Injectable({
     providedIn: 'root'
 })
 export class AuthService {
-    constructor(private baseService: BaseService, private router: Router, private http: HttpClient) { }
+    private currentUserSubject: BehaviorSubject<string>;
+    public currentUser: Observable<string>;
+
+    constructor(
+        private baseService: BaseService,
+        private router: Router,
+        private http: HttpClient) {
+        this.currentUserSubject = new BehaviorSubject<string>(localStorage.getItem("user-id"));
+        this.currentUser = this.currentUserSubject.asObservable();
+    }
   
     login(email: string, password: string) {
         return this.baseService.login(email, password).pipe(
@@ -41,23 +51,11 @@ export class AuthService {
         return localStorage.getItem('x-access-token');
     }
   
-    getRefreshToken() {
-        return localStorage.getItem('x-refresh-token');
-    }
-  
-    getUserId() {
-        return localStorage.getItem('user-id');
-    }
-  
-    setAccessToken(accessToken: string) {
-        localStorage.setItem('x-access-token', accessToken);
-    }
-  
     getNewAccessToken() {
         return this.http.get(`${this.baseService.ROOT_URL}/users/me/access-token`, {
             headers: {
-                'x-refresh-token': this.getRefreshToken(),
-                '_id': this.getUserId()
+                'x-refresh-token': localStorage.getItem('x-refresh-token'),
+                '_id': localStorage.getItem('user-id')
             },
             observe: 'response'
         }).pipe(
@@ -66,16 +64,22 @@ export class AuthService {
             })
         );
     }
+  
+    private setAccessToken(accessToken: string) {
+        localStorage.setItem('x-access-token', accessToken);
+    }
 
     private setSession(userId: string, accessToken: string, refreshToken: string) {
         localStorage.setItem('user-id', userId);
         localStorage.setItem('x-access-token', accessToken);
         localStorage.setItem('x-refresh-token', refreshToken);
+        this.currentUserSubject.next(userId);
     }
   
     private removeSession() {
         localStorage.removeItem('user-id');
         localStorage.removeItem('x-access-token');
         localStorage.removeItem('x-refresh-token');
+        this.currentUserSubject.next(null);
     }
 }

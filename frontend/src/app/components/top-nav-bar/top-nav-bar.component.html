@@ -1,0 +1,18 @@
+<mat-toolbar fxLayoutAlign="space-between center">
+    <span>{{ title }}</span>
+    <div>
+        <button mat-button [matMenuTriggerFor]="menu">
+            Insert logged in user name here <mat-icon>expand_more</mat-icon>
+        </button>
+        <mat-menu #menu="matMenu">
+            <button mat-menu-item (click)="openSettings()">
+                <mat-icon>settings</mat-icon>
+                <span>Settings</span>
+            </button>
+            <button mat-menu-item (click)="logout()">
+                <mat-icon>logout</mat-icon>
+                <span>Logout</span>
+            </button>
+        </mat-menu>
+    </div>
+</mat-toolbar>

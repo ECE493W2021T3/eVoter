@@ -1,1 +1,35 @@
-<router-outlet></router-outlet>
+<mat-sidenav-container fullscreen autosize>
+    <mat-sidenav *ngIf="currentUserId"
+                 opened
+                 mode="side"
+                 [ngStyle]="{ 'width.px': sidenavWidth }"
+                 [ngClass]="{ 'side-nav-shadow' : isExpanded }"
+                 (mouseover)="expandSidenav()"
+                 (mouseleave)="collapseSidenav()">
+        <div fxLayout="row" fxLayoutAlign="space-between center" [style.visibility]="isExpanded ? 'visible' : 'hidden'">
+            <h1 style="margin: 20px;">eVoter</h1>
+            <button mat-icon-button (click)="isCollapsible = !isCollapsible">
+                <mat-icon *ngIf="isCollapsible">panorama_fish_eye</mat-icon>
+                <mat-icon *ngIf="!isCollapsible">radio_button_checked</mat-icon>
+            </button>
+        </div>
+        <mat-nav-list>
+            <div *ngFor="let route of routes">
+                <mat-list-item [routerLink]="[route.Route]" [routerLinkActive]="['link-active']">
+                    <mat-icon>{{ route.Icon }}</mat-icon>
+                    <span *ngIf="isExpanded">{{ route.Label }}</span>
+                </mat-list-item>
+            </div>
+            <mat-list-item (click)="logout()">
+                <mat-icon>logout</mat-icon>
+                <span *ngIf="isExpanded">Logout</span>
+            </mat-list-item>
+        </mat-nav-list>
+    </mat-sidenav>
+    <mat-sidenav-content fxLayout="column" style="height: 100%;">
+        <app-top-nav-bar fxFlex="0 0 auto" *ngIf="currentUserId"></app-top-nav-bar>
+        <div class="content">
+            <router-outlet></router-outlet>
+        </div>
+    </mat-sidenav-content>
+</mat-sidenav-container>
