@@ -7,6 +7,10 @@ export const COMMON = {
     pollType: {
         survey: 'Survey',
         election: 'Election'
+    },
+    questionType: {
+        shortAnswer: 'Short Answer',
+        multipleChoice: 'Multiple Choice'
     }
 }
 
@@ -41,3 +45,14 @@ export const POLL_TYPES: ICommonValue[] = [
         value: COMMON.pollType.election
     }
 ];
+
+export const QUESTION_TYPES: ICommonValue[] = [
+    {
+        display: COMMON.questionType.shortAnswer,
+        value: COMMON.questionType.shortAnswer
+    },
+    {
+        display: COMMON.questionType.multipleChoice,
+        value: COMMON.questionType.multipleChoice
+    }
+]
