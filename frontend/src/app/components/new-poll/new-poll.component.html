@@ -1,111 +1,131 @@
-<div style="height: 100%">
-    <mat-horizontal-stepper #stepper fxFlex linear>
-        <mat-step label="Poll configuration"
-                  errorMessage="Invalid configuration."
-                  [hasError]="!pollConfigForm.valid"
-                  [completed]="pcf.type.value != ''">
-            <form [formGroup]="pollConfigForm"
-                  fxLayout="column"
-                  fxFlex="50">
-                <mat-form-field>
-                    <input matInput required formControlName="title" placeholder="Title">
-                    <mat-error *ngIf="pcf.title.errors && pcf.title.errors.required">Title is required</mat-error>
-                </mat-form-field>
+<mat-horizontal-stepper #stepper fxFlex linear>
+    <mat-step label="Poll configuration"
+              errorMessage="Invalid configuration."
+              [hasError]="!pollConfigForm.valid"
+              [completed]="pcf.type.value != ''">
+        <form [formGroup]="pollConfigForm"
+              fxLayout="column"
+              fxFlex="50">
+            <mat-form-field>
+                <input matInput required formControlName="title" placeholder="Title">
+                <mat-error *ngIf="pcf.title.errors && pcf.title.errors.required">Title is required</mat-error>
+            </mat-form-field>
 
-                <mat-form-field>
-                    <mat-label>Type</mat-label>
-                    <mat-select formControlName="type" required>
-                        <mat-option *ngFor="let type of pollTypes" [value]="type.value">{{ type.display }}</mat-option>
-                    </mat-select>
-                    <mat-error *ngIf="pcf.type.errors && pcf.type.errors.required">Type is required</mat-error>
-                </mat-form-field>
+            <mat-form-field>
+                <mat-label>Type</mat-label>
+                <mat-select formControlName="type" required>
+                    <mat-option *ngFor="let type of pollTypes" [value]="type.value">{{ type.display }}</mat-option>
+                </mat-select>
+                <mat-error *ngIf="pcf.type.errors && pcf.type.errors.required">Type is required</mat-error>
+            </mat-form-field>
 
-                <mat-form-field>
-                    <mat-label>Access Level</mat-label>
-                    <mat-select formControlName="accessLevel" required>
-                        <mat-option *ngFor="let accessLevel of accessLevels" [value]="accessLevel.value">{{ accessLevel.display }}</mat-option>
-                    </mat-select>
-                    <mat-error *ngIf="pcf.accessLevel.errors && pcf.accessLevel.errors.required">Access Level is required</mat-error>
-                </mat-form-field>
+            <mat-form-field>
+                <mat-label>Access Level</mat-label>
+                <mat-select formControlName="accessLevel" required>
+                    <mat-option *ngFor="let accessLevel of accessLevels" [value]="accessLevel.value">{{ accessLevel.display }}</mat-option>
+                </mat-select>
+                <mat-error *ngIf="pcf.accessLevel.errors && pcf.accessLevel.errors.required">Access Level is required</mat-error>
+            </mat-form-field>
 
-                <!-- <mat-form-field fxFlex>
-                    <input matInput readonly required [min]="minDate" [matDatepicker]="endDatePicker"
-                        (focus)="endDatePicker.open()" formControlName="endDate" placeholder="End Date">
-                    <mat-datepicker-toggle matSuffix [for]="endDatePicker"></mat-datepicker-toggle>
-                    <mat-datepicker #endDatePicker></mat-datepicker>
-                    <mat-error *ngIf="pcf.endDate.errors && pcf.endDate.errors.required">End Date is required
-                    </mat-error>
-                </mat-form-field> -->
+            <!-- <mat-form-field fxFlex>
+                <input matInput readonly required [min]="minDate" [matDatepicker]="endDatePicker"
+                    (focus)="endDatePicker.open()" formControlName="endDate" placeholder="End Date">
+                <mat-datepicker-toggle matSuffix [for]="endDatePicker"></mat-datepicker-toggle>
+                <mat-datepicker #endDatePicker></mat-datepicker>
+                <mat-error *ngIf="pcf.endDate.errors && pcf.endDate.errors.required">End Date is required
+                </mat-error>
+            </mat-form-field> -->
 
-                <br />
+            <br />
 
-                <div fxLayout="column" fxLayoutGap="20px">
-                    <mat-slide-toggle formControlName="isAnonymousModeOn" color="primary">
-                        Anonymous Mode
-                    </mat-slide-toggle>
+            <div fxLayout="column" fxLayoutGap="20px">
+                <mat-slide-toggle formControlName="isAnonymousModeOn" color="primary">
+                    Anonymous Mode
+                </mat-slide-toggle>
 
-                    <mat-slide-toggle formControlName="isHiddenUntilDeadline" color="primary">
-                        Results Remain Hidden Until Deadline
-                    </mat-slide-toggle>
+                <mat-slide-toggle formControlName="isHiddenUntilDeadline" color="primary">
+                    Results Remain Hidden Until Deadline
+                </mat-slide-toggle>
 
-                    <mat-slide-toggle formControlName="canVotersSeeResults" color="primary">
-                        Allow All Voters To See Results
-                    </mat-slide-toggle>
-                </div>
-            </form>
-
-            <br /><br />
-
-            <div>
-                <button mat-button matStepperNext type="button" (click)="test()">Next</button>
+                <mat-slide-toggle formControlName="canVotersSeeResults" color="primary">
+                    Allow All Voters To See Results
+                </mat-slide-toggle>
             </div>
-        </mat-step>
+        </form>
 
-        <mat-step #questionStep
-                  label="Add Questions"
-                  errorMessage="At least one question is required."
-                  [hasError]="questionStep.interacted && qfa.length == 0"
-                  [completed]="qfa.length > 0">
-            <form [formGroup]="questionForm"
-                  fxLayout="column"
-                  fxLayoutGap="20px"
-                  fxFlex="70">
-                <div formArrayName="questions">
-                    <div *ngFor="let item of qfa.controls; let i = index;">
-                        <div [formGroupName]="i">
-                            <mat-card>
-                                <div fxLayout="row" fxLayoutGap="20px">
-                                    <mat-form-field *ngIf="pcf.type.value == 'Survey'">
-                                        <mat-label>Type</mat-label>
-                                        <mat-select formControlName="questionType" [required]="pcf.type.value == 'Survey'">
-                                            <mat-option *ngFor="let type of questionTypes" [value]="type.value">{{ type.display }}</mat-option>
-                                        </mat-select>
-                                        <mat-error *ngIf="item.controls.questionType.errors && item.controls.questionType.errors.required">Type is required</mat-error>
-                                    </mat-form-field>
+        <br /><br />
 
-                                    <mat-form-field fxFlex>
-                                        <input matInput required formControlName="question" placeholder="Question">
-                                        <mat-error *ngIf="item.controls.question.errors && item.controls.question.errors.required">Question is required</mat-error>
-                                    </mat-form-field>
+        <div>
+            <button mat-button matStepperNext type="button">Next</button>
+        </div>
+    </mat-step>
 
-                                    <button mat-mini-fab color="accent" (click)="deleteQuestion(i)">
-                                        <mat-icon>delete</mat-icon>
-                                    </button>
+    <mat-step #questionStep
+              label="Add Questions"
+              errorMessage="At least one question is required."
+              [hasError]="questionStep.interacted && (qfa.length == 0 || !questionForm.valid)"
+              [completed]="qfa.length > 0">
+        <form [formGroup]="questionForm"
+              fxLayout="column"
+              fxLayoutGap="20px"
+              fxFlex="70">
+            <div formArrayName="questions">
+                <div *ngFor="let item of qfa.controls; let i = index;">
+                    <div [formGroupName]="i">
+                        <mat-card style="margin: 20px 0;">
+                            <div fxLayout="row" fxLayoutGap="20px">
+                                <mat-form-field *ngIf="pcf.type.value == 'Survey'">
+                                    <mat-label>Type</mat-label>
+                                    <mat-select formControlName="questionType" [required]="pcf.type.value == 'Survey'" (selectionChange)="onQuestionTypeChange($event, item)">
+                                        <mat-option *ngFor="let type of questionTypes" [value]="type.value">{{ type.display }}</mat-option>
+                                    </mat-select>
+                                    <mat-error *ngIf="item.controls.questionType.errors && item.controls.questionType.errors.required">Type is required</mat-error>
+                                </mat-form-field>
+
+                                <mat-form-field fxFlex>
+                                    <input matInput required formControlName="question" placeholder="Question">
+                                    <mat-error *ngIf="item.controls.question.errors && item.controls.question.errors.required">Question is required</mat-error>
+                                </mat-form-field>
+
+                                <button mat-mini-fab color="warn" (click)="deleteQuestion(i)">
+                                    <mat-icon>delete</mat-icon>
+                                </button>
+                            </div>
+
+                            <div *ngIf="item.value.questionType == 'Multiple Choice'" style="margin-top: 20px;">
+                                <div *ngFor="let choice of item.controls.choices.controls; let j = index;">
+                                    <div [formGroup]="choice" fxLayout="row" fxLayoutGap="20px">
+                                        <mat-form-field fxFlex>
+                                            <input matInput required formControlName="option" placeholder="Option">
+                                            <mat-error *ngIf="choice.controls.option.errors && choice.controls.option.errors.required">Option is required</mat-error>
+                                        </mat-form-field>
+
+                                        <button *ngIf="j > 0" mat-mini-fab color="accent" (click)="deleteChoice(item, j)">
+                                            <mat-icon>delete</mat-icon>
+                                        </button>
+                                    </div>
                                 </div>
-                            </mat-card>
-                        </div>
+                                <button mat-raised-button (click)="addChoice(item)"><mat-icon>add</mat-icon> Add New Multiple Choice Option</button>
+                            </div>
+                        </mat-card>
                     </div>
                 </div>
-                <button mat-raised-button (click)="addQuestion()"><mat-icon>add</mat-icon> Add New Question</button>
-            </form>
-        </mat-step>
-
-        <mat-step label="Done">
-            <p>You are now done.</p>
-            <div>
-                <button mat-button matStepperPrevious>Back</button>
-                <button mat-button (click)="stepper.reset()">Reset</button>
             </div>
-        </mat-step>
-    </mat-horizontal-stepper>
-</div>
+            <button mat-raised-button (click)="addQuestion()"><mat-icon>add</mat-icon> Add New Question</button>
+        </form>
+
+        <br/><br/>
+
+        <div>
+            <button mat-button matStepperPrevious>Back</button>
+            <button mat-button matStepperNext type="button">Next</button>
+        </div>
+    </mat-step>
+
+    <mat-step label="Done">
+        <p>You are now done.</p>
+        <div>
+            <button mat-button matStepperPrevious>Back</button>
+        </div>
+    </mat-step>
+</mat-horizontal-stepper>

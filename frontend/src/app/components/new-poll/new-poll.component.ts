@@ -1,7 +1,7 @@
 import { STEPPER_GLOBAL_OPTIONS } from '@angular/cdk/stepper';
 import { Component, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ACCESS_LEVELS, POLL_TYPES, QUESTION_TYPES } from 'src/app/helpers/common.const';
+import { ACCESS_LEVELS, COMMON, POLL_TYPES, QUESTION_TYPES } from 'src/app/helpers/common.const';
 
 @Component({
     selector: 'app-new-poll',
@@ -48,12 +48,31 @@ export class NewPollComponent implements OnInit {
     addQuestion() {
         this.qfa.push(this.formBuilder.group({
             question: ['', Validators.required],
-            questionType: ['', Validators.required]
+            questionType: ['', Validators.required],
+            choices: new FormArray([])
         }));
     }
 
     deleteQuestion(index) {
         this.qfa.removeAt(index);
+    }
+
+    addChoice(item) {
+        const choices = item.controls.choices as FormArray;
+        choices.push(this.formBuilder.group({
+            option: ['', Validators.required]
+        }));
+    }
+
+    deleteChoice(item, index) {
+        var choices = item.controls.choices as FormArray;
+        choices.removeAt(index);
+    }
+
+    onQuestionTypeChange(event, item) {
+        if (event.value == COMMON.questionType.multipleChoice && item.controls.choices.length == 0) {
+            this.addChoice(item);
+        }
     }
 
     test() {
