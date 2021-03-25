@@ -5,6 +5,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { ACCESS_LEVELS, COMMON, POLL_TYPES, QUESTION_TYPES } from 'src/app/helpers/common.const';
 import { Poll } from 'src/app/models/poll.model';
 import { Question } from 'src/app/models/question.model';
+import * as moment from 'moment';
 
 @Component({
     selector: 'app-new-poll',
@@ -25,7 +26,9 @@ export class NewPollComponent implements OnInit {
     public SURVEY = COMMON.pollType.survey;
     public ELECTION = COMMON.pollType.election;
     public MULTIPLE_CHOICE = COMMON.questionType.multipleChoice;
+    public endTimeArray = [];
 
+    private TIME_INTERVAL = 15; // time array goes up by 15 minutes;
     private SHORT_ANSWER = COMMON.questionType.shortAnswer;
     private oldSelectedPollType: string;
     private selectedPollType: string;
@@ -39,8 +42,8 @@ export class NewPollComponent implements OnInit {
             title: ['', Validators.required],
             type: ['', Validators.required],
             accessLevel: ['', Validators.required],
-            // endDate: ['', Validators.required],
-            // endTime: ['', Validators.required],
+            endDate: ['', Validators.required],
+            endTime: [{ value: '', disabled: true }, Validators.required],
             isAnonymousModeOn: [false],
             isHiddenUntilDeadline: [false],
             canVotersSeeResults: [false]
@@ -65,10 +68,15 @@ export class NewPollComponent implements OnInit {
             return;
         }
 
+        const endTime = moment(this.pcf.endTime.value, "hh:mm a");
+        var deadline = moment(this.pcf.endDate.value);
+        deadline.set({ hour: endTime.get('hour'), minute: endTime.get('minute'), second: endTime.get('second') });
+
         const model = {
             title: this.pcf.title.value,
             type: this.pcf.type.value,
             accessLevel: this.pcf.accessLevel.value,
+            deadline: deadline.toDate(),
             isAnonymousModeOn: this.pcf.isAnonymousModeOn.value,
             isHiddenUntilDeadline: this.pcf.isHiddenUntilDeadline.value,
             canVotersSeeResults: this.pcf.canVotersSeeResults.value,
@@ -142,5 +150,47 @@ export class NewPollComponent implements OnInit {
     deleteChoice(item, index) {
         var choices = item.controls.choices as FormArray;
         choices.removeAt(index);
+    }
+
+    constructEndTimeArray() {
+        if (this.pcf.endDate.value == null || this.pcf.endDate.value == '') {
+            this.pcf.endTime.disable();
+            return;
+        }
+
+        this.endTimeArray = [];
+        var selectedEndDate = new Date(this.pcf.endDate.value);
+
+        // If selected end date chosen is today, use the nearest 15 minute interval from current time. Else, start the array from 12am
+        const startTimeMinutes = selectedEndDate.setHours(0, 0, 0, 0) == new Date().setHours(0, 0, 0, 0)
+                ? this.getRoundedTimeDifference()
+                : 0;
+
+        var hours, minutes, ampm, time;
+        for(var i = startTimeMinutes; i < 1440; i += this.TIME_INTERVAL) {
+            minutes = i % 60;
+            if (minutes < 10) minutes += '0';
+
+            hours = Math.floor(i / 60);
+            ampm = hours % 24 < 12 ? 'AM' : 'PM';
+            hours = hours % 12;
+            if (hours === 0) hours = 12;
+
+            time = hours + ':' + minutes + ' ' + ampm;
+            this.endTimeArray.push({ value: time, display: time });
+        }
+
+        this.pcf.endTime.enable();
+    }
+
+    private getRoundedTimeDifference() {
+        const today = new Date();
+        const today12am = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+
+		const coeff = 1000 * 60 * this.TIME_INTERVAL;
+        const roundedTime = new Date(Math.ceil(today.getTime() / coeff) * coeff); // Round up current time to the nearest time interval
+        const diff = (roundedTime.getTime() - today12am.getTime()) / 1000 / 60; // Get minute difference from 12am to rounded time
+
+        return Math.abs(Math.round(diff));
     }
 }

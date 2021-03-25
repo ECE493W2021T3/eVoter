@@ -27,14 +27,30 @@
                 <mat-error *ngIf="pcf.accessLevel.errors && pcf.accessLevel.errors.required">Access Level is required</mat-error>
             </mat-form-field>
 
-            <!-- <mat-form-field fxFlex>
-                <input matInput readonly required [min]="minDate" [matDatepicker]="endDatePicker"
-                    (focus)="endDatePicker.open()" formControlName="endDate" placeholder="End Date">
-                <mat-datepicker-toggle matSuffix [for]="endDatePicker"></mat-datepicker-toggle>
-                <mat-datepicker #endDatePicker></mat-datepicker>
-                <mat-error *ngIf="pcf.endDate.errors && pcf.endDate.errors.required">End Date is required
-                </mat-error>
-            </mat-form-field> -->
+            <div fxLayout="row" fxLayoutGap="20px">
+                <mat-form-field fxFlex>
+                    <input matInput
+                        readonly
+                        required
+                        [min]="minDate"
+                        [matDatepicker]="endDatePicker"
+                        (focus)="endDatePicker.open()"
+                        (dateChange)="constructEndTimeArray()"
+                        formControlName="endDate"
+                        placeholder="End Date">
+                    <mat-datepicker-toggle matSuffix [for]="endDatePicker"></mat-datepicker-toggle>
+                    <mat-datepicker #endDatePicker></mat-datepicker>
+                    <mat-error *ngIf="pcf.endDate.errors && pcf.endDate.errors.required">End Date is required</mat-error>
+                </mat-form-field>
+
+                <mat-form-field fxFlex>
+                    <mat-label>End Time</mat-label>
+                    <mat-select formControlName="endTime" required>
+                        <mat-option *ngFor="let time of endTimeArray" [value]="time.value">{{ time.display }}</mat-option>
+                    </mat-select>
+                    <mat-error *ngIf="pcf.endTime.errors && pcf.endTime.errors.required">End Time is required</mat-error>
+                </mat-form-field>
+            </div>
 
             <br />
 

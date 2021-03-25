@@ -18,6 +18,7 @@ import { HostedPollsComponent } from './components/hosted-polls/hosted-polls.com
 import { InvitedPollsComponent } from './components/invited-polls/invited-polls.component';
 import { PollResultsComponent } from './components/poll-results/poll-results.component';
 import { SettingsComponent } from './components/settings/settings.component';
+import { MatNativeDateModule } from '@angular/material/core';
 
 @NgModule({
     declarations: [
@@ -39,7 +40,8 @@ import { SettingsComponent } from './components/settings/settings.component';
         MaterialModule,
         FlexLayoutModule,
         FormsModule,
-        ReactiveFormsModule
+        ReactiveFormsModule,
+        MatNativeDateModule
     ],
     providers: [
         AuthGuard,

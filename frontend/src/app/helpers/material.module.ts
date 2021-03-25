@@ -13,6 +13,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatCardModule } from '@angular/material/card';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatDatepickerModule } from '@angular/material/datepicker';
 
 @NgModule({
 	declarations: [],
@@ -30,7 +31,8 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 		MatSelectModule,
 		MatSlideToggleModule,
 		MatCardModule,
-		MatSnackBarModule
+		MatSnackBarModule,
+		MatDatepickerModule
 	],
 	exports: [
 		MatSidenavModule,
@@ -45,7 +47,8 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 		MatSelectModule,
 		MatSlideToggleModule,
 		MatCardModule,
-		MatSnackBarModule
+		MatSnackBarModule,
+		MatDatepickerModule
 	]
 })
 export class MaterialModule { }
