@@ -1,11 +1,14 @@
 import { STEPPER_GLOBAL_OPTIONS } from '@angular/cdk/stepper';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { Router } from '@angular/router';
 import { ACCESS_LEVELS, COMMON, POLL_TYPES, QUESTION_TYPES } from 'src/app/helpers/common.const';
 import { Poll } from 'src/app/models/poll.model';
 import { Question } from 'src/app/models/question.model';
 import * as moment from 'moment';
+import { PollService } from 'src/app/services/poll.service';
+import { Subscription } from 'rxjs';
 
 @Component({
     selector: 'app-new-poll',
@@ -16,7 +19,7 @@ import * as moment from 'moment';
         useValue: { showError: true }
     }]
 })
-export class NewPollComponent implements OnInit {
+export class NewPollComponent implements OnInit, OnDestroy {
     public pollConfigForm: FormGroup;
     public questionForm: FormGroup;
     public minDate = new Date();
@@ -30,12 +33,15 @@ export class NewPollComponent implements OnInit {
 
     private TIME_INTERVAL = 15; // time array goes up by 15 minutes;
     private SHORT_ANSWER = COMMON.questionType.shortAnswer;
+    private subscription: Subscription = new Subscription();
     private oldSelectedPollType: string;
     private selectedPollType: string;
 
     constructor(
         private formBuilder: FormBuilder,
-        private snackBar: MatSnackBar) { }
+        private snackBar: MatSnackBar,
+        private router: Router,
+        private pollService: PollService) { }
 
     ngOnInit(): void {
         this.pollConfigForm = this.formBuilder.group({
@@ -52,6 +58,10 @@ export class NewPollComponent implements OnInit {
         this.questionForm = this.formBuilder.group({
             questions: new FormArray([])
         });
+    }
+
+    ngOnDestroy(): void {
+        this.subscription.unsubscribe();
     }
 
     // Convenience getters for easy access to form fields
@@ -94,6 +104,16 @@ export class NewPollComponent implements OnInit {
                     return question;
                 })
         } as Poll;
+
+        this.subscription.add(this.pollService.createPoll(model).subscribe(result => {
+            this.router.navigate(['/hosted-polls']);
+        }, error => {
+            this.snackBar.open('Failed to create poll.', '', {
+                duration: 5000,
+                verticalPosition: 'top',
+                panelClass: ['error-snackbar']
+            });
+        }))
     }
 
     onPollTypeChange(event) {
@@ -122,6 +142,7 @@ export class NewPollComponent implements OnInit {
     }
 
     onQuestionTypeChange(event, item) {
+        // Add a choice only if the new question type is multiple choice and the choices list is empty
         if (event.value == this.MULTIPLE_CHOICE && item.controls.choices.length == 0) {
             this.addChoice(item);
         }
@@ -161,7 +182,7 @@ export class NewPollComponent implements OnInit {
         this.endTimeArray = [];
         var selectedEndDate = new Date(this.pcf.endDate.value);
 
-        // If selected end date chosen is today, use the nearest 15 minute interval from current time. Else, start the array from 12am
+        // If selected end date is today, start the array from the nearest time minute interval from current time. Else, start the array from 12am
         const startTimeMinutes = selectedEndDate.setHours(0, 0, 0, 0) == new Date().setHours(0, 0, 0, 0)
                 ? this.getRoundedTimeDifference()
                 : 0;
