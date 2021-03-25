@@ -1,6 +1,6 @@
 export class Question {
     id: number;
-    question: string;
     type: string;
+    question: string;
     choices: string[];
 }

@@ -93,8 +93,8 @@ export class NewPollComponent implements OnInit, OnDestroy {
             questions: this.qfa.value
                 .map(item => {
                     const question = {
-                        question: item.question,
-                        type: item.questionType
+                        type: item.questionType,
+                        question: item.question
                     } as Question;
 
                     if (item.questionType == this.MULTIPLE_CHOICE) {
@@ -136,6 +136,19 @@ export class NewPollComponent implements OnInit, OnDestroy {
             indices.forEach(index => {
                 this.qfa.removeAt(index);
             });
+        }
+        // If poll type was changed from election to survey, enable the "isAnonymousOn" field and set it to false
+        else if (this.oldSelectedPollType == this.ELECTION && this.selectedPollType == this.SURVEY) {
+            this.pcf.isAnonymousModeOn.setValue(false);
+            this.pcf.isAnonymousModeOn.updateValueAndValidity();
+            this.pcf.isAnonymousModeOn.enable();
+        }
+
+        // Elections should always have anonymous mode on
+        if (this.selectedPollType == this.ELECTION) {
+            this.pcf.isAnonymousModeOn.setValue(true);
+            this.pcf.isAnonymousModeOn.updateValueAndValidity();
+            this.pcf.isAnonymousModeOn.disable();
         }
 
         this.oldSelectedPollType = this.selectedPollType;
