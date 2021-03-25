@@ -326,7 +326,10 @@ app.post('/users', (req, res) => {
             // access auth token generated successfully, now we return an object containing the auth tokens
             return { accessToken, refreshToken }
         });
-    }).then((authTokens) => {
+    }).then(async (authTokens) => {
+        // Sign up user in Blockchain and add to wallet
+        await network.registerUser(newUser._id.toString());
+
         // Now we construct and send the response to the user with their auth tokens in the header and the user object in the body
         res
             .header('x-refresh-token', authTokens.refreshToken)
