@@ -13,7 +13,7 @@
 
             <mat-form-field>
                 <mat-label>Type</mat-label>
-                <mat-select formControlName="type" required>
+                <mat-select formControlName="type" required (selectionChange)="onPollTypeChange($event)">
                     <mat-option *ngFor="let type of pollTypes" [value]="type.value">{{ type.display }}</mat-option>
                 </mat-select>
                 <mat-error *ngIf="pcf.type.errors && pcf.type.errors.required">Type is required</mat-error>
@@ -87,12 +87,12 @@
                                     <mat-error *ngIf="item.controls.question.errors && item.controls.question.errors.required">Question is required</mat-error>
                                 </mat-form-field>
 
-                                <button mat-mini-fab color="warn" (click)="deleteQuestion(i)">
+                                <button *ngIf="i > 0" mat-mini-fab color="warn" (click)="deleteQuestion(i)">
                                     <mat-icon>delete</mat-icon>
                                 </button>
                             </div>
 
-                            <div *ngIf="item.value.questionType == 'Multiple Choice'" style="margin-top: 20px;">
+                            <div *ngIf="item.value.questionType == 'Multiple Choice' || pcf.type.value == 'Election'" style="margin-top: 20px;">
                                 <div *ngFor="let choice of item.controls.choices.controls; let j = index;">
                                     <div [formGroup]="choice" fxLayout="row" fxLayoutGap="20px">
                                         <mat-form-field fxFlex>
