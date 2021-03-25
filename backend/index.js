@@ -362,7 +362,7 @@ app.post('/users/login', (req, res) => {
             // Now we construct and send the response to the user with their auth tokens in the header and the user object in the body
             
             // This is how to connect to Blockchain network with userId
-            let networkObj = await network.connectToNetwork(user._id.toString());
+            let connection = await network.connectToNetwork(user._id.toString());
             
             res
                 .header('x-refresh-token', authTokens.refreshToken)
@@ -405,8 +405,8 @@ let deleteTasksFromList = (_listId) => {
  * Purpose: query all assets in world state
  */
 app.get('/blockchain/queryAll', async (req, res) => {
-    let networkObj = await network.connectToNetwork(appAdmin);
-    let response = await network.invoke(networkObj, true, 'queryAll', '');
+    let connection = await network.connectToNetwork(appAdmin);
+    let response = await network.invoke(connection, true, 'queryAll', '');
     let parsedResponse = await JSON.parse(response);
     res.send(parsedResponse);
 });
