@@ -10,6 +10,6 @@ export class PollService {
     constructor(private baseService: BaseService) { }
 
     public createPoll(data: Poll): Observable<any> {
-        return this.baseService.post('/poll', data);
+        return this.baseService.post('poll', data);
     }
 }

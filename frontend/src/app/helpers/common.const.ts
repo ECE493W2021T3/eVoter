@@ -22,16 +22,16 @@ export interface ICommonValue {
 
 export const ACCESS_LEVELS: ICommonValue[] = [
     {
-        display: COMMON.accessLevel.private,
-        value: COMMON.accessLevel.private
+        display: COMMON.accessLevel.inviteOnly,
+        value: COMMON.accessLevel.inviteOnly
     },
     {
         display: COMMON.accessLevel.public,
         value: COMMON.accessLevel.public
     },
     {
-        display: COMMON.accessLevel.inviteOnly,
-        value: COMMON.accessLevel.inviteOnly
+        display: COMMON.accessLevel.private,
+        value: COMMON.accessLevel.private
     }
 ];
 
