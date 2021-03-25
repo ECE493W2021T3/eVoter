@@ -358,8 +358,12 @@ app.post('/users/login', (req, res) => {
                 // access auth token generated successfully, now we return an object containing the auth tokens
                 return { accessToken, refreshToken }
             });
-        }).then((authTokens) => {
+        }).then(async (authTokens) => {
             // Now we construct and send the response to the user with their auth tokens in the header and the user object in the body
+            
+            // This is how to connect to Blockchain network with userId
+            let networkObj = await network.connectToNetwork(user._id.toString());
+            
             res
                 .header('x-refresh-token', authTokens.refreshToken)
                 .header('x-access-token', authTokens.accessToken)
