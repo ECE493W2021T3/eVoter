@@ -2,7 +2,7 @@
     <mat-step label="Poll configuration"
               errorMessage="Invalid configuration."
               [hasError]="!pollConfigForm.valid"
-              [completed]="pcf.type.value != ''">
+              [completed]="pollConfigForm.valid">
         <form [formGroup]="pollConfigForm"
               fxLayout="column"
               fxFlex="50">
@@ -64,7 +64,7 @@
               label="Add Questions"
               errorMessage="At least one question is required."
               [hasError]="questionStep.interacted && (qfa.length == 0 || !questionForm.valid)"
-              [completed]="qfa.length > 0">
+              [completed]="qfa.length > 0 && questionForm.valid">
         <form [formGroup]="questionForm"
               fxLayout="column"
               fxLayoutGap="20px"
@@ -74,9 +74,9 @@
                     <div [formGroupName]="i">
                         <mat-card style="margin: 20px 0;">
                             <div fxLayout="row" fxLayoutGap="20px">
-                                <mat-form-field *ngIf="pcf.type.value == 'Survey'">
+                                <mat-form-field *ngIf="pcf.type.value == SURVEY">
                                     <mat-label>Type</mat-label>
-                                    <mat-select formControlName="questionType" [required]="pcf.type.value == 'Survey'" (selectionChange)="onQuestionTypeChange($event, item)">
+                                    <mat-select formControlName="questionType" [required]="pcf.type.value == SURVEY" (selectionChange)="onQuestionTypeChange($event, item)">
                                         <mat-option *ngFor="let type of questionTypes" [value]="type.value">{{ type.display }}</mat-option>
                                     </mat-select>
                                     <mat-error *ngIf="item.controls.questionType.errors && item.controls.questionType.errors.required">Type is required</mat-error>
@@ -92,7 +92,7 @@
                                 </button>
                             </div>
 
-                            <div *ngIf="item.value.questionType == 'Multiple Choice' || pcf.type.value == 'Election'" style="margin-top: 20px;">
+                            <div *ngIf="item.value.questionType == MULTIPLE_CHOICE || pcf.type.value == ELECTION" style="margin-top: 20px;">
                                 <div *ngFor="let choice of item.controls.choices.controls; let j = index;">
                                     <div [formGroup]="choice" fxLayout="row" fxLayoutGap="20px">
                                         <mat-form-field fxFlex>
@@ -105,7 +105,7 @@
                                         </button>
                                     </div>
                                 </div>
-                                <button mat-raised-button (click)="addChoice(item)"><mat-icon>add</mat-icon> Add New Multiple Choice Option</button>
+                                <button mat-raised-button (click)="addChoice(item)" style="margin-top: 20px;"><mat-icon>add</mat-icon> Add New Multiple Choice Option</button>
                             </div>
                         </mat-card>
                     </div>
@@ -123,9 +123,10 @@
     </mat-step>
 
     <mat-step label="Done">
-        <p>You are now done.</p>
+        <p>Create and host your poll now!</p>
         <div>
             <button mat-button matStepperPrevious>Back</button>
+            <button mat-button color="primary" (click)="onSubmit()">Submit</button>
         </div>
     </mat-step>
 </mat-horizontal-stepper>
