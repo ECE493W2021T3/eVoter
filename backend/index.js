@@ -1,15 +1,24 @@
-const express = require('express');
-const app = express();
+'use strict'
 
-const { mongoose } = require('./db/mongoose');
-
-const bodyParser = require('body-parser');
-
-// Load in the mongoose models
-const { List, Task, User } = require('./db/models');
-
+const path = require('path');
+const fs = require('fs');
+const util = require('util');
 const jwt = require('jsonwebtoken');
 
+const express = require('express');
+const bodyParser = require('body-parser');
+const app = express();
+
+// Load in the mongoose models
+const { mongoose } = require('./db/mongoose');
+const { List, Task, User } = require('./db/models');
+
+// Blockchain Network
+let network = require('./fabric/network.js');
+const configPath = path.join(process.cwd(), './configs/config.json');
+const configJSON = fs.readFileSync(configPath, 'utf8');
+const config = JSON.parse(configJSON);
+const appAdmin = config.appAdmin;
 
 /* MIDDLEWARE  */
 
@@ -373,7 +382,6 @@ app.get('/users/me/access-token', verifySession, (req, res) => {
 })
 
 
-
 /* HELPER METHODS */
 let deleteTasksFromList = (_listId) => {
     Task.deleteMany({
@@ -383,8 +391,20 @@ let deleteTasksFromList = (_listId) => {
     })
 }
 
+/* Blockchain ROUTES */
 
+/**
+ * GET /blockchain/queryAll
+ * Purpose: query all assets in world state
+ */
+app.get('/blockchain/queryAll', async (req, res) => {
+    let networkObj = await network.connectToNetwork(appAdmin);
+    let response = await network.invoke(networkObj, true, 'queryAll', '');
+    let parsedResponse = await JSON.parse(response);
+    res.send(parsedResponse);
+});
 
+/* End of Blockchain ROUTES */
 
 app.listen(3000, () => {
     console.log("Server is listening on port 3000");
