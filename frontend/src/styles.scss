@@ -65,3 +65,13 @@ mat-nav-list mat-icon {
     position: relative;
     overflow-y: auto;
 }
+
+.page-padding {
+	padding: 0 20px;
+}
+
+.error-snackbar {
+    background: #B00020;
+	color: #FFF;
+	font-weight: bold;
+}

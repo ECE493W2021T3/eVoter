@@ -9,8 +9,7 @@ import { AuthService } from '../services/auth.service';
 export class AuthGuard implements CanActivate {
     constructor(
         private authService: AuthService,
-        private router: Router
-    ) {}
+        private router: Router) { }
 
     // prevents the user from accessing certain components if not logged in
     canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
