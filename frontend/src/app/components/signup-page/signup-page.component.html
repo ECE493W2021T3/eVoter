@@ -1,34 +1,57 @@
 <div class="centered-content">
-  <div class="white-box">
+    <form [formGroup]="registrationForm" (ngSubmit)="onSubmit()">
+        <mat-card fxLayout="column" style="padding: 40px;">
+            <h1 class="title">Sign up</h1>
 
-    <h1 class="title has-text-primary">Sign up</h1>
-    
-    <div class="field">
-      <p class="control has-icons-left has-icons-right">
-        <input #emailInput class="input has-background-light" type="email" placeholder="Email">
-        <span class="icon is-small is-left">
-          <i class="fas fa-envelope"></i>
-        </span>
-      </p>
-    </div>
-    <div class="field">
-      <p class="control has-icons-left">
-        <input #pwInput class="input has-background-light" type="password" placeholder="Password">
-        <span class="icon is-small is-left">
-          <i class="fas fa-lock"></i>
-        </span>
-      </p>
-    </div>
-    <div class="field" style="display: flex; justify-content: flex-end;">
-      <p class="control">
-        <button class="button is-success has-text-white" (click)="onSignupButtonClicked(emailInput.value, pwInput.value)">
-          Sign up
-        </button>
-      </p>
-    </div>
-    <br>
+            <div fxLayout="row" fxLayoutGap="30px">
+                <div fxLayout="column">
+                    <mat-form-field appearance="outline">
+                        <mat-label>Name</mat-label>
+                        <input matInput required formControlName="name">
+                        <mat-error *ngIf="rf.name.errors && rf.name.errors.required">Name is required</mat-error>
+                    </mat-form-field>
 
-    <p class="has-text-grey">Already got an account? <a routerLink="/login">Login</a> now!</p>
+                    <mat-form-field appearance="outline">
+                        <mat-label>Email</mat-label>
+                        <input matInput required email formControlName="email">
+                        <mat-error *ngIf="rf.email.errors && rf.email.errors.required">Email is required</mat-error>
+                        <mat-error *ngIf="rf.email.errors && rf.email.errors.email">Email is invalid</mat-error>
+                    </mat-form-field>
 
-  </div>
+                    <mat-form-field appearance="outline">
+                        <mat-label>Password</mat-label>
+                        <input matInput required type="password" minlength="8" formControlName="password">
+                        <mat-error *ngIf="rf.password.errors && rf.password.errors.required">Password is required</mat-error>
+                        <mat-error *ngIf="rf.password.errors && rf.password.errors.minlength">Password length needs to be a minimum of 8 characters</mat-error>
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline">
+                        <mat-label>Confirm Password</mat-label>
+                        <input matInput required type="password" formControlName="confirmPassword">
+                        <mat-error *ngIf="rf.confirmPassword.errors && rf.confirmPassword.errors.required">Confirm Password is required</mat-error>
+                        <mat-error *ngIf="rf.errors && rf.errors.notSame">Passwords do not match</mat-error>
+                    </mat-form-field>
+
+                    <div fxLayout="column" fxLayoutGap="20px">
+                        <mat-slide-toggle formControlName="isHostingPolls" color="primary">
+                            I will be hosting polls
+                        </mat-slide-toggle>
+
+                        <mat-slide-toggle formControlName="is2FAEnabled" color="primary">
+                            Enable Two-Factor Authentication
+                        </mat-slide-toggle>
+                    </div>
+                </div>
+
+                <div fxLayout="column">
+                    <!-- security questions -->
+                </div>
+
+                <div fxLayout="column" fxLayoutGap="20px">
+                    <button mat-raised-button color="primary" type="submit">Sign up</button>
+                    <span>Already have an account? <a routerLink="/login">Log in.</a></span>
+                </div>
+            </div>
+        </mat-card>
+    </form>
 </div>
