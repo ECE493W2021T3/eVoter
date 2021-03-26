@@ -1,0 +1,11 @@
+{
+    "connection_file": "configs/ibpConnection.json",
+    "appAdmin": "<>",
+    "appAdminSecret": "<>",
+    "orgMSPID": "votermsp",
+    "caName": "<>",
+    "userName": "V1",
+    "gatewayDiscovery": { "enabled": true, "asLocalhost": false },
+    "channel_name": "mychannel",
+    "contract_name": "evoterContract"
+}
