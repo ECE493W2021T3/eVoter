@@ -1,15 +1,24 @@
-const express = require('express');
-const app = express();
+'use strict'
 
-const { mongoose } = require('./db/mongoose');
-
-const bodyParser = require('body-parser');
-
-// Load in the mongoose models
-const { List, Task, User } = require('./db/models');
-
+const path = require('path');
+const fs = require('fs');
+const util = require('util');
 const jwt = require('jsonwebtoken');
 
+const express = require('express');
+const bodyParser = require('body-parser');
+const app = express();
+
+// Load in the mongoose models
+const { mongoose } = require('./db/mongoose');
+const { List, Task, User } = require('./db/models');
+
+// Blockchain Network
+let network = require('./fabric/network.js');
+const configPath = path.join(process.cwd(), './configs/config.json');
+const configJSON = fs.readFileSync(configPath, 'utf8');
+const config = JSON.parse(configJSON);
+const appAdmin = config.appAdmin;
 
 /* MIDDLEWARE  */
 
@@ -317,7 +326,10 @@ app.post('/users', (req, res) => {
             // access auth token generated successfully, now we return an object containing the auth tokens
             return { accessToken, refreshToken }
         });
-    }).then((authTokens) => {
+    }).then(async (authTokens) => {
+        // Sign up user in Blockchain and add to wallet
+        await network.registerUser(newUser._id.toString());
+
         // Now we construct and send the response to the user with their auth tokens in the header and the user object in the body
         res
             .header('x-refresh-token', authTokens.refreshToken)
@@ -346,8 +358,12 @@ app.post('/users/login', (req, res) => {
                 // access auth token generated successfully, now we return an object containing the auth tokens
                 return { accessToken, refreshToken }
             });
-        }).then((authTokens) => {
+        }).then(async (authTokens) => {
             // Now we construct and send the response to the user with their auth tokens in the header and the user object in the body
+            
+            // This is how to connect to Blockchain network with userId
+            let connection = await network.connectToNetwork(user._id.toString());
+            
             res
                 .header('x-refresh-token', authTokens.refreshToken)
                 .header('x-access-token', authTokens.accessToken)
@@ -393,7 +409,20 @@ let deleteTasksFromList = (_listId) => {
 }
 
 
+/* Blockchain ROUTES */
 
+/**
+ * GET /blockchain/queryAll
+ * Purpose: query all assets in world state
+ */
+app.get('/blockchain/queryAll', async (req, res) => {
+    let connection = await network.connectToNetwork(appAdmin);
+    let response = await network.invoke(connection, true, 'queryAll', '');
+    let parsedResponse = await JSON.parse(response);
+    res.send(parsedResponse);
+});
+
+/* End of Blockchain ROUTES */
 
 app.listen(3000, () => {
     console.log("Server is listening on port 3000");
