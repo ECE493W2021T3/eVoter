@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FlexLayoutModule } from "@angular/flex-layout";
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -17,6 +18,7 @@ import { HostedPollsComponent } from './components/hosted-polls/hosted-polls.com
 import { InvitedPollsComponent } from './components/invited-polls/invited-polls.component';
 import { PollResultsComponent } from './components/poll-results/poll-results.component';
 import { SettingsComponent } from './components/settings/settings.component';
+import { MatNativeDateModule } from '@angular/material/core';
 
 @NgModule({
     declarations: [
@@ -36,7 +38,10 @@ import { SettingsComponent } from './components/settings/settings.component';
         HttpClientModule,
         BrowserAnimationsModule,
         MaterialModule,
-        FlexLayoutModule
+        FlexLayoutModule,
+        FormsModule,
+        ReactiveFormsModule,
+        MatNativeDateModule
     ],
     providers: [
         AuthGuard,

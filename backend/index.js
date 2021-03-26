@@ -373,6 +373,15 @@ app.get('/users/me/access-token', verifySession, (req, res) => {
 })
 
 
+/**
+ * POST /poll
+ * Purpose: creates a new poll
+ */
+app.post('/poll', (req, res) => {
+    console.log(req.body);
+    res.send({ 'message': 'updated successfully' });
+})
+
 
 /* HELPER METHODS */
 let deleteTasksFromList = (_listId) => {
