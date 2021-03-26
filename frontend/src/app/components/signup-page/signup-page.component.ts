@@ -1,26 +1,32 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AuthService } from 'src/app/services/auth.service';
 import { MyErrorStateMatcher } from 'src/app/helpers/default.error-matcher';
-import { SECURITY_QUESTION_1, SECURITY_QUESTION_2, SECURITY_QUESTION_3 } from 'src/app/helpers/common.const';
+import { COMMON, SECURITY_QUESTION_1, SECURITY_QUESTION_2, SECURITY_QUESTION_3 } from 'src/app/helpers/common.const';
+import { Subscription } from 'rxjs';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { SecurityQuestion, User } from 'src/app/models/user.model';
 
 @Component({
     selector: 'app-signup-page',
     templateUrl: './signup-page.component.html',
     styleUrls: ['./signup-page.component.scss']
 })
-export class SignupPageComponent implements OnInit {
+export class SignupPageComponent implements OnInit, OnDestroy {
     public registrationForm: FormGroup;
     public matcher = new MyErrorStateMatcher();
     public securityQuestions1 = SECURITY_QUESTION_1;
     public securityQuestions2 = SECURITY_QUESTION_2;
     public securityQuestions3 = SECURITY_QUESTION_3;
 
+    private subscription: Subscription = new Subscription();
+
     constructor(
         private formBuilder: FormBuilder,
         private authService: AuthService,
-        private router: Router) { }
+        private router: Router,
+        private snackBar: MatSnackBar) { }
 
     ngOnInit() {
         this.registrationForm = this.formBuilder.group({
@@ -44,17 +50,43 @@ export class SignupPageComponent implements OnInit {
         }
     }
 
+    ngOnDestroy(): void {
+        this.subscription.unsubscribe();
+    }
+
     // Convenience getters for easy access to form fields
     get rf() { return this.registrationForm.controls; }
     get sfa() { return this.rf.securityQuestions as FormArray; }
 
     onSubmit() {
-        console.log(this.rf);
-        console.log(this.registrationForm.valid);
-        // this.authService.signup(this.rf.email.value, this.rf.password.value).subscribe((res: HttpResponse<any>) => {
-        //     console.log(res);
-        //     this.router.navigate(['/lists']);
-        // });
+        if (this.registrationForm.invalid || this.registrationForm.pending) {
+            return;
+        }
+
+        const model = {
+            name: this.rf.name.value,
+            email: this.rf.email.value,
+            password: this.rf.passwords.value.password,
+            role: this.rf.isHostingPolls.value ? COMMON.role.admin : COMMON.role.voter,
+            is2FAEnabled: this.rf.is2FAEnabled.value,
+            securityQuestions: this.sfa.value.map(item => {
+                return {
+                    question: item.question,
+                    answer: item.answer
+                } as SecurityQuestion;
+            })
+        } as User;
+
+        this.subscription.add(this.authService.signup(model).subscribe(result => {
+            const route = this.rf.isHostingPolls.value ? '/hosted-polls' : '/invited-polls';
+            this.router.navigate([route]);
+        }, error =>{
+            this.snackBar.open('User with entered email already exists.', '', {
+                duration: 5000,
+                verticalPosition: 'top',
+                panelClass: ['error-snackbar']
+            });
+        }))
     }
 
     private checkPasswords(group: FormGroup) {

@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { shareReplay, tap } from 'rxjs/operators';
 import { BaseService } from './base.service';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { User } from '../models/user.model';
 
 @Injectable({
     providedIn: 'root'
@@ -21,7 +22,7 @@ export class AuthService {
     }
   
     login(email: string, password: string) {
-        return this.baseService.login(email, password).pipe(
+        return this.baseService.auth('users/login', { email, password }).pipe(
             shareReplay(),
             tap((res: HttpResponse<any>) => {
                 // the auth tokens will be in the header of this response
@@ -30,16 +31,16 @@ export class AuthService {
             })
         );
     }
-  
-    signup(email: string, password: string) {
-        return this.baseService.signup(email, password).pipe(
+
+    signup(data: User): Observable<any> {
+        return this.baseService.auth('users', data).pipe(
             shareReplay(),
-            tap((res: HttpResponse<any>) => {
+            tap(res => {
                 // the auth tokens will be in the header of this response
                 this.setSession(res.body._id, res.headers.get('x-access-token'), res.headers.get('x-refresh-token'));
                 console.log("Successfully signed up and now logged in!");
             })
-        );
+        )
     }
     
     logout() {

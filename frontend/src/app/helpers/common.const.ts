@@ -1,4 +1,8 @@
 export const COMMON = {
+    role: {
+        admin: 'Admin',
+        voter: 'Voter'
+    },
     accessLevel: {
         private: 'Private',
         public: 'Public',

@@ -18,6 +18,10 @@ export class BaseService {
     public post(url: string, data: Object) {
         return this.http.post(`${this.ROOT_URL}/${url}`, data);
     }
+
+    public auth(url: string, data: Object) {
+        return this.http.post(`${this.ROOT_URL}/${url}`, data, { observe: 'response' });
+    }
     
     public patch(url: string, data: Object) {
         return this.http.patch(`${this.ROOT_URL}/${url}`, data);
@@ -25,23 +29,5 @@ export class BaseService {
     
     public delete(url: string) {
         return this.http.delete(`${this.ROOT_URL}/${url}`);
-    }
-
-    public login(email: string, password: string) {
-        return this.http.post(`${this.ROOT_URL}/users/login`, {
-            email,
-            password
-        }, {
-            observe: 'response'
-        });
-    }
-    
-    public signup(email: string, password: string) {
-        return this.http.post(`${this.ROOT_URL}/users`, {
-            email,
-            password
-        }, {
-            observe: 'response'
-        });
     }
 }
