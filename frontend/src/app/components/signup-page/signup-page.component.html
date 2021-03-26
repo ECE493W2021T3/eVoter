@@ -18,19 +18,20 @@
                         <mat-error *ngIf="rf.email.errors && rf.email.errors.email">Email is invalid</mat-error>
                     </mat-form-field>
 
-                    <mat-form-field appearance="outline">
-                        <mat-label>Password</mat-label>
-                        <input matInput required type="password" minlength="8" formControlName="password">
-                        <mat-error *ngIf="rf.password.errors && rf.password.errors.required">Password is required</mat-error>
-                        <mat-error *ngIf="rf.password.errors && rf.password.errors.minlength">Password length needs to be a minimum of 8 characters</mat-error>
-                    </mat-form-field>
+                    <div formGroupName="passwords" fxLayout="column">
+                        <mat-form-field appearance="outline">
+                            <mat-label>Password</mat-label>
+                            <input matInput required type="password" minlength="8" formControlName="password">
+                            <mat-error *ngIf="rf.passwords.controls.password.errors && rf.passwords.controls.password.errors.required">Password is required</mat-error>
+                            <mat-error *ngIf="rf.passwords.controls.password.errors && rf.passwords.controls.password.errors.minlength">Password length needs to be a minimum of 8 characters</mat-error>
+                        </mat-form-field>
 
-                    <mat-form-field appearance="outline">
-                        <mat-label>Confirm Password</mat-label>
-                        <input matInput required type="password" formControlName="confirmPassword">
-                        <mat-error *ngIf="rf.confirmPassword.errors && rf.confirmPassword.errors.required">Confirm Password is required</mat-error>
-                        <mat-error *ngIf="rf.errors && rf.errors.notSame">Passwords do not match</mat-error>
-                    </mat-form-field>
+                        <mat-form-field appearance="outline">
+                            <mat-label>Confirm Password</mat-label>
+                            <input matInput type="password" formControlName="confirmPassword" [errorStateMatcher]="matcher">
+                            <mat-error *ngIf="rf.passwords.errors && rf.passwords.errors.mismatch">Passwords do not match</mat-error>
+                        </mat-form-field>
+                    </div>
 
                     <div fxLayout="column" fxLayoutGap="20px">
                         <mat-slide-toggle formControlName="isHostingPolls" color="primary">
