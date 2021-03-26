@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AuthService } from 'src/app/services/auth.service';
 import { MyErrorStateMatcher } from 'src/app/helpers/default.error-matcher';
+import { SECURITY_QUESTION_1, SECURITY_QUESTION_2, SECURITY_QUESTION_3 } from 'src/app/helpers/common.const';
 
 @Component({
     selector: 'app-signup-page',
@@ -12,6 +13,9 @@ import { MyErrorStateMatcher } from 'src/app/helpers/default.error-matcher';
 export class SignupPageComponent implements OnInit {
     public registrationForm: FormGroup;
     public matcher = new MyErrorStateMatcher();
+    public securityQuestions1 = SECURITY_QUESTION_1;
+    public securityQuestions2 = SECURITY_QUESTION_2;
+    public securityQuestions3 = SECURITY_QUESTION_3;
 
     constructor(
         private formBuilder: FormBuilder,
