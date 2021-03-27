@@ -1,34 +1,104 @@
 <div class="centered-content">
-  <div class="white-box">
+    <form [formGroup]="registrationForm" (ngSubmit)="onSubmit()" style="width: 70%;">
+        <mat-card fxLayout="column" style="padding: 40px;">
+            <h1 class="title">Sign up</h1>
 
-    <h1 class="title has-text-primary">Sign up</h1>
-    
-    <div class="field">
-      <p class="control has-icons-left has-icons-right">
-        <input #emailInput class="input has-background-light" type="email" placeholder="Email">
-        <span class="icon is-small is-left">
-          <i class="fas fa-envelope"></i>
-        </span>
-      </p>
-    </div>
-    <div class="field">
-      <p class="control has-icons-left">
-        <input #pwInput class="input has-background-light" type="password" placeholder="Password">
-        <span class="icon is-small is-left">
-          <i class="fas fa-lock"></i>
-        </span>
-      </p>
-    </div>
-    <div class="field" style="display: flex; justify-content: flex-end;">
-      <p class="control">
-        <button class="button is-success has-text-white" (click)="onSignupButtonClicked(emailInput.value, pwInput.value)">
-          Sign up
-        </button>
-      </p>
-    </div>
-    <br>
+            <div fxLayout="row" fxLayoutGap="50px">
+                <div fxLayout="column" fxFlex="40">
+                    <mat-form-field appearance="outline">
+                        <mat-label>Name</mat-label>
+                        <input matInput required formControlName="name">
+                        <mat-error *ngIf="rf.name.errors && rf.name.errors.required">Name is required</mat-error>
+                    </mat-form-field>
 
-    <p class="has-text-grey">Already got an account? <a routerLink="/login">Login</a> now!</p>
+                    <mat-form-field appearance="outline">
+                        <mat-label>Email</mat-label>
+                        <input matInput required email formControlName="email">
+                        <mat-error *ngIf="rf.email.errors && rf.email.errors.required">Email is required</mat-error>
+                        <mat-error *ngIf="rf.email.errors && rf.email.errors.email">Email is invalid</mat-error>
+                    </mat-form-field>
 
-  </div>
+                    <div formGroupName="passwords" fxLayout="column">
+                        <mat-form-field appearance="outline">
+                            <mat-label>Password</mat-label>
+                            <input matInput required type="password" minlength="8" formControlName="password">
+                            <mat-error *ngIf="rf.passwords.controls.password.errors && rf.passwords.controls.password.errors.required">Password is required</mat-error>
+                            <mat-error *ngIf="rf.passwords.controls.password.errors && rf.passwords.controls.password.errors.minlength">Password has to be a minimum of 8 chars</mat-error>
+                        </mat-form-field>
+
+                        <mat-form-field appearance="outline">
+                            <mat-label>Confirm Password</mat-label>
+                            <input matInput type="password" formControlName="confirmPassword" [errorStateMatcher]="matcher">
+                            <mat-error *ngIf="rf.passwords.errors && rf.passwords.errors.mismatch">Passwords do not match</mat-error>
+                        </mat-form-field>
+                    </div>
+
+                    <div fxLayout="column" fxLayoutGap="20px">
+                        <mat-slide-toggle formControlName="isHostingPolls" color="primary">
+                            I will be hosting polls
+                        </mat-slide-toggle>
+
+                        <mat-slide-toggle formControlName="is2FAEnabled" color="primary">
+                            Enable Two-Factor Authentication
+                        </mat-slide-toggle>
+                    </div>
+                </div>
+
+                <div formArrayName="securityQuestions" fxLayout="column" fxFlex="40">
+                    <div formGroupName="0" fxLayout="column">
+                        <mat-form-field>
+                            <mat-label>Security Question 1</mat-label>
+                            <mat-select formControlName="question" required [matTooltip]="sfa.controls[0].controls.question.value">
+                                <mat-option *ngFor="let question of securityQuestions1" [value]="question.value">{{ question.display }}</mat-option>
+                            </mat-select>
+                            <mat-error *ngIf="sfa.controls[0].controls.question.errors && sfa.controls[0].controls.question.errors.required">Security Question 1 is required</mat-error>
+                        </mat-form-field>
+
+                        <mat-form-field appearance="outline">
+                            <mat-label>Security Answer 1</mat-label>
+                            <input matInput required formControlName="answer">
+                            <mat-error *ngIf="sfa.controls[0].controls.answer.errors && sfa.controls[0].controls.answer.errors.required">Security Answer 1 is required</mat-error>
+                        </mat-form-field>
+                    </div>
+
+                    <div formGroupName="1" fxLayout="column">
+                        <mat-form-field>
+                            <mat-label>Security Question 2</mat-label>
+                            <mat-select formControlName="question" required [matTooltip]="sfa.controls[1].controls.question.value">
+                                <mat-option *ngFor="let question of securityQuestions2" [value]="question.value">{{ question.display }}</mat-option>
+                            </mat-select>
+                            <mat-error *ngIf="sfa.controls[1].controls.question.errors && sfa.controls[1].controls.question.errors.required">Security Question 12 is required</mat-error>
+                        </mat-form-field>
+
+                        <mat-form-field appearance="outline">
+                            <mat-label>Security Answer 2</mat-label>
+                            <input matInput required formControlName="answer">
+                            <mat-error *ngIf="sfa.controls[1].controls.answer.errors && sfa.controls[1].controls.answer.errors.required">Security Answer 2 is required</mat-error>
+                        </mat-form-field>
+                    </div>
+
+                    <div formGroupName="2" fxLayout="column">
+                        <mat-form-field>
+                            <mat-label>Security Question 3</mat-label>
+                            <mat-select formControlName="question" required [matTooltip]="sfa.controls[2].controls.question.value">
+                                <mat-option *ngFor="let question of securityQuestions3" [value]="question.value">{{ question.display }}</mat-option>
+                            </mat-select>
+                            <mat-error *ngIf="sfa.controls[2].controls.question.errors && sfa.controls[2].controls.question.errors.required">Security Question 3 is required</mat-error>
+                        </mat-form-field>
+
+                        <mat-form-field appearance="outline">
+                            <mat-label>Security Answer 3</mat-label>
+                            <input matInput required formControlName="answer">
+                            <mat-error *ngIf="sfa.controls[2].controls.answer.errors && sfa.controls[2].controls.answer.errors.required">Security Answer 3 is required</mat-error>
+                        </mat-form-field>
+                    </div>
+                </div>
+
+                <div fxLayout="column" fxLayoutGap="20px" fxFlex="20" fxLayoutAlign="center">
+                    <button mat-raised-button color="primary" style="border-radius: 100px; height: 50px;" type="submit">Sign up</button>
+                    <span style="font-size: small;">Already have an account? <a routerLink="/login">Log in.</a></span>
+                </div>
+            </div>
+        </mat-card>
+    </form>
 </div>
