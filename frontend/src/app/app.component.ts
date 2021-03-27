@@ -9,7 +9,7 @@ import { AuthService } from './services/auth.service';
 })
 export class AppComponent implements OnInit, OnDestroy {
     private subscription: Subscription = new Subscription();
-    public currentUserId: string;
+    public currentUserID: string;
 
     public isExpanded = true;
     public isCollapsible = false;
@@ -27,8 +27,8 @@ export class AppComponent implements OnInit, OnDestroy {
 
     ngOnInit(): void {
         // Below triggers every time the user id changes (log in/out)
-        this.subscription.add(this.authService.currentUser.subscribe(userId => {
-            this.currentUserId = userId; // this is used to hide the navigation bars if user logs out
+        this.subscription.add(this.authService.currentUser.subscribe(userID => {
+            this.currentUserID = userID; // this is used to hide the navigation bars if user logs out
         }));
     }
 

@@ -1,5 +1,5 @@
 <mat-sidenav-container fullscreen autosize>
-    <mat-sidenav *ngIf="currentUserId"
+    <mat-sidenav *ngIf="currentUserID"
                  opened
                  mode="side"
                  [ngStyle]="{ 'width.px': sidenavWidth }"
@@ -27,7 +27,7 @@
         </mat-nav-list>
     </mat-sidenav>
     <mat-sidenav-content fxLayout="column" style="height: 100%;">
-        <app-top-nav-bar fxFlex="0 0 auto" *ngIf="currentUserId"></app-top-nav-bar>
+        <app-top-nav-bar fxFlex="0 0 auto" *ngIf="currentUserID"></app-top-nav-bar>
         <div class="content">
             <router-outlet></router-outlet>
         </div>

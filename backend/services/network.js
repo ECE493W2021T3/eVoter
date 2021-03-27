@@ -14,7 +14,7 @@ const fs = require('fs');
 const util = require('util');
 
 //connect to the config file
-const configPath = path.join(process.cwd(), './configs/config.json');
+const configPath = path.join(process.cwd(), './config/config.json');
 const configJSON = fs.readFileSync(configPath, 'utf8');
 const config = JSON.parse(configJSON);
 
@@ -40,7 +40,7 @@ exports.connectToNetwork = async function (userName) {
     const gateway = new Gateway();
 
     try {
-        const walletPath = path.join(process.cwd(), 'wallet');
+        const walletPath = path.join(process.cwd(), 'assets', 'wallet');
         const wallet = new FileSystemWallet(walletPath);
         console.log(`Wallet path: ${walletPath}`);
         console.log('userName: ');
@@ -137,29 +137,29 @@ exports.invoke = async function (connection, isQuery, func, args) {
 
 /* 
  * Register User Identity on Blockchain Network, import identity to wallet
- * input: userId
+ * input: userID
  * return: response
  */
-exports.registerUser = async function (userId) {
+exports.registerUser = async function (userID) {
     try {
-        if (!userId) {
+        if (!userID) {
             let response = {};
-            response.error = 'userId is required';
+            response.error = 'userID is required';
             return response;
         }
 
         // create wallet
-        const walletPath = path.join(process.cwd(), 'wallet');
+        const walletPath = path.join(process.cwd(), 'assets', 'wallet');
         const wallet = new FileSystemWallet(walletPath);
         console.log(`Wallet path: ${walletPath}`);
         console.log(wallet);
 
-        // check if userId is unique
-        const userExists = await wallet.exists(userId);
+        // check if userID is unique
+        const userExists = await wallet.exists(userID);
         if (userExists) {
             let response = {};
-            console.log(`userId ${userId} already taken`);
-            response.error = `userId ${userId} already taken`;
+            console.log(`userID ${userID} already taken`);
+            response.error = `userID ${userID} already taken`;
             return response;
         }
 
@@ -183,17 +183,17 @@ exports.registerUser = async function (userId) {
         console.log(`AdminIdentity: + ${adminIdentity}`);
 
         // Register the user, enroll the user, and import the new identity into the wallet.
-        const secret = await ca.register({ affiliation: '', enrollmentID: userId, role: 'client' }, adminIdentity);
+        const secret = await ca.register({ affiliation: '', enrollmentID: userID, role: 'client' }, adminIdentity);
 
-        const enrollment = await ca.enroll({ enrollmentID: userId, enrollmentSecret: secret });
+        const enrollment = await ca.enroll({ enrollmentID: userID, enrollmentSecret: secret });
         const userIdentity = await X509WalletMixin.createIdentity(orgMSPID, enrollment.certificate, enrollment.key.toBytes());
-        await wallet.import(userId, userIdentity);
-        console.log(`Successfully user with userId: ${userId}`);
-        let response = `Successfully user with userId: ${userId}`;
+        await wallet.import(userID, userIdentity);
+        console.log(`Successfully user with userID: ${userID}`);
+        let response = `Successfully user with userID: ${userID}`;
         return response;
 
     } catch (error) {
-        console.error(`Failed to register user + ${userId} + : ${error}`);
+        console.error(`Failed to register user + ${userID} + : ${error}`);
         let response = {};
         response.error = error;
         return response;
