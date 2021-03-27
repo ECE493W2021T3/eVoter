@@ -3,10 +3,8 @@ const _ = require('lodash');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const bcrypt = require('bcryptjs');
+const config = require('config');
 
-
-// JWT Secret
-const jwtSecret = "51778657246321226641fsdklafjasdkljfsklfjd7148924065";
 
 const UserSchema = new mongoose.Schema({
     email: {
@@ -48,7 +46,7 @@ UserSchema.methods.generateAccessAuthToken = function () {
     const user = this;
     return new Promise((resolve, reject) => {
         // Create the JSON Web Token and return that
-        jwt.sign({ _id: user._id.toHexString() }, jwtSecret, { expiresIn: "15m" }, (err, token) => {
+        jwt.sign({ _id: user._id.toHexString() }, config.get('jwtPrivateKey'), { expiresIn: "15m" }, (err, token) => {
             if (!err) {
                 resolve(token);
             } else {
@@ -75,7 +73,6 @@ UserSchema.methods.generateRefreshAuthToken = function () {
 
 UserSchema.methods.createSession = function () {
     let user = this;
-
     return user.generateRefreshAuthToken().then((refreshToken) => {
         return saveSessionToDatabase(user, refreshToken);
     }).then((refreshToken) => {
@@ -87,15 +84,7 @@ UserSchema.methods.createSession = function () {
     })
 }
 
-
-
 /* MODEL METHODS (static methods) */
-
-UserSchema.statics.getJWTSecret = () => {
-    return jwtSecret;
-}
-
-
 
 UserSchema.statics.findByIdAndToken = function (_id, token) {
     // finds user by id and token
@@ -111,6 +100,7 @@ UserSchema.statics.findByIdAndToken = function (_id, token) {
 
 
 UserSchema.statics.findByCredentials = function (email, password) {
+
     let User = this;
     return User.findOne({ email }).then((user) => {
         if (!user) return Promise.reject();
@@ -139,7 +129,6 @@ UserSchema.statics.hasRefreshTokenExpired = (expiresAt) => {
     }
 }
 
-
 /* MIDDLEWARE */
 // Before a user document is saved, this code runs
 UserSchema.pre('save', function (next) {
@@ -160,7 +149,6 @@ UserSchema.pre('save', function (next) {
         next();
     }
 });
-
 
 /* HELPER METHODS */
 let saveSessionToDatabase = (user, refreshToken) => {

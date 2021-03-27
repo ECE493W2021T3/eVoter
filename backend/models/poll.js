@@ -37,6 +37,13 @@ const Poll = mongoose.model("Poll",
       minlength: 3,
       maxlength: 255,
     },
+    host: {
+      type: String,
+      required: true,
+      trim: true,
+      minlength: 3,
+      maxlength: 255,
+    },
     type: {
       type: String,
       required: true,
