@@ -19,7 +19,7 @@ export class AuthService {
         this.currentUserSubject = new BehaviorSubject<string>(localStorage.getItem("user-id"));
         this.currentUser = this.currentUserSubject.asObservable();
     }
-  
+
     login(email: string, password: string) {
         return this.baseService.login(email, password).pipe(
             shareReplay(),
@@ -30,7 +30,7 @@ export class AuthService {
             })
         );
     }
-  
+
     signup(email: string, password: string) {
         return this.baseService.signup(email, password).pipe(
             shareReplay(),
@@ -41,16 +41,16 @@ export class AuthService {
             })
         );
     }
-    
+
     logout() {
         this.removeSession();
         this.router.navigate(['/login']);
     }
-  
+
     getAccessToken() {
         return localStorage.getItem('x-access-token');
     }
-  
+
     getNewAccessToken() {
         return this.http.get(`${this.baseService.ROOT_URL}/users/me/access-token`, {
             headers: {
@@ -64,18 +64,18 @@ export class AuthService {
             })
         );
     }
-  
+
     private setAccessToken(accessToken: string) {
         localStorage.setItem('x-access-token', accessToken);
     }
 
-    private setSession(userId: string, accessToken: string, refreshToken: string) {
-        localStorage.setItem('user-id', userId);
+    private setSession(userID: string, accessToken: string, refreshToken: string) {
+        localStorage.setItem('user-id', userID);
         localStorage.setItem('x-access-token', accessToken);
         localStorage.setItem('x-refresh-token', refreshToken);
-        this.currentUserSubject.next(userId);
+        this.currentUserSubject.next(userID);
     }
-  
+
     private removeSession() {
         localStorage.removeItem('user-id');
         localStorage.removeItem('x-access-token');
