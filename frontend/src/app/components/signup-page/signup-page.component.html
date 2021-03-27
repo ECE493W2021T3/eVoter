@@ -23,7 +23,7 @@
                             <mat-label>Password</mat-label>
                             <input matInput required type="password" minlength="8" formControlName="password">
                             <mat-error *ngIf="rf.passwords.controls.password.errors && rf.passwords.controls.password.errors.required">Password is required</mat-error>
-                            <mat-error *ngIf="rf.passwords.controls.password.errors && rf.passwords.controls.password.errors.minlength">Password length needs to be a minimum of 8 characters</mat-error>
+                            <mat-error *ngIf="rf.passwords.controls.password.errors && rf.passwords.controls.password.errors.minlength">Password has to be a minimum of 8 chars</mat-error>
                         </mat-form-field>
 
                         <mat-form-field appearance="outline">
