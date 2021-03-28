@@ -4,6 +4,7 @@ import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FlexLayoutModule } from "@angular/flex-layout";
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatNativeDateModule } from '@angular/material/core';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -18,7 +19,7 @@ import { HostedPollsComponent } from './components/hosted-polls/hosted-polls.com
 import { InvitedPollsComponent } from './components/invited-polls/invited-polls.component';
 import { PollResultsComponent } from './components/poll-results/poll-results.component';
 import { SettingsComponent } from './components/settings/settings.component';
-import { MatNativeDateModule } from '@angular/material/core';
+import { ChangePasswordComponent } from './components/change-password/change-password.component';
 
 @NgModule({
     declarations: [
@@ -31,6 +32,7 @@ import { MatNativeDateModule } from '@angular/material/core';
         InvitedPollsComponent,
         PollResultsComponent,
         SettingsComponent,
+        ChangePasswordComponent,
     ],
     imports: [
         BrowserModule,
