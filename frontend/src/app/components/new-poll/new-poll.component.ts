@@ -85,6 +85,7 @@ export class NewPollComponent implements OnInit, OnDestroy {
         const model = {
             title: this.pcf.title.value,
             type: this.pcf.type.value,
+            status: COMMON.pollStatus.active,
             accessLevel: this.pcf.accessLevel.value,
             deadline: deadline.toDate(),
             isAnonymousModeOn: this.pcf.isAnonymousModeOn.value,

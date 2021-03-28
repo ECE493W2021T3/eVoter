@@ -14,6 +14,10 @@ export class PollService {
     }
 
     public getHostedPolls(hostID: string): Observable<Poll[]> {
-        return this.baseService.get(`poll/all/${hostID}`);
+        return this.baseService.get(`poll/all-hosted-by/${hostID}`);
+    }
+
+    public updatePollStatus(pollID: string, status: string): Observable<Poll> {
+        return this.baseService.patch(`poll/${pollID}`, { status });
     }
 }

@@ -23,11 +23,7 @@ export class BaseService {
         return this.http.post<T>(`${this.ROOT_URL}/${url}`, data, { observe: 'response' });
     }
     
-    public patch(url: string, data: Object) {
-        return this.http.patch(`${this.ROOT_URL}/${url}`, data);
-    }
-    
-    public delete(url: string) {
-        return this.http.delete(`${this.ROOT_URL}/${url}`);
+    public patch<T>(url: string, data: Object) {
+        return this.http.patch<T>(`${this.ROOT_URL}/${url}`, data);
     }
 }

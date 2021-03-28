@@ -1,10 +1,10 @@
-<div *ngFor="let poll of hostedPolls">
+<div *ngFor="let poll of hostedPolls; let i = index;">
     <mat-card style="margin: 20px 60px;">
         <div fxLayout="row" fxLayoutAlign="space-between center">
             <h2>{{ poll.title }}</h2>
             <div fxLayout="row" fxLayoutGap="20px">
-                <button mat-raised-button color="primary" [disabled]="poll.accessLevel == PRIVATE || isPastDeadline(poll.deadline)">Invite Voters</button>
-                <button mat-raised-button color="warn" [disabled]="isPastDeadline(poll.deadline)">End Poll</button>
+                <button mat-raised-button color="primary" [disabled]="poll.accessLevel == PRIVATE || isPastDeadline(poll.deadline) || poll.status == INACTIVE">Invite Voters</button>
+                <button mat-raised-button color="warn" [disabled]="isPastDeadline(poll.deadline) || poll.status == INACTIVE" (click)="endPoll(poll.id, i)">End Poll</button>
             </div>
         </div>
         <div fxLayout="row" fxLayoutAlign="space-between center">

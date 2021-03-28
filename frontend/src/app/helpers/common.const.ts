@@ -3,6 +3,10 @@ export const COMMON = {
         admin: 'Admin',
         voter: 'Voter'
     },
+    pollStatus: {
+        active: 'Active',
+        inactive: 'Inactive'
+    },
     accessLevel: {
         private: 'Private',
         public: 'Public',
