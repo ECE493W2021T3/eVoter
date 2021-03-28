@@ -3,7 +3,6 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { Subscription } from 'rxjs';
 import { COMMON } from 'src/app/helpers/common.const';
 import { Poll } from 'src/app/models/poll.model';
-import { AuthService } from 'src/app/services/auth.service';
 import { PollService } from 'src/app/services/poll.service';
 
 @Component({
@@ -13,7 +12,6 @@ import { PollService } from 'src/app/services/poll.service';
 })
 export class HostedPollsComponent implements OnInit, OnDestroy {
     public PRIVATE = COMMON.accessLevel.private;
-    public INACTIVE = COMMON.pollStatus.inactive;
     public hostedPolls: Poll[] = [];
     public displayedColumns: string[] = [
         'title',
@@ -31,15 +29,12 @@ export class HostedPollsComponent implements OnInit, OnDestroy {
     private subscription: Subscription = new Subscription();
 
     constructor(
-        private authService: AuthService,
         private pollService: PollService,
         private snackBar: MatSnackBar) { }
 
     ngOnInit(): void {
-        this.subscription.add(this.authService.currentUser.subscribe(currentUserId => {
-            this.subscription.add(this.pollService.getHostedPolls(currentUserId).subscribe(polls => {
-                this.hostedPolls = polls;
-            }));
+        this.subscription.add(this.pollService.getHostedPolls().subscribe(polls => {
+            this.hostedPolls = polls;
         }));
     }
 
@@ -48,7 +43,8 @@ export class HostedPollsComponent implements OnInit, OnDestroy {
     }
 
     endPoll(pollID: string, index: number) {
-        this.subscription.add(this.pollService.updatePollStatus(pollID, this.INACTIVE).subscribe(result => {
+        this.subscription.add(this.pollService.updatePoll(pollID, { deadline: new Date() }).subscribe(result => {
+            console.log(result);
             this.hostedPolls[index] = result;
         }, error => {
             this.snackBar.open('Failed to end poll.', '', {
@@ -60,7 +56,7 @@ export class HostedPollsComponent implements OnInit, OnDestroy {
     }
 
     showViewResults(poll: Poll) {
-        return this.isPastDeadline(poll.deadline) || poll.status == this.INACTIVE ? true : !poll.isHiddenUntilDeadline;
+        return this.isPastDeadline(poll.deadline) ? true : !poll.isHiddenUntilDeadline;
     }
 
     isPastDeadline(deadline: Date) {

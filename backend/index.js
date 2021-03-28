@@ -2,8 +2,6 @@
 
 const bodyParser = require('body-parser');
 
-const { auth } = require('./middleware/auth');
-
 const express = require('express');
 const app = express();
 
@@ -33,7 +31,7 @@ app.use(function (req, res, next) {
 /* END MIDDLEWARE  */
 
 /* ROUTE HANDLERS */
-app.use('/poll',auth, pollRouter);
+app.use('/poll', pollRouter);
 app.use('/users', usersRouter);
 app.use('/blockchain', blockchainRouter);
 
