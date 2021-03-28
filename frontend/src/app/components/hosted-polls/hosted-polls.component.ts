@@ -34,7 +34,7 @@ export class HostedPollsComponent implements OnInit, OnDestroy {
 
     ngOnInit(): void {
         this.subscription.add(this.pollService.getHostedPolls().subscribe(polls => {
-            this.hostedPolls = polls;
+            this.hostedPolls = this.sortByDeadline(polls);
         }));
     }
 
@@ -44,8 +44,8 @@ export class HostedPollsComponent implements OnInit, OnDestroy {
 
     endPoll(pollID: string, index: number) {
         this.subscription.add(this.pollService.updatePoll(pollID, { deadline: new Date() }).subscribe(result => {
-            console.log(result);
             this.hostedPolls[index] = result;
+            this.hostedPolls = this.sortByDeadline(this.hostedPolls);
         }, error => {
             this.snackBar.open('Failed to end poll.', '', {
                 duration: 5000,
@@ -61,5 +61,9 @@ export class HostedPollsComponent implements OnInit, OnDestroy {
 
     isPastDeadline(deadline: Date) {
         return deadline.getTime() <= new Date().getTime();
+    }
+
+    private sortByDeadline(polls: Poll[]) {
+        return polls.sort((a, b) => new Date(b.deadline).getTime() - new Date(a.deadline).getTime());
     }
 }

@@ -8,10 +8,9 @@ router.get("/", async (req, res) => {
 });
 
 router.get("/all-hosted", auth, async (req, res) => {
-  const polls = await Poll.find({ host: req.userID }).select("-__v");
-  res.send(polls);
-  res.send(req.param.id);
-})
+    const polls = await Poll.find({ host: req.userID }).select("-__v");
+    res.send(polls);
+});
 
 router.get("/:id", async (req, res) => {
     const poll = await Poll.findById(req.params.id).select("-__v");
@@ -19,7 +18,6 @@ router.get("/:id", async (req, res) => {
       return res.status(404).send("The poll with the given ID was not found.");
   
     res.send(poll);
-    res.send(req.param.id);
 });
 
 router.post("/", auth, async (req, res) => {
@@ -44,12 +42,12 @@ router.post("/", auth, async (req, res) => {
 });
 
 router.patch("/:id", async (req, res) => {
-  const poll = await Poll.findOneAndUpdate({ _id: req.params.id }, { $set: req.body }, { new: true });
-  if (!poll)
+    const poll = await Poll.findOneAndUpdate({ _id: req.params.id }, { $set: req.body }, { new: true });
+    if (!poll)
       return res.status(404).send("The poll with the given ID was not found.");
 
-  res.send(poll);
-  res.send(req.param.id);
+    res.send(poll);
+    res.send(req.param.id);
 });
 
 module.exports = router;
