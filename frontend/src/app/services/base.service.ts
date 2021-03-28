@@ -11,16 +11,16 @@ export class BaseService {
         this.ROOT_URL = 'http://localhost:3000';
     }
 
-    public get(url: string) {
-        return this.http.get(`${this.ROOT_URL}/${url}`);
+    public get<T>(url: string) {
+        return this.http.get<T>(`${this.ROOT_URL}/${url}`);
     }
 
-    public post(url: string, data: Object) {
-        return this.http.post(`${this.ROOT_URL}/${url}`, data);
+    public post<T>(url: string, data: Object) {
+        return this.http.post<T>(`${this.ROOT_URL}/${url}`, data);
     }
 
-    public auth(url: string, data: Object) {
-        return this.http.post(`${this.ROOT_URL}/${url}`, data, { observe: 'response' });
+    public auth<T>(url: string, data: Object) {
+        return this.http.post<T>(`${this.ROOT_URL}/${url}`, data, { observe: 'response' });
     }
     
     public patch(url: string, data: Object) {

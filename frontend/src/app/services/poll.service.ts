@@ -12,4 +12,8 @@ export class PollService {
     public createPoll(data: Poll): Observable<any> {
         return this.baseService.post('poll', data);
     }
+
+    public getHostedPolls(hostID: string): Observable<Poll[]> {
+        return this.baseService.get(`poll/all/${hostID}`);
+    }
 }
