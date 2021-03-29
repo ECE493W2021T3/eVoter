@@ -1,26 +1,12 @@
 <div *ngFor="let poll of hostedPolls; let i = index;">
-    <mat-card style="margin: 20px 60px;">
+    <mat-card style="margin: 20px 60px;" (click)="openPollDetails(poll)" matTooltip="Click to view poll details">
         <div fxLayout="row" fxLayoutAlign="space-between center">
             <h2>{{ poll.title }}</h2>
-            <div fxLayout="row" fxLayoutGap="20px">
-                <button mat-raised-button color="primary" [disabled]="poll.accessLevel == PRIVATE || isPastDeadline(poll.deadline)">Invite Voters</button>
-                <button mat-raised-button color="warn" [disabled]="isPastDeadline(poll.deadline)" (click)="endPoll(poll._id, i)">End Poll</button>
+            <div fxLayout="row" fxLayoutGap="20px" fxLayoutAlign="center center">
+                <a *ngIf="showViewResults(poll)" routerLink="/poll-results">View Results</a>
+                <button mat-raised-button color="primary" [disabled]="poll.accessLevel == PRIVATE || isPastDeadline(poll.deadline)" (click)="$event.stopPropagation()">Invite Voters</button>
+                <button mat-raised-button color="warn" [disabled]="isPastDeadline(poll.deadline)" (click)="endPoll(poll._id, i); $event.stopPropagation()">End Poll</button>
             </div>
-        </div>
-        <div fxLayout="row" fxLayoutAlign="space-between center">
-            <div fxLayout="row" fxLayoutGap="60px">
-                <div fxLayout="column" fxLayoutGap="10px">
-                    <span><span class="label">Type:</span> {{ poll.type }}</span>
-                    <span><span class="label">Deadline:</span> {{ poll.deadline | date: 'LLL d, yyyy, h:mm a' }}</span>
-                    <span><span class="label">Access Level:</span> {{ poll.accessLevel }}</span>
-                </div>
-                <div fxLayout="column" fxLayoutGap="10px">
-                    <span><span class="label">Anonymous mode?</span> {{ poll.isAnonymousModeOn ? 'Yes' : 'No' }}</span>
-                    <span><span class="label">Are results hidden until deadline?</span> {{ poll.isHiddenUntilDeadline ? 'Yes' : 'No' }}</span>
-                    <span><span class="label">Can voters see results?</span> {{ poll.canVotersSeeResults ? 'Yes' : 'No' }}</span>
-                </div>
-            </div>
-            <a *ngIf="showViewResults(poll)" fxFlexAlign="end" routerLink="/poll-results">View Results</a>
         </div>
     </mat-card>
 </div>

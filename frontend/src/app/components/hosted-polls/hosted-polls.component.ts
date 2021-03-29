@@ -1,9 +1,11 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Subscription } from 'rxjs';
 import { COMMON } from 'src/app/helpers/common.const';
 import { Poll } from 'src/app/models/poll.model';
 import { PollService } from 'src/app/services/poll.service';
+import { PollDetailsDialogComponent } from '../poll-details-dialog/poll-details-dialog.component';
 
 @Component({
     selector: 'app-hosted-polls',
@@ -30,7 +32,8 @@ export class HostedPollsComponent implements OnInit, OnDestroy {
 
     constructor(
         private pollService: PollService,
-        private snackBar: MatSnackBar) { }
+        private snackBar: MatSnackBar,
+        private dialog: MatDialog) { }
 
     ngOnInit(): void {
         this.subscription.add(this.pollService.getHostedPolls().subscribe(polls => {
@@ -40,6 +43,13 @@ export class HostedPollsComponent implements OnInit, OnDestroy {
 
     ngOnDestroy(): void {
         this.subscription.unsubscribe();
+    }
+
+    openPollDetails(poll: Poll) {
+        this.dialog.open(PollDetailsDialogComponent, {
+            maxWidth: "800px",
+            data: { poll: poll }
+        });
     }
 
     endPoll(pollID: string, index: number) {

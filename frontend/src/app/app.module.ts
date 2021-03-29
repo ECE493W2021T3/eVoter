@@ -19,6 +19,7 @@ import { InvitedPollsComponent } from './components/invited-polls/invited-polls.
 import { PollResultsComponent } from './components/poll-results/poll-results.component';
 import { SettingsComponent } from './components/settings/settings.component';
 import { MatNativeDateModule } from '@angular/material/core';
+import { PollDetailsDialogComponent } from './components/poll-details-dialog/poll-details-dialog.component';
 
 @NgModule({
     declarations: [
@@ -31,6 +32,7 @@ import { MatNativeDateModule } from '@angular/material/core';
         InvitedPollsComponent,
         PollResultsComponent,
         SettingsComponent,
+        PollDetailsDialogComponent,
     ],
     imports: [
         BrowserModule,
