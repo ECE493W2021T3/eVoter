@@ -11,6 +11,7 @@ import { AuthService } from 'src/app/services/auth.service';
 export class TopNavBarComponent implements OnInit, OnDestroy {
     private subscription: Subscription = new Subscription();
     public title: string = "Welcome to eVoter";
+    public activeUserName: string;
 
     constructor(
         private router: Router,
@@ -27,6 +28,10 @@ export class TopNavBarComponent implements OnInit, OnDestroy {
         if (this.title == null || this.title == '') {
             console.log("DEBUG: this.title == null || this.title == ''")
         }
+
+        this.subscription.add(this.authService.userProfile.subscribe(user => {
+            this.activeUserName = user?.name;
+        }));
     }
 
     ngOnDestroy(): void {
