@@ -15,6 +15,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatDialogModule } from '@angular/material/dialog';
 
 @NgModule({
 	declarations: [],
@@ -34,7 +35,8 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 		MatCardModule,
 		MatSnackBarModule,
 		MatDatepickerModule,
-		MatTooltipModule
+		MatTooltipModule,
+		MatDialogModule
 	],
 	exports: [
 		MatSidenavModule,
@@ -51,7 +53,8 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 		MatCardModule,
 		MatSnackBarModule,
 		MatDatepickerModule,
-		MatTooltipModule
+		MatTooltipModule,
+		MatDialogModule
 	]
 })
 export class MaterialModule { }

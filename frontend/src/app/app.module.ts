@@ -20,6 +20,7 @@ import { InvitedPollsComponent } from './components/invited-polls/invited-polls.
 import { PollResultsComponent } from './components/poll-results/poll-results.component';
 import { SettingsComponent } from './components/settings/settings.component';
 import { ChangePasswordComponent } from './components/change-password/change-password.component';
+import { PollDetailsDialogComponent } from './components/poll-details-dialog/poll-details-dialog.component';
 
 @NgModule({
     declarations: [
@@ -33,6 +34,7 @@ import { ChangePasswordComponent } from './components/change-password/change-pas
         PollResultsComponent,
         SettingsComponent,
         ChangePasswordComponent,
+        PollDetailsDialogComponent
     ],
     imports: [
         BrowserModule,

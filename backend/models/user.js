@@ -4,20 +4,74 @@ const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const bcrypt = require('bcryptjs');
 const config = require('config');
+const Joi = require("joi");
 
+/* Models and Schemas */
+const questionJoi = Joi.object({ 
+    question: Joi.string().min(3).max(255).required(),
+    answer: Joi.string().min(3).max(255).required()
+})
+
+const userJoi = Joi.object({
+    name:Joi.string().min(3).max(255).required(),
+    email:Joi.string().email().required(),
+    role:Joi.string().required().valid("Voter", "Admin"),
+    password:Joi.string().min(8).max(255).required(),
+    is2FAEnabled: Joi.boolean().required(),
+    securityQuestions: Joi.array().items(questionJoi).required().length(3)
+});
+
+const QuestionSchema = new mongoose.Schema({
+    question: {
+      type: String,
+      required: true,
+      trim: true,
+      minlength: 3,
+      maxlength: 255,
+    },
+    answer: {
+      type: String,
+      required: true,
+      trim: true,
+      minlength: 3,
+      maxlength: 255,
+    }
+});
 
 const UserSchema = new mongoose.Schema({
+    name: {
+        type: String,
+        required: true,
+        trim: true,
+        minlength: 3,
+        maxlength: 255,
+    },
     email: {
         type: String,
         required: true,
-        minlength: 1,
+        minlength: 5,
         trim: true,
         unique: true
+    },
+    role: {
+        type: String,
+        required: true,
+        enum: ["Voter", "Admin"],
+        trim: true,
     },
     password: {
         type: String,
         required: true,
         minlength: 8
+    },
+    is2FAEnabled: {type: Boolean, required: true},
+    securityQuestions: { 
+        type: [QuestionSchema], 
+        required: true, 
+        validate: {
+            validator: v => Array.isArray(v) && v.length == 3, message: 'message "required" failed for path name',
+            message: () => "Require 3 security questions."
+        }
     },
     sessions: [{
         token: {
@@ -31,42 +85,27 @@ const UserSchema = new mongoose.Schema({
     }]
 });
 
+/* Instance Methods */
 
-// *** Instance methods ***
-
+// Called when User passed as JSON
 UserSchema.methods.toJSON = function () {
-    const user = this;
-    const userObject = user.toObject();
-
-    // return the document except the password and sessions (these shouldn't be made available)
-    return _.omit(userObject, ['password', 'sessions']);
+    return _.omit(this.toObject(), ['password', 'sessions', '__v']);
 }
 
 UserSchema.methods.generateAccessAuthToken = function () {
-    const user = this;
     return new Promise((resolve, reject) => {
-        // Create the JSON Web Token and return that
-        jwt.sign({ _id: user._id.toHexString() }, config.get('jwtPrivateKey'), { expiresIn: "15m" }, (err, token) => {
-            if (!err) {
-                resolve(token);
-            } else {
-                // there is an error
-                reject();
-            }
+        jwt.sign({ _id: this._id.toHexString() }, config.get('jwtPrivateKey'), { expiresIn: "15m" }, (err, token) => {
+            if (err) { return reject(); }
+            return resolve(token);
         })
     })
 }
 
 UserSchema.methods.generateRefreshAuthToken = function () {
-    // This method simply generates a 64byte hex string - it doesn't save it to the database. saveSessionToDatabase() does that.
     return new Promise((resolve, reject) => {
         crypto.randomBytes(64, (err, buf) => {
-            if (!err) {
-                // no error
-                let token = buf.toString('hex');
-
-                return resolve(token);
-            }
+            if (err) { reject(); }
+            return resolve(buf.toString('hex'));
         })
     })
 }
@@ -75,91 +114,72 @@ UserSchema.methods.createSession = function () {
     let user = this;
     return user.generateRefreshAuthToken().then((refreshToken) => {
         return saveSessionToDatabase(user, refreshToken);
-    }).then((refreshToken) => {
-        // saved to database successfully
-        // now return the refresh token
-        return refreshToken;
-    }).catch((e) => {
+    })
+    .catch((e) => {
         return Promise.reject('Failed to save session to database.\n' + e);
     })
 }
 
 /* MODEL METHODS (static methods) */
 
-UserSchema.statics.findByIdAndToken = function (_id, token) {
-    // finds user by id and token
-    // used in auth middleware (verifySession)
-
-    const User = this;
-
-    return User.findOne({
+UserSchema.statics.findSessionToken = function (_id, token) {
+    return this.findOne({
         _id,
         'sessions.token': token
     });
 }
 
-
 UserSchema.statics.findByCredentials = function (email, password) {
 
-    let User = this;
-    return User.findOne({ email }).then((user) => {
-        if (!user) return Promise.reject();
+    return this.findOne({ email }).then((user) => {
+
+        if (!user) return Promise.reject("User not found");
 
         return new Promise((resolve, reject) => {
             bcrypt.compare(password, user.password, (err, res) => {
-                if (res) {
-                    resolve(user);
-                }
-                else {
-                    reject();
-                }
+                if (res) { resolve(user); }
+                reject("Invalid password");
             })
         })
     })
 }
 
 UserSchema.statics.hasRefreshTokenExpired = (expiresAt) => {
-    let secondsSinceEpoch = Date.now() / 1000;
-    if (expiresAt > secondsSinceEpoch) {
-        // hasn't expired
-        return false;
-    } else {
-        // has expired
-        return true;
-    }
+    let now = Date.now() / 1000;
+    if (expiresAt > now) { return false; }
+    return true;
 }
 
 /* MIDDLEWARE */
 // Before a user document is saved, this code runs
 UserSchema.pre('save', function (next) {
-    let user = this;
-    let costFactor = 10;
 
-    if (user.isModified('password')) {
-        // if the password field has been edited/changed then run this code.
-
-        // Generate salt and hash password
-        bcrypt.genSalt(costFactor, (err, salt) => {
-            bcrypt.hash(user.password, salt, (err, hash) => {
-                user.password = hash;
-                next();
+    if (this.isModified('password')) {
+        bcrypt.genSalt(10, (err, salt) => {
+            bcrypt.hash(this.password, salt, (err, hash) => {
+                this.password = hash;
             })
         })
-    } else {
-        next();
     }
+    next();
 });
 
 /* HELPER METHODS */
+
+function validateUser(user) {
+    return userJoi.validate(user);
+}
+
+let generateRefreshTokenExpiryTime = () => {
+    // 864000 = 10 * 24 * 60 * 60;  => seconds in 10 days
+    return ((Date.now() / 1000) + 864000);
+}
+
 let saveSessionToDatabase = (user, refreshToken) => {
     // Save session to database
     return new Promise((resolve, reject) => {
-        let expiresAt = generateRefreshTokenExpiryTime();
-
-        user.sessions.push({ 'token': refreshToken, expiresAt });
-
+        user.sessions.push({ 'token': refreshToken, 'expiresAt':generateRefreshTokenExpiryTime() });
         user.save().then(() => {
-            // saved session successfully
             return resolve(refreshToken);
         }).catch((e) => {
             reject(e);
@@ -167,12 +187,7 @@ let saveSessionToDatabase = (user, refreshToken) => {
     })
 }
 
-let generateRefreshTokenExpiryTime = () => {
-    let daysUntilExpire = "10";
-    let secondsUntilExpire = ((daysUntilExpire * 24) * 60) * 60;
-    return ((Date.now() / 1000) + secondsUntilExpire);
-}
-
 const User = mongoose.model('User', UserSchema);
 
-module.exports = { User }
+exports.User = User;
+exports.validateUser = validateUser;

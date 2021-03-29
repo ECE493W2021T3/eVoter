@@ -1,1 +1,15 @@
-<p>hosted-polls works!</p>
+<div *ngFor="let poll of hostedPolls; let i = index;">
+    <mat-card style="margin: 20px 60px;" (click)="openPollDetails(poll)" matTooltip="Click to view poll details">
+        <div fxLayout="row" fxLayoutAlign="space-between center">
+            <h2>{{ poll.title }}</h2>
+            <div fxLayout="row" fxLayoutGap="20px" fxLayoutAlign="center center">
+                <a *ngIf="showViewResults(poll)" routerLink="/poll-results">View Results</a>
+                <button mat-raised-button color="primary" [disabled]="poll.accessLevel == PRIVATE || isPastDeadline(poll.deadline)" (click)="$event.stopPropagation()">Invite Voters</button>
+                <button mat-raised-button color="warn" [disabled]="isPastDeadline(poll.deadline)" (click)="endPoll(poll._id, i); $event.stopPropagation()">End Poll</button>
+            </div>
+        </div>
+    </mat-card>
+</div>
+<div *ngIf="hostedPolls.length == 0" class="centered-content">
+    <h3>Not hosting any polls? <a routerLink="/new-poll">Create and host one now!</a></h3>
+</div>
