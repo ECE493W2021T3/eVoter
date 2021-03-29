@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -10,7 +10,7 @@ import { UserService } from 'src/app/services/user.service';
     templateUrl: './settings.component.html',
     styleUrls: ['./settings.component.css']
 })
-export class SettingsComponent implements OnInit {
+export class SettingsComponent implements OnInit, OnDestroy {
     public settingsForm: FormGroup;
 
     private subscription: Subscription = new Subscription();
@@ -29,6 +29,10 @@ export class SettingsComponent implements OnInit {
         this.subscription.add(this.userService.get2FAConfig().subscribe(is2FAEnabled => {
             this.sf.is2FAEnabled.setValue(is2FAEnabled);
         }));
+    }
+
+    ngOnDestroy(): void {
+        this.subscription.unsubscribe();
     }
 
     // Convenience getters for easy access to form fields
