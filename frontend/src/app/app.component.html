@@ -20,6 +20,10 @@
                     <span *ngIf="isExpanded">{{ route.Label }}</span>
                 </mat-list-item>
             </div>
+            <mat-list-item (click)="openSettingsDialog()">
+                <mat-icon>settings</mat-icon>
+                <span *ngIf="isExpanded">Settings</span>
+            </mat-list-item>
             <mat-list-item (click)="logout()">
                 <mat-icon>logout</mat-icon>
                 <span *ngIf="isExpanded">Logout</span>

@@ -1,5 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { Subscription } from 'rxjs';
+import { SettingsComponent } from './components/settings/settings.component';
 import { COMMON } from './helpers/common.const';
 import { UserProfile } from './models/user.model';
 import { AuthService } from './services/auth.service';
@@ -17,7 +19,9 @@ export class AppComponent implements OnInit, OnDestroy {
     public isCollapsible = false;
     public sidenavWidth = 250;
 
-    constructor(private authService: AuthService) { }
+    constructor(
+        private authService: AuthService,
+        private dialog: MatDialog) { }
 
     ngOnInit(): void {
         // Below triggers every time the user id changes (log in/out)
@@ -29,8 +33,7 @@ export class AppComponent implements OnInit, OnDestroy {
                 this.routes = [
                     { Icon: 'add_circle', Label: 'Create New Poll', Route: '/new-poll', IsVisible: isAdmin },
                     { Icon: 'content_paste', Label: 'My Hosted Polls', Route: '/hosted-polls', IsVisible: isAdmin },
-                    { Icon: 'ballot', Label: 'Invited Polls', Route: '/invited-polls', IsVisible: !isAdmin },
-                    { Icon: 'settings', Label: 'Settings', Route: '/settings', IsVisible: true },
+                    { Icon: 'ballot', Label: 'Invited Polls', Route: '/invited-polls', IsVisible: !isAdmin }
                 ];
             }
         }));
@@ -38,6 +41,13 @@ export class AppComponent implements OnInit, OnDestroy {
 
     ngOnDestroy(): void {
         this.subscription.unsubscribe();
+    }
+
+    openSettingsDialog() {
+        this.dialog.open(SettingsComponent, {
+            maxWidth: "600px",
+            disableClose: true
+        });
     }
 
     logout() {

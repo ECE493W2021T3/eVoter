@@ -1,7 +1,9 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRouteSnapshot, NavigationEnd, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { AuthService } from 'src/app/services/auth.service';
+import { SettingsComponent } from '../settings/settings.component';
 
 @Component({
     selector: 'app-top-nav-bar',
@@ -15,7 +17,8 @@ export class TopNavBarComponent implements OnInit, OnDestroy {
 
     constructor(
         private router: Router,
-        private authService: AuthService) { }
+        private authService: AuthService,
+        private dialog: MatDialog) { }
 
     ngOnInit(): void {
         // Get title from routes in app-routing-module
@@ -38,8 +41,11 @@ export class TopNavBarComponent implements OnInit, OnDestroy {
         this.subscription.unsubscribe();
     }
 
-    openSettings() {
-        this.router.navigate(['/settings']);
+    openSettingsDialog() {
+        this.dialog.open(SettingsComponent, {
+            maxWidth: "600px",
+            disableClose: true
+        });
     }
 
     logout() {
