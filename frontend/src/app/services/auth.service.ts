@@ -4,21 +4,21 @@ import { Router } from '@angular/router';
 import { shareReplay, tap } from 'rxjs/operators';
 import { BaseService } from './base.service';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { User } from '../models/user.model';
+import { User, UserProfile } from '../models/user.model';
 
 @Injectable({
     providedIn: 'root'
 })
 export class AuthService {
-    private currentUserSubject: BehaviorSubject<string>;
-    public currentUser: Observable<string>;
+    private userProfileSubject: BehaviorSubject<UserProfile>;
+    public userProfile: Observable<UserProfile>;
 
     constructor(
         private baseService: BaseService,
         private router: Router,
         private http: HttpClient) {
-        this.currentUserSubject = new BehaviorSubject<string>(localStorage.getItem("user-id"));
-        this.currentUser = this.currentUserSubject.asObservable();
+        this.userProfileSubject = new BehaviorSubject<UserProfile>(JSON.parse(localStorage.getItem("userProfile")));
+        this.userProfile = this.userProfileSubject.asObservable();
     }
 
     login(email: string, password: string) {
@@ -26,7 +26,7 @@ export class AuthService {
             shareReplay(),
             tap((res: HttpResponse<any>) => {
                 // the auth tokens will be in the header of this response
-                this.setSession(res.body._id, res.headers.get('x-access-token'), res.headers.get('x-refresh-token'));
+                this.setSession(res.body, res.headers.get('x-access-token'), res.headers.get('x-refresh-token'));
                 console.log("LOGGED IN!");
             })
         );
@@ -37,7 +37,7 @@ export class AuthService {
             shareReplay(),
             tap(res => {
                 // the auth tokens will be in the header of this response
-                this.setSession(res.body._id, res.headers.get('x-access-token'), res.headers.get('x-refresh-token'));
+                this.setSession(res.body, res.headers.get('x-access-token'), res.headers.get('x-refresh-token'));
                 console.log("Successfully signed up and now logged in!");
             })
         )
@@ -56,7 +56,7 @@ export class AuthService {
         return this.http.get(`${this.baseService.ROOT_URL}/users/me/access-token`, {
             headers: {
                 'x-refresh-token': localStorage.getItem('x-refresh-token'),
-                '_id': localStorage.getItem('user-id')
+                '_id': this.userProfileSubject.value._id
             },
             observe: 'response'
         }).pipe(
@@ -70,17 +70,23 @@ export class AuthService {
         localStorage.setItem('x-access-token', accessToken);
     }
 
-    private setSession(userID: string, accessToken: string, refreshToken: string) {
-        localStorage.setItem('user-id', userID);
+    private setSession(response: any, accessToken: string, refreshToken: string) {
+        const userProfile = {
+            _id: response._id,
+            name: response.name,
+            role: response.role
+        } as UserProfile;
+
+        localStorage.setItem('userProfile', JSON.stringify(userProfile));
         localStorage.setItem('x-access-token', accessToken);
         localStorage.setItem('x-refresh-token', refreshToken);
-        this.currentUserSubject.next(userID);
+        this.userProfileSubject.next(userProfile);
     }
 
     private removeSession() {
-        localStorage.removeItem('user-id');
+        localStorage.removeItem('userProfile');
         localStorage.removeItem('x-access-token');
         localStorage.removeItem('x-refresh-token');
-        this.currentUserSubject.next(null);
+        this.userProfileSubject.next(null);
     }
 }

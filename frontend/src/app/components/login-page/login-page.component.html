@@ -1,35 +1,27 @@
 <div class="centered-content">
-  <div class="white-box">
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" style="width: 30%;">
+        <mat-card fxLayout="column" style="padding: 40px;">
+            <h1 class="title">Log in</h1>
 
-    <h1 class="title has-text-primary">Login</h1>
-    
-    <div class="field">
-      <p class="control has-icons-left has-icons-right">
-        <input #emailInput class="input has-background-light" type="email" placeholder="Email">
-        <span class="icon is-small is-left">
-          <i class="fas fa-envelope"></i>
-        </span>
-      </p>
-    </div>
-    <div class="field">
-      <p class="control has-icons-left">
-        <input #pwInput class="input has-background-light" type="password" placeholder="Password">
-        <span class="icon is-small is-left">
-          <i class="fas fa-lock"></i>
-        </span>
-      </p>
-    </div>
-    <div class="field" style="display: flex; justify-content: flex-end;">
-      <p class="control">
-        <button class="button is-success has-text-white" (click)="onLoginButtonClicked(emailInput.value, pwInput.value)">
-          Login
-        </button>
-      </p>
-    </div>
+            <mat-form-field appearance="outline">
+                <mat-label>Email</mat-label>
+                <input matInput required email formControlName="email">
+                <mat-error *ngIf="lf.email.errors && lf.email.errors.required">Email is required</mat-error>
+                <mat-error *ngIf="lf.email.errors && lf.email.errors.email">Email is invalid</mat-error>
+            </mat-form-field>
 
-    <br>
+            <mat-form-field appearance="outline">
+                <mat-label>Password</mat-label>
+                <input matInput required type="password" formControlName="password">
+                <mat-error *ngIf="lf.password.errors && lf.password.errors.required">Password is required</mat-error>
+            </mat-form-field>
 
-    <p class="has-text-grey">Not got an account? <a routerLink="/signup">Sign up</a> now!</p>
+            <a routerLink="/change-password" fxFlexAlign="end" style="font-size: small; margin-bottom: 20px;">Forgot password?</a>
 
-  </div>
+            <div fxLayout="column" fxLayoutGap="20px" fxFlex="20">
+                <button mat-raised-button color="primary" style="border-radius: 100px; height: 50px;" type="submit">Log in</button>
+                <span fxFlexAlign="center" style="font-size: small;">Don't have an account? <a routerLink="/signup">Sign up</a> now.</span>
+            </div>
+        </mat-card>
+    </form>
 </div>

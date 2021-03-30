@@ -2,10 +2,10 @@
     <span>{{ title }}</span>
     <div>
         <button mat-button [matMenuTriggerFor]="menu">
-            Insert logged in user name here <mat-icon>expand_more</mat-icon>
+            {{ activeUserName }} <mat-icon>expand_more</mat-icon>
         </button>
         <mat-menu #menu="matMenu">
-            <button mat-menu-item (click)="openSettings()">
+            <button mat-menu-item (click)="openSettingsDialog()">
                 <mat-icon>settings</mat-icon>
                 <span>Settings</span>
             </button>
