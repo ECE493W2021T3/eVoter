@@ -74,7 +74,10 @@ export class PollInviteComponent implements OnInit, OnDestroy {
     
     openInviteSystemDialog() {
         this.dialog.open(SystemInviteComponent, {
-            maxWidth: "800px",
+            minWidth: "600px",
+            data: {
+                registeredVoterEmails: this.voterList.map(x => x.email)
+            },
             disableClose: true
         });
     }
