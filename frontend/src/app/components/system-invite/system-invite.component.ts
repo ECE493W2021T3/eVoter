@@ -1,7 +1,9 @@
 import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { Subscription } from 'rxjs';
+import { UserService } from 'src/app/services/user.service';
 
 @Component({
     selector: 'app-system-invite',
@@ -15,7 +17,10 @@ export class SystemInviteComponent implements OnInit, OnDestroy {
     private existingVoterList = [];
 
     constructor(
+        private dialogRef: MatDialogRef<SystemInviteComponent>,
         private formBuilder: FormBuilder,
+        private userService: UserService,
+        private snackBar: MatSnackBar,
         @Inject(MAT_DIALOG_DATA) public data: any) {
         this.existingVoterList = data.registeredVoterEmails;
     }
@@ -38,8 +43,15 @@ export class SystemInviteComponent implements OnInit, OnDestroy {
             return;
         }
 
-        // Send emails to backend
-        // this.subscription.add()
+        this.subscription.add(this.userService.sendSystemRegistrationEmail(this.ef.emails.value).subscribe(result => {
+            this.dialogRef.close();
+        }, error => {
+            this.snackBar.open('Failed to send emails to unregistered voters.', '', {
+                duration: 5000,
+                verticalPosition: 'top',
+                panelClass: ['error-snackbar']
+            });
+        }));
     }
     
     addEmail(event) {

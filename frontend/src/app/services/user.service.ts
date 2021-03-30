@@ -9,12 +9,16 @@ import { BaseService } from './base.service';
 export class UserService {
     constructor(private baseService: BaseService) { }
 
-    public get2FAConfig(): Observable<boolean> {
-        return this.baseService.get('users/me/2FA');
-    }
-
     public getRegisteredVoters(): Observable<Voter[]> {
         return this.baseService.get('users/voters');
+    }
+
+    public sendSystemRegistrationEmail(emails: string[]): Observable<any> {
+        return this.baseService.post('users/send-registration-email', { emails });
+    }
+
+    public get2FAConfig(): Observable<boolean> {
+        return this.baseService.get('users/me/2FA');
     }
 
     public update2FASetting(is2FAEnabled: boolean): Observable<any> {

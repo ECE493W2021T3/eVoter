@@ -24,10 +24,10 @@
     </mat-form-field>
 
     <div fxLayout="row" fxLayoutAlign="space-between center">
-        <button mat-stroked-button color="primary" (click)="openInviteSystemDialog()">Voter not registered?</button>
+        <button mat-stroked-button color="primary" type="button" (click)="openInviteSystemDialog()">Voter not registered?</button>
         <div fxLayout="row" fxLayoutGap="10px" fxLayoutAlign="end">
             <button mat-raised-button color="primary" type="submit" [disabled]="!votersForm.dirty">Invite</button>
-            <button mat-dialog-close mat-raised-button>Cancel</button>
+            <button mat-dialog-close mat-raised-button type="button">Cancel</button>
         </div>
     </div>
 </form>
