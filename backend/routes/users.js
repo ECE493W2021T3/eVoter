@@ -1,6 +1,7 @@
 const router = require("express").Router();
 const { User, validateUser } = require('../models/user');
 const { verifySession } = require("../middleware/verifySession");
+const { auth } = require("../middleware/auth");
 let network = require('../services/network');
 
 /**
@@ -84,5 +85,27 @@ router.get('/me/access-token', verifySession, (req, res) => {
         res.status(400).send(e);
     });
 })
+
+/**
+ * GET /users/me/2FA
+ * Purpose: Gets the Two-Factor Authentication setting
+ */
+router.get('/me/2FA', auth, async (req, res) => {
+    const user = await User.findById(req.userID).select("is2FAEnabled -_id");
+    res.send(user.is2FAEnabled);
+});
+
+/**
+ * PATCH /users/me/2FA
+ * Purpose: Updates the Two-Factor Authentication setting
+ */
+router.patch('/me/2FA', auth, async (req, res) => {
+    if (typeof(req.body.is2FAEnabled) == "boolean") {
+        await User.findOneAndUpdate({ _id: req.userID }, { is2FAEnabled: req.body.is2FAEnabled });
+        res.send({ 'message': 'Updated successfully' });
+    } else {
+        return res.status(404).send("The provided field in the request is not of type boolean");
+    }
+});
 
 module.exports = router;

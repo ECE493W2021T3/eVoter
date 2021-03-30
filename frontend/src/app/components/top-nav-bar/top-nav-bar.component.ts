@@ -1,7 +1,9 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRouteSnapshot, NavigationEnd, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { AuthService } from 'src/app/services/auth.service';
+import { SettingsComponent } from '../settings/settings.component';
 
 @Component({
     selector: 'app-top-nav-bar',
@@ -11,10 +13,12 @@ import { AuthService } from 'src/app/services/auth.service';
 export class TopNavBarComponent implements OnInit, OnDestroy {
     private subscription: Subscription = new Subscription();
     public title: string = "Welcome to eVoter";
+    public activeUserName: string;
 
     constructor(
         private router: Router,
-        private authService: AuthService) { }
+        private authService: AuthService,
+        private dialog: MatDialog) { }
 
     ngOnInit(): void {
         // Get title from routes in app-routing-module
@@ -27,14 +31,21 @@ export class TopNavBarComponent implements OnInit, OnDestroy {
         if (this.title == null || this.title == '') {
             console.log("DEBUG: this.title == null || this.title == ''")
         }
+
+        this.subscription.add(this.authService.userProfile.subscribe(user => {
+            this.activeUserName = user?.name;
+        }));
     }
 
     ngOnDestroy(): void {
         this.subscription.unsubscribe();
     }
 
-    openSettings() {
-        this.router.navigate(['/settings']);
+    openSettingsDialog() {
+        this.dialog.open(SettingsComponent, {
+            maxWidth: "600px",
+            disableClose: true
+        });
     }
 
     logout() {

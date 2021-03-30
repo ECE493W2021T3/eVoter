@@ -1,1 +1,15 @@
-<p>settings works!</p>
+<form [formGroup]="settingsForm"
+      (ngSubmit)="onSubmit()"
+      fxLayout="column"
+      fxLayoutGap="20px">
+    <h2 mat-dialog-title>Settings</h2>
+
+    <mat-slide-toggle formControlName="is2FAEnabled" color="primary">
+        Enable Two-Factor Authentication
+    </mat-slide-toggle>
+
+    <div fxLayout="row" fxLayoutGap="10px" fxLayoutAlign="end">
+        <button mat-raised-button color="primary" type="submit" [disabled]="!settingsForm.dirty">Save</button>
+        <button mat-dialog-close mat-raised-button>Cancel</button>
+    </div>
+</form>

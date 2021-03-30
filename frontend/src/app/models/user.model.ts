@@ -11,3 +11,9 @@ export class SecurityQuestion {
     question: string;
     answer: string;
 }
+
+export class UserProfile {
+    _id: string;
+    name: string;
+    role: string;
+}

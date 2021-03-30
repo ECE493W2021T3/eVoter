@@ -1,5 +1,5 @@
 <mat-sidenav-container fullscreen autosize>
-    <mat-sidenav *ngIf="currentUserID"
+    <mat-sidenav *ngIf="userProfile"
                  opened
                  mode="side"
                  [ngStyle]="{ 'width.px': sidenavWidth }"
@@ -15,11 +15,15 @@
         </div>
         <mat-nav-list>
             <div *ngFor="let route of routes">
-                <mat-list-item [routerLink]="[route.Route]" [routerLinkActive]="['link-active']">
+                <mat-list-item *ngIf="route.IsVisible" [routerLink]="[route.Route]" [routerLinkActive]="['link-active']">
                     <mat-icon>{{ route.Icon }}</mat-icon>
                     <span *ngIf="isExpanded">{{ route.Label }}</span>
                 </mat-list-item>
             </div>
+            <mat-list-item (click)="openSettingsDialog()">
+                <mat-icon>settings</mat-icon>
+                <span *ngIf="isExpanded">Settings</span>
+            </mat-list-item>
             <mat-list-item (click)="logout()">
                 <mat-icon>logout</mat-icon>
                 <span *ngIf="isExpanded">Logout</span>
@@ -27,7 +31,7 @@
         </mat-nav-list>
     </mat-sidenav>
     <mat-sidenav-content fxLayout="column" style="height: 100%;">
-        <app-top-nav-bar fxFlex="0 0 auto" *ngIf="currentUserID"></app-top-nav-bar>
+        <app-top-nav-bar fxFlex="0 0 auto" *ngIf="userProfile"></app-top-nav-bar>
         <div class="content">
             <router-outlet></router-outlet>
         </div>

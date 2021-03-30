@@ -13,10 +13,10 @@ export class AuthGuard implements CanActivate {
 
     // prevents the user from accessing certain components if not logged in
     canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
-        return this.authService.currentUser.pipe(
+        return this.authService.userProfile.pipe(
             take(1),
-            map(userID => {
-                if (!userID) {
+            map(user => {
+                if (!user) {
                     this.router.navigate(['/login']);
                     return false;
                 }
