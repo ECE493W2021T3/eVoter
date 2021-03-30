@@ -108,4 +108,13 @@ router.patch('/me/2FA', auth, async (req, res) => {
     }
 });
 
+/**
+ * GET /voters
+ * Purpose: Gets all registered voters in the system
+ */
+ router.get('/voters', async (req, res) => {
+    const voters = await User.find({ role: 'Voter' }).select("_id email");
+    res.send(voters);
+});
+
 module.exports = router;

@@ -35,8 +35,8 @@ import { SystemInviteComponent } from './components/system-invite/system-invite.
         InvitedPollsComponent,
         PollResultsComponent,
         SettingsComponent,
-        PollDetailsDialogComponent,
         ChangePasswordComponent,
+        PollDetailsDialogComponent,
         PollInviteComponent,
         SystemInviteComponent
     ],

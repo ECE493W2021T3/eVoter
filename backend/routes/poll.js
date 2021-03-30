@@ -50,4 +50,10 @@ router.patch("/:id", async (req, res) => {
     res.send(req.param.id);
 });
 
+router.post("/:id/voter-assignments", (req, res) =>{
+    console.log(req.params.id); // poll id
+    console.log(req.body); // voters [ { _id, email } ]
+    res.send({ 'message': 'Created successfully' });
+});
+
 module.exports = router;

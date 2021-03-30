@@ -18,8 +18,8 @@
 
     <mat-form-field appearance="outline">
         <mat-label>Select individual registered voters to invite</mat-label>
-        <mat-select formControlName="voterIDs" multiple [disabled]="voterList.length == 0">
-            <mat-option *ngFor="let voter of voterList" [value]="voter._id">{{ voter.email }}</mat-option>
+        <mat-select formControlName="voters" multiple [disabled]="voterList.length == 0">
+            <mat-option *ngFor="let voter of voterList" [value]="voter">{{ voter.email }}</mat-option>
         </mat-select>
     </mat-form-field>
 
