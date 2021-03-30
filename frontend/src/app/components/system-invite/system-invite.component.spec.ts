@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { InviteSystemComponent } from './invite-system.component';
+import { SystemInviteComponent } from './system-invite.component';
 
-describe('InviteSystemComponent', () => {
-  let component: InviteSystemComponent;
-  let fixture: ComponentFixture<InviteSystemComponent>;
+describe('SystemInviteComponent', () => {
+  let component: SystemInviteComponent;
+  let fixture: ComponentFixture<SystemInviteComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ InviteSystemComponent ]
+      declarations: [ SystemInviteComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(InviteSystemComponent);
+    fixture = TestBed.createComponent(SystemInviteComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

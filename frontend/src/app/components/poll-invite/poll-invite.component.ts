@@ -4,14 +4,14 @@ import { MatDialog, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Subscription } from 'rxjs';
 import { Poll } from 'src/app/models/poll.model';
 import { VoterAssignment } from 'src/app/models/voter-assignment.model';
-import { InviteSystemComponent } from '../invite-system/invite-system.component';
+import { SystemInviteComponent } from '../system-invite/system-invite.component';
 
 @Component({
-    selector: 'app-invite-poll',
-    templateUrl: './invite-poll.component.html',
-    styleUrls: ['./invite-poll.component.css']
+    selector: 'app-poll-invite',
+    templateUrl: './poll-invite.component.html',
+    styleUrls: ['./poll-invite.component.css']
 })
-export class InvitePollComponent implements OnInit, OnDestroy {
+export class PollInviteComponent implements OnInit, OnDestroy {
     public votersForm: FormGroup;
     public poll: Poll;
     public voterList = [];
@@ -73,7 +73,7 @@ export class InvitePollComponent implements OnInit, OnDestroy {
     }
     
     openInviteSystemDialog() {
-        this.dialog.open(InviteSystemComponent, {
+        this.dialog.open(SystemInviteComponent, {
             maxWidth: "800px",
             disableClose: true
         });

@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { InvitePollComponent } from './invite-poll.component';
+import { PollInviteComponent } from './poll-invite.component';
 
-describe('InvitePollComponent', () => {
-  let component: InvitePollComponent;
-  let fixture: ComponentFixture<InvitePollComponent>;
+describe('PollInviteComponent', () => {
+  let component: PollInviteComponent;
+  let fixture: ComponentFixture<PollInviteComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ InvitePollComponent ]
+      declarations: [ PollInviteComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(InvitePollComponent);
+    fixture = TestBed.createComponent(PollInviteComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

@@ -20,8 +20,8 @@ import { PollResultsComponent } from './components/poll-results/poll-results.com
 import { SettingsComponent } from './components/settings/settings.component';
 import { MatNativeDateModule } from '@angular/material/core';
 import { PollDetailsDialogComponent } from './components/poll-details-dialog/poll-details-dialog.component';
-import { InvitePollComponent } from './components/invite-poll/invite-poll.component';
-import { InviteSystemComponent } from './components/invite-system/invite-system.component';
+import { PollInviteComponent } from './components/poll-invite/poll-invite.component';
+import { SystemInviteComponent } from './components/system-invite/system-invite.component';
 
 @NgModule({
     declarations: [
@@ -35,8 +35,8 @@ import { InviteSystemComponent } from './components/invite-system/invite-system.
         PollResultsComponent,
         SettingsComponent,
         PollDetailsDialogComponent,
-        InvitePollComponent,
-        InviteSystemComponent
+        PollInviteComponent,
+        SystemInviteComponent,
     ],
     imports: [
         BrowserModule,
