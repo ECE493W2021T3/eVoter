@@ -74,6 +74,27 @@ router.post('/login', (req, res) => {
 })
 
 /**
+ * GET /users/by-email/:email
+ * Purpose: gets the user by email
+ */
+router.get('/by-email/:email', async (req, res) => {
+    const user = await User.findOne({ email: req.params.email }).select("-__v");
+    if (!user)
+      return res.status(404).send("The user with the given email was not found.");
+    res.send(user);
+});
+
+/**
+ * PATCH /users/:id/change-password
+ * Purpose: Updates the user's password
+ */
+ router.patch('/:id/change-password', async (req, res) => {
+     console.log(req.params.id);
+     console.log(req.body);
+     res.send({ 'message' : 'Updated successfully' });
+});
+
+/**
  * GET /users/me/access-token
  * Purpose: generates and returns an access token
  */
