@@ -9,6 +9,7 @@
 'use strict';
 
 const { FileSystemWallet, Gateway, X509WalletMixin } = require('fabric-network');
+const FabricCAServices = require('fabric-ca-client');
 const path = require('path');
 const fs = require('fs');
 const util = require('util');
@@ -24,6 +25,7 @@ let connection_file = config.connection_file;
 let gatewayDiscovery = config.gatewayDiscovery;
 let appAdmin = config.appAdmin;
 let orgMSPID = config.orgMSPID;
+let caName = config.caName;
 
 // connect to the connection file
 const ccpPath = path.join(process.cwd(), connection_file);
@@ -178,7 +180,9 @@ exports.registerUser = async function (userID) {
         await gateway.connect(ccp, { wallet, identity: appAdmin, discovery: gatewayDiscovery });
 
         // Get the CA client object from the gateway for interacting with the CA.
-        const ca = gateway.getClient().getCertificateAuthority();
+        const caURL = caName;
+        const ca = new FabricCAServices(caURL);
+        // const ca = gateway.getClient().getCertificateAuthority();
         const adminIdentity = gateway.getCurrentIdentity();
         console.log(`AdminIdentity: + ${adminIdentity}`);
 
