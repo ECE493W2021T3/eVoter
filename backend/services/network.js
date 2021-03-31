@@ -42,14 +42,14 @@ exports.connectToNetwork = async function (userName) {
     try {
         const walletPath = path.join(process.cwd(), 'assets', 'wallet');
         const wallet = new FileSystemWallet(walletPath);
-        console.log(`Wallet path: ${walletPath}`);
-        console.log('userName: ');
-        console.log(userName);
+        // console.log(`Wallet path: ${walletPath}`);
+        // console.log('userName: ');
+        // console.log(userName);
 
-        console.log('wallet: ');
-        console.log(util.inspect(wallet));
-        console.log('ccp: ');
-        console.log(util.inspect(ccp));
+        // console.log('wallet: ');
+        // console.log(util.inspect(wallet));
+        // console.log('ccp: ');
+        // console.log(util.inspect(ccp));
 
         const userExists = await wallet.exists(userName);
         if (!userExists) {
@@ -92,18 +92,18 @@ exports.connectToNetwork = async function (userName) {
 exports.invoke = async function (connection, isQuery, func, args) {
     try {
         console.log(`isQuery: ${isQuery}, func: ${func}, args: ${args}`);
-        console.log(util.inspect(connection));
+        // console.log(util.inspect(connection));
         if (isQuery === true) {
             if (args) {
                 let response = await connection.contract.evaluateTransaction(func, args);
-                console.log(response);
+                // console.log(response);
                 console.log(`Transaction ${func} with args ${args} has been evaluated`);
 
                 await connection.gateway.disconnect();
                 return response;
             } else {
                 let response = await connection.contract.evaluateTransaction(func);
-                console.log(response);
+                // console.log(response);
                 console.log(`Transaction ${func} without args has been evaluated`);
 
                 await connection.gateway.disconnect();
@@ -114,14 +114,14 @@ exports.invoke = async function (connection, isQuery, func, args) {
                 args = JSON.parse(args[0]);
                 args = JSON.stringify(args);
                 let response = await connection.contract.submitTransaction(func, args);
-                console.log(response);
+                // console.log(response);
                 console.log(`Transaction ${func} with args ${args} has been submitted`);
 
                 await connection.gateway.disconnect();
                 return response;
             } else {
                 let response = await connection.contract.submitTransaction(func);
-                console.log(response);
+                // console.log(response);
                 console.log(`Transaction ${func} without args has been submitted`);
 
                 await connection.gateway.disconnect();
@@ -151,8 +151,8 @@ exports.registerUser = async function (userID) {
         // create wallet
         const walletPath = path.join(process.cwd(), 'assets', 'wallet');
         const wallet = new FileSystemWallet(walletPath);
-        console.log(`Wallet path: ${walletPath}`);
-        console.log(wallet);
+        // console.log(`Wallet path: ${walletPath}`);
+        // console.log(wallet);
 
         // check if userID is unique
         const userExists = await wallet.exists(userID);
