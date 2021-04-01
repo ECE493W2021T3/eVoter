@@ -2,7 +2,7 @@
       (ngSubmit)="onSubmit()"
       fxLayout="column"
       fxLayoutGap="20px">
-    <h2 mat-dialog-title>Invite Voters To Your {{ poll.title }} Poll</h2>
+    <h2 mat-dialog-title>Invite Voters To <span class="label">{{ poll.title }}</span></h2>
 
     <div *ngIf="voterList.length == 0" class="warning-container">
         <h4 fxLayoutAlign=" center"><mat-icon>warning</mat-icon> Warning</h4>
@@ -11,14 +11,14 @@
     
     <mat-form-field appearance="outline">
         <mat-label>Select domain names to invite</mat-label>
-        <mat-select formControlName="domainNames" multiple [disabled]="domainNames.length == 0">
+        <mat-select formControlName="domainNames" multiple>
             <mat-option *ngFor="let name of domainNames" [value]="name">{{ name }}</mat-option>
         </mat-select>
     </mat-form-field>
 
     <mat-form-field appearance="outline">
         <mat-label>Select individual registered voters to invite</mat-label>
-        <mat-select formControlName="voters" multiple [disabled]="voterList.length == 0">
+        <mat-select formControlName="voters" multiple>
             <mat-option *ngFor="let voter of voterList" [value]="voter">{{ voter.email }}</mat-option>
         </mat-select>
     </mat-form-field>
