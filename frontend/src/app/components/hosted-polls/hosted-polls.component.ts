@@ -5,6 +5,7 @@ import { Subscription } from 'rxjs';
 import { COMMON } from 'src/app/helpers/common.const';
 import { Poll } from 'src/app/models/poll.model';
 import { PollService } from 'src/app/services/poll.service';
+import { PollInviteComponent } from '../poll-invite/poll-invite.component';
 import { PollDetailsDialogComponent } from '../poll-details-dialog/poll-details-dialog.component';
 
 @Component({
@@ -49,6 +50,14 @@ export class HostedPollsComponent implements OnInit, OnDestroy {
         this.dialog.open(PollDetailsDialogComponent, {
             maxWidth: "800px",
             data: { poll: poll }
+        });
+    }
+
+    openInviteVotersDialog(poll: Poll) {
+        this.dialog.open(PollInviteComponent, {
+            minWidth: "600px",
+            data: { poll: poll },
+            disableClose: true
         });
     }
 

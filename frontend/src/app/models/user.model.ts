@@ -17,3 +17,8 @@ export class UserProfile {
     name: string;
     role: string;
 }
+
+export class Voter {
+    _id: string;
+    email: string;
+}

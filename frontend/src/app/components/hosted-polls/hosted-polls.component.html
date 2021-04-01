@@ -4,7 +4,7 @@
             <h2>{{ poll.title }}</h2>
             <div fxLayout="row" fxLayoutGap="20px" fxLayoutAlign="center center">
                 <a *ngIf="showViewResults(poll)" routerLink="/poll-results">View Results</a>
-                <button mat-raised-button color="primary" [disabled]="poll.accessLevel == PRIVATE || isPastDeadline(poll.deadline)" (click)="$event.stopPropagation()">Invite Voters</button>
+                <button mat-raised-button color="primary" [disabled]="poll.accessLevel == PRIVATE || isPastDeadline(poll.deadline)" (click)="openInviteVotersDialog(poll); $event.stopPropagation()">Invite Voters</button>
                 <button mat-raised-button color="warn" [disabled]="isPastDeadline(poll.deadline)" (click)="endPoll(poll._id, i); $event.stopPropagation()">End Poll</button>
             </div>
         </div>
