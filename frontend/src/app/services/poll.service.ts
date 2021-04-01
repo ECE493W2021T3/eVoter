@@ -20,6 +20,11 @@ export class PollService {
         );
     }
 
+    public getInvitedPolls(): Observable<Poll[]> {
+        return this.baseService.get('poll/all-invited')
+            .pipe(map((res: Object[]) => res.map(o => new Poll(o))))
+    }
+
     public updatePoll(pollID: string, data: any): Observable<Poll> {
         return this.baseService.patch(`poll/${pollID}`, data)
             .pipe(map(res => new Poll(res)));

@@ -21,6 +21,7 @@ import { PollResultsComponent } from './components/poll-results/poll-results.com
 import { SettingsComponent } from './components/settings/settings.component';
 import { ChangePasswordComponent } from './components/change-password/change-password.component';
 import { PollDetailsDialogComponent } from './components/poll-details-dialog/poll-details-dialog.component';
+import { SubmitResponseComponent } from './components/submit-response/submit-response.component';
 
 @NgModule({
     declarations: [
@@ -34,7 +35,8 @@ import { PollDetailsDialogComponent } from './components/poll-details-dialog/pol
         PollResultsComponent,
         SettingsComponent,
         ChangePasswordComponent,
-        PollDetailsDialogComponent
+        PollDetailsDialogComponent,
+        SubmitResponseComponent
     ],
     imports: [
         BrowserModule,

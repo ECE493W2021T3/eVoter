@@ -1,1 +1,17 @@
-<p>invited-polls works!</p>
+<div *ngFor="let poll of invitedPolls; let i = index;">
+    <mat-card style="margin: 20px 60px;">
+        <div fxLayout="row" fxLayoutAlign="space-between center">
+            <div fxLayout="column">
+                <h2>{{ poll.title }}</h2>
+                <span>Deadline: {{ poll.deadline | date: 'LLL d, yyyy, h:mm a' }}</span>
+            </div>
+            <div fxLayout="row" fxLayoutGap="20px" fxLayoutAlign="center center">
+                <a *ngIf="showViewResults(poll)" routerLink="/poll-results">View Results</a>
+                <button mat-raised-button color="primary" [disabled]="isPastDeadline(poll.deadline)" (click)="openSubmitResponsePage(poll)">Vote Now</button>
+            </div>
+        </div>
+    </mat-card>
+</div>
+<div *ngIf="invitedPolls.length == 0" class="centered-content">
+    <h3>You have not been invited to participate in any polls.</h3>
+</div>
