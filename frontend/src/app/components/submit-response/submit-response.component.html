@@ -4,8 +4,30 @@
       fxLayoutGap="20px">
     <h2 mat-dialog-title>{{ poll.title }}</h2>
 
-    <div fxLayout="row" fxLayoutGap="10px" fxLayoutAlign="end">
-        <button mat-raised-button color="primary" type="submit" [disabled]="!responseForm.dirty">Submit</button>
-        <button mat-dialog-close mat-raised-button type="button">Cancel</button>
-    </div>
+    <mat-dialog-content>
+        <div formArrayName="questions">
+            <div *ngFor="let item of qfa.controls; let i = index;">
+                <div [formGroupName]="i" fxLayout="column">
+                    <h4>{{ item.value.question }}</h4>
+
+                    <mat-form-field *ngIf="item.value.type === SHORT_ANSWER">
+                        <input matInput required formControlName="response" placeholder="Answer">
+                        <mat-error *ngIf="item.controls.response.errors && item.controls.response.errors.required">Answer is required</mat-error>
+                    </mat-form-field>
+
+                    <div *ngIf="item.value.type === MULTIPLE_CHOICE">
+                        <mat-radio-group required formControlName="response" class="mc-container" fxLayout="column" fxLayoutGap="8px">
+                            <mat-radio-button *ngFor="let choice of item.value.choices" color="primary" [value]="choice">{{ choice }}</mat-radio-button>
+                        </mat-radio-group>
+                        <mat-error *ngIf="item.controls.response.errors && item.controls.response.errors.required">Answer is required</mat-error>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div fxLayout="row" fxLayoutGap="10px" fxLayoutAlign="end">
+            <button mat-raised-button color="primary" type="submit" [disabled]="!responseForm.dirty">Submit</button>
+            <button mat-dialog-close mat-raised-button type="button">Cancel</button>
+        </div>
+    </mat-dialog-content>
 </form>

@@ -31,7 +31,7 @@ export class InvitedPollsComponent implements OnInit, OnDestroy {
 
     openSubmitResponsePage(poll: Poll) {
         this.dialog.open(SubmitResponseComponent, {
-            minWidth: "600px",
+            minWidth: "800px",
             data: { poll: poll },
             disableClose: true
         });
