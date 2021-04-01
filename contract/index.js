@@ -4,7 +4,7 @@
 
 'use strict';
 
-const MyAssetContract = require('./lib/evoterContract.js');
+const MyAssetContract = require('./lib/evoterContract');
 
 module.exports.MyAssetContract = MyAssetContract;
 module.exports.contracts = [ MyAssetContract ];
