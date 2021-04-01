@@ -1,0 +1,32 @@
+<form [formGroup]="emailForm"
+      (ngSubmit)="onSubmit()"
+      fxLayout="column"
+      fxLayoutGap="20px">
+    <h2 mat-dialog-title>Send Voters A System Registration Email</h2>
+
+    <mat-form-field>
+        <mat-label>Unregistered Voter Emails</mat-label>
+        <mat-chip-list #chipList formControlName="emails">
+            <mat-chip *ngFor="let email of ef.emails.value"
+                      [selectable]="false"
+                      [removable]="true"
+                      (removed)="removeEmail(email)">
+                {{ email }}
+                <mat-icon matChipRemove>cancel</mat-icon>
+            </mat-chip>
+            <input required
+                   placeholder="New email [enter]"
+                   [matChipInputFor]="chipList"
+                   [matChipInputAddOnBlur]="true"
+                   (matChipInputTokenEnd)="addEmail($event)">
+        </mat-chip-list>
+        <mat-error *ngIf="ef.emails.errors && ef.emails.errors.required">Unregistered Voter Emails is requried</mat-error>
+        <mat-error *ngIf="ef.emails.errors && ef.emails.errors.invalid">One or more of the emails is invalid</mat-error>
+        <mat-error *ngIf="ef.emails.errors && ef.emails.errors.exists">One or more of the emails already exists</mat-error>
+    </mat-form-field>
+
+    <div fxLayout="row" fxLayoutGap="10px" fxLayoutAlign="end">
+        <button mat-raised-button color="primary" type="submit" [disabled]="ef.emails.value.length == 0">Invite</button>
+        <button mat-dialog-close mat-raised-button>Cancel</button>
+    </div>
+</form>
