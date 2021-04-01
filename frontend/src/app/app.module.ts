@@ -21,6 +21,8 @@ import { PollResultsComponent } from './components/poll-results/poll-results.com
 import { SettingsComponent } from './components/settings/settings.component';
 import { ChangePasswordComponent } from './components/change-password/change-password.component';
 import { PollDetailsDialogComponent } from './components/poll-details-dialog/poll-details-dialog.component';
+import { PollInviteComponent } from './components/poll-invite/poll-invite.component';
+import { SystemInviteComponent } from './components/system-invite/system-invite.component';
 import { SubmitResponseComponent } from './components/submit-response/submit-response.component';
 
 @NgModule({
@@ -36,6 +38,8 @@ import { SubmitResponseComponent } from './components/submit-response/submit-res
         SettingsComponent,
         ChangePasswordComponent,
         PollDetailsDialogComponent,
+        PollInviteComponent,
+        SystemInviteComponent,
         SubmitResponseComponent
     ],
     imports: [

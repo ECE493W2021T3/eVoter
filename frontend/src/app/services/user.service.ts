@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { Voter } from '../models/user.model';
 import { BaseService } from './base.service';
 
 @Injectable({
@@ -7,6 +8,14 @@ import { BaseService } from './base.service';
 })
 export class UserService {
     constructor(private baseService: BaseService) { }
+
+    public getRegisteredVoters(): Observable<Voter[]> {
+        return this.baseService.get('users/voters');
+    }
+
+    public sendSystemRegistrationEmail(emails: string[]): Observable<any> {
+        return this.baseService.post('users/send-registration-email', { emails });
+    }
 
     public get2FAConfig(): Observable<boolean> {
         return this.baseService.get('users/me/2FA');

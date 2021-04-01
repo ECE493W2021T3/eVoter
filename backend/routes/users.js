@@ -108,4 +108,22 @@ router.patch('/me/2FA', auth, async (req, res) => {
     }
 });
 
+/**
+ * GET /users/voters
+ * Purpose: Gets all registered voters in the system
+ */
+router.get('/voters', async (req, res) => {
+    const voters = await User.find({ role: 'Voter' }).select("_id email");
+    res.send(voters);
+});
+
+/**
+ * POST /users/send-registration-email
+ * Purpose: Sends a system registration email to unregistered voters
+ */
+router.post('/send-registration-email', (req, res) => {
+    console.log(req.body);
+    res.send({ 'message': 'Emails sent successfully' });
+});
+
 module.exports = router;

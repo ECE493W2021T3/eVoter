@@ -1,0 +1,33 @@
+<form [formGroup]="votersForm"
+      (ngSubmit)="onSubmit()"
+      fxLayout="column"
+      fxLayoutGap="20px">
+    <h2 mat-dialog-title>Invite Voters To <span class="label">{{ poll.title }}</span></h2>
+
+    <div *ngIf="voterList.length == 0" class="warning-container">
+        <h4 fxLayoutAlign=" center"><mat-icon>warning</mat-icon> Warning</h4>
+        <p>There are no registered voters in the system.</p>
+    </div>
+    
+    <mat-form-field appearance="outline">
+        <mat-label>Select domain names to invite</mat-label>
+        <mat-select formControlName="domainNames" multiple>
+            <mat-option *ngFor="let name of domainNames" [value]="name">{{ name }}</mat-option>
+        </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+        <mat-label>Select individual registered voters to invite</mat-label>
+        <mat-select formControlName="voters" multiple>
+            <mat-option *ngFor="let voter of voterList" [value]="voter">{{ voter.email }}</mat-option>
+        </mat-select>
+    </mat-form-field>
+
+    <div fxLayout="row" fxLayoutAlign="space-between center">
+        <button mat-stroked-button color="primary" type="button" (click)="openInviteSystemDialog()">Voter not registered?</button>
+        <div fxLayout="row" fxLayoutGap="10px" fxLayoutAlign="end">
+            <button mat-raised-button color="primary" type="submit" [disabled]="!votersForm.dirty">Invite</button>
+            <button mat-dialog-close mat-raised-button type="button">Cancel</button>
+        </div>
+    </div>
+</form>
