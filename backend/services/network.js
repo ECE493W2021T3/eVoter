@@ -9,6 +9,7 @@
 'use strict';
 
 const { FileSystemWallet, Gateway, X509WalletMixin } = require('fabric-network');
+const FabricCAServices = require('fabric-ca-client');
 const path = require('path');
 const fs = require('fs');
 const util = require('util');
@@ -24,6 +25,7 @@ let connection_file = config.connection_file;
 let gatewayDiscovery = config.gatewayDiscovery;
 let appAdmin = config.appAdmin;
 let orgMSPID = config.orgMSPID;
+let caName = config.caName;
 
 // connect to the connection file
 const ccpPath = path.join(process.cwd(), connection_file);
@@ -42,14 +44,14 @@ exports.connectToNetwork = async function (userName) {
     try {
         const walletPath = path.join(process.cwd(), 'assets', 'wallet');
         const wallet = new FileSystemWallet(walletPath);
-        console.log(`Wallet path: ${walletPath}`);
-        console.log('userName: ');
-        console.log(userName);
+        // console.log(`Wallet path: ${walletPath}`);
+        // console.log('userName: ');
+        // console.log(userName);
 
-        console.log('wallet: ');
-        console.log(util.inspect(wallet));
-        console.log('ccp: ');
-        console.log(util.inspect(ccp));
+        // console.log('wallet: ');
+        // console.log(util.inspect(wallet));
+        // console.log('ccp: ');
+        // console.log(util.inspect(ccp));
 
         const userExists = await wallet.exists(userName);
         if (!userExists) {
@@ -92,18 +94,18 @@ exports.connectToNetwork = async function (userName) {
 exports.invoke = async function (connection, isQuery, func, args) {
     try {
         console.log(`isQuery: ${isQuery}, func: ${func}, args: ${args}`);
-        console.log(util.inspect(connection));
+        // console.log(util.inspect(connection));
         if (isQuery === true) {
             if (args) {
                 let response = await connection.contract.evaluateTransaction(func, args);
-                console.log(response);
+                // console.log(response);
                 console.log(`Transaction ${func} with args ${args} has been evaluated`);
 
                 await connection.gateway.disconnect();
                 return response;
             } else {
                 let response = await connection.contract.evaluateTransaction(func);
-                console.log(response);
+                // console.log(response);
                 console.log(`Transaction ${func} without args has been evaluated`);
 
                 await connection.gateway.disconnect();
@@ -114,14 +116,14 @@ exports.invoke = async function (connection, isQuery, func, args) {
                 args = JSON.parse(args[0]);
                 args = JSON.stringify(args);
                 let response = await connection.contract.submitTransaction(func, args);
-                console.log(response);
+                // console.log(response);
                 console.log(`Transaction ${func} with args ${args} has been submitted`);
 
                 await connection.gateway.disconnect();
                 return response;
             } else {
                 let response = await connection.contract.submitTransaction(func);
-                console.log(response);
+                // console.log(response);
                 console.log(`Transaction ${func} without args has been submitted`);
 
                 await connection.gateway.disconnect();
@@ -151,8 +153,8 @@ exports.registerUser = async function (userID) {
         // create wallet
         const walletPath = path.join(process.cwd(), 'assets', 'wallet');
         const wallet = new FileSystemWallet(walletPath);
-        console.log(`Wallet path: ${walletPath}`);
-        console.log(wallet);
+        // console.log(`Wallet path: ${walletPath}`);
+        // console.log(wallet);
 
         // check if userID is unique
         const userExists = await wallet.exists(userID);
@@ -178,7 +180,9 @@ exports.registerUser = async function (userID) {
         await gateway.connect(ccp, { wallet, identity: appAdmin, discovery: gatewayDiscovery });
 
         // Get the CA client object from the gateway for interacting with the CA.
-        const ca = gateway.getClient().getCertificateAuthority();
+        const caURL = caName;
+        const ca = new FabricCAServices(caURL);
+        // const ca = gateway.getClient().getCertificateAuthority();
         const adminIdentity = gateway.getCurrentIdentity();
         console.log(`AdminIdentity: + ${adminIdentity}`);
 

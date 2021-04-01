@@ -1,5 +1,9 @@
 # Group 3:
 
+### Blockchain Setup
+- For Local Setup, See [Blockchain Setup (Local)](docs/blockchain_local.md)
+- For Cloud Setup, See [Blockchain Setup (Cloud)](docs/blockchain_cloud.md)
+
 ### Install nvm
 
 - We need nvm for multiple version of node

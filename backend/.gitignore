@@ -1,6 +1,13 @@
 node_modules/
 
 # Blockchain identities
-config/ibpConnection.json
 config/config.json
 assets/wallet/
+
+config/cloud_config.json
+config/ibpConnection.json
+assets/cloud_wallet/
+
+config/local_config.json
+config/fabric_connection.json
+assets/local_wallet/
