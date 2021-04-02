@@ -33,4 +33,8 @@ export class PollService {
     public assignVotersToPoll(pollID: string, voters: Voter[]): Observable<any> {
         return this.baseService.post(`poll/${pollID}/voter-assignments`, voters);
     }
+
+    public getAssignedVoters(pollID: string): Observable<Voter[]> {
+        return this.baseService.get(`poll/${pollID}/voter-assignments`);
+    }
 }

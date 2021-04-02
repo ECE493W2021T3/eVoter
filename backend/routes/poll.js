@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const { Poll, validatePoll } = require('../models');
+const { Poll, validatePoll, VoterAssignment, validateVoterAssignment } = require('../models');
 const { auth } = require('../middleware/auth');
 const {ObjectID} = require('mongodb');
 
@@ -13,10 +13,11 @@ const configJSON = fs.readFileSync(configPath, 'utf8');
 const config = JSON.parse(configJSON);
 const appAdmin = config.appAdmin;
 
-router.get("/", async (req, res) => {
-    res.send("hello front poll router");
-});
-
+/**
+ * GET /poll/all-hosted
+ * Purpose: For admin to get all hosted polls
+ * Return: [Polls]
+ */
 router.get("/all-hosted", auth, async (req, res) => {
     let election_polls = [];
 
@@ -49,7 +50,21 @@ router.get("/all-hosted", auth, async (req, res) => {
     res.send(polls);
 });
 
+/**
+ * GET /poll/all-invited
+ * Purpose: For users to get all invited polls
+ * Return: [Polls]
+ */
 router.get("/all-invited", auth, async (req, res) => {
+    // console.log(req.userID);
+    // let polls = await VoterAssignment.find({ userID: req.userID }).populate('pollID').select("-__v");
+    // polls = polls.map(
+    //     poll => {
+    //         return poll.pollID;
+    //     }
+    // );
+    // res.send(polls);
+
     // hardcoded for frontend testing
     let invitedPolls = [{
         poll: {
@@ -97,7 +112,12 @@ router.get("/all-invited", auth, async (req, res) => {
       res.send(invitedPolls);
 });
 
-router.get("/:id", async (req, res) => {
+/**
+ * GET /poll/<:id>
+ * Purpose: Get one poll by ID
+ * Return: Poll
+ */
+router.get("/:id", auth, async (req, res) => {
     // First find in DB
     let poll = await Poll.findById(req.params.id).select("-__v");
     if (!poll) {
@@ -128,6 +148,11 @@ router.get("/:id", async (req, res) => {
     res.send(poll);
 });
 
+/**
+ * POST /poll/
+ * Purpose: Posts a Poll
+ * Return: Poll
+ */
 router.post("/", auth, async (req, res) => {
 
     const { error } = validatePoll(req.body);
@@ -172,7 +197,12 @@ router.post("/", auth, async (req, res) => {
     res.send(poll);
 });
 
-router.patch("/:id", async (req, res) => {
+/**
+ * POST /poll/<:id>
+ * Purpose: Update Poll
+ * Return: Poll
+ */
+router.patch("/:id", auth, async (req, res) => {
     // Find in DB first
     let poll = await Poll.findOneAndUpdate({ _id: req.params.id }, { $set: req.body }, { new: true });
     if (!poll){
@@ -232,10 +262,53 @@ router.patch("/:id", async (req, res) => {
     res.send(req.param.id);
 });
 
-router.post("/:id/voter-assignments", (req, res) =>{
-    console.log(req.params.id); // poll id
-    console.log(req.body); // voters [ { _id, email } ]
-    res.send({ 'message': 'Created successfully' });
+
+/**
+ * POST /poll/<id>/voter-assignments
+ * Purpose: Assign Voters to a Poll indicate by <id>
+ * Return: Message
+ */
+router.post("/:id/voter-assignments", auth, async (req, res) =>{
+
+    const assignments = req.body.map( entry =>
+        {
+            return {pollID: req.params.id,
+                    userID: entry._id}
+        }
+    );
+
+    for (var i = 0; i < assignments.length; i++) {
+        console.log(assignments[i]);
+        const { error } = validateVoterAssignment(assignments[i]);
+        if (error)  {
+            res.status(400).send(error.message);
+            return;
+        }
+      }
+
+    VoterAssignment.insertMany(assignments)
+    .then(function(mongooseDocuments) {
+         res.status(200).send({ 'message': 'Voters assigned successfully'});
+    })
+    .catch(function(err) {
+        res.status(400).send(err.message);
+    });
+
+});
+
+/**
+ * Get /poll/<id>/voter-assignments
+ * Purpose: Get assigned voters to a Poll indicate by <id>
+ * Return: Voters
+ */
+router.get("/:id/voter-assignments", auth, async (req, res) =>{
+    let users = await VoterAssignment.find({ pollID: req.params.id }).populate('userID');
+    users = users.map(
+        user => {
+            return (({ _id, email }) => ({ _id, email }))(user.userID);
+        }
+    );
+    res.send(users);
 });
 
 module.exports = router;
