@@ -24,6 +24,7 @@ import { PollDetailsDialogComponent } from './components/poll-details-dialog/pol
 import { PollInviteComponent } from './components/poll-invite/poll-invite.component';
 import { SystemInviteComponent } from './components/system-invite/system-invite.component';
 import { SubmitResponseComponent } from './components/submit-response/submit-response.component';
+import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component';
 
 @NgModule({
     declarations: [
@@ -40,7 +41,8 @@ import { SubmitResponseComponent } from './components/submit-response/submit-res
         PollDetailsDialogComponent,
         PollInviteComponent,
         SystemInviteComponent,
-        SubmitResponseComponent
+        SubmitResponseComponent,
+        ConfirmDialogComponent
     ],
     imports: [
         BrowserModule,
