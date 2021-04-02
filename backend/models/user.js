@@ -153,15 +153,21 @@ UserSchema.statics.hasRefreshTokenExpired = (expiresAt) => {
 /* MIDDLEWARE */
 // Before a user document is saved, this code runs
 UserSchema.pre('save', function (next) {
+    var user = this;
 
-    if (this.isModified('password')) {
-        bcrypt.genSalt(10, (err, salt) => {
-            bcrypt.hash(this.password, salt, (err, hash) => {
-                this.password = hash;
-            })
-        })
-    }
-    next();
+    // Only hash the password if it has been modified (or is new)
+    if (!user.isModified('password')) return next();
+
+    bcrypt.genSalt(10, function(err, salt) {
+        if (err) return next(err);
+
+        bcrypt.hash(user.password, salt, function(err, hash) {
+            if (err) return next(err);
+
+            user.password = hash;
+            next();
+        });
+    });
 });
 
 /* HELPER METHODS */

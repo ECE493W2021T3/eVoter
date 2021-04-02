@@ -10,7 +10,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { TokenInterceptor } from './helpers/token.interceptor';
 import { MaterialModule } from './helpers/material.module';
-import { AuthGuard } from './helpers/auth.guard';
+import { AuthGuard } from './guards/auth.guard';
 import { LoginPageComponent } from './components/login-page/login-page.component';
 import { SignupPageComponent } from './components/signup-page/signup-page.component';
 import { TopNavBarComponent } from './components/top-nav-bar/top-nav-bar.component';
