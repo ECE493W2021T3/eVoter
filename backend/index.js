@@ -41,17 +41,38 @@ app.use('/blockchain', blockchainRouter);
  */
 app.post('/response', (req, res) => {
     console.log(req.body);
-    res.send({ 'responseID': 'responseID' }); // send response id to client
+    res.send({ 'responseID': 'responseID' }); // send new response id to client
 });
 
 /**
- * PATCH /response
+ * PATCH /response/:id
  * Purpose: updates a response
  */
  app.patch('/response/:id', (req, res) => {
     console.log(req.params.id);
     console.log(req.body);
     res.send({ 'message': 'updated successfully' });
+});
+
+/**
+ * GET /response/:id
+ * Purpose: gets a response by id
+ */
+app.get('/response/:id', (req, res) => {
+    // hardcoded for frontend testing
+    let response = {
+        _id: "responseID1",
+        pollID: "surveypollid",
+        voterID: "voterID",
+        answers: [
+            { questionID: "id1", answer: "test" },
+            { questionID: "id2", answer: "option 1" },
+            { questionID: "id3", answer: "option2" },
+            { questionID: "id4", answer: "something" }
+        ]
+    };
+
+    res.send(response);
 });
 
 app.listen(3000, () => {

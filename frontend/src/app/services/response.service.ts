@@ -13,7 +13,11 @@ export class ResponseService {
         return this.baseService.post('response', data);
     }
 
-    public updateResponse(responseID: string, answers: Answer[]) {
+    public updateResponse(responseID: string, answers: Answer[]): Observable<any> {
         return this.baseService.patch(`response/${responseID}`, { answers });
+    }
+
+    public getResponse(responseID: string): Observable<VoterResponse> {
+        return this.baseService.get(`response/${responseID}`);
     }
 }

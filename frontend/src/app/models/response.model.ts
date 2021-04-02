@@ -6,6 +6,6 @@ export class VoterResponse {
 }
 
 export class Answer {
-    question: string;
+    questionID: string;
     answer: string;
 }

@@ -36,15 +36,19 @@ export class SubmitResponseComponent implements OnInit, OnDestroy {
             questions: new FormArray([])
         });
 
-        this.poll.questions.forEach(item => {
-            this.qfa.push(this.formBuilder.group({
-                id: item._id,
-                question: item.question,
-                type: item.type,
-                choices: [item.choices],
-                response: ['', Validators.required]
+        if (this.data.id) {
+            this.subscription.add(this.responseService.getResponse(this.data.id).subscribe(voterResponse => {
+                this.addQuestionFields(voterResponse);
+            }, error =>{
+                this.snackBar.open('Could not retrieve voter response.', '', {
+                    duration: 5000,
+                    verticalPosition: 'top',
+                    panelClass: ['error-snackbar']
+                });
             }));
-        });
+        } else {
+            this.addQuestionFields(null);
+        }
     }
 
     ngOnDestroy(): void {
@@ -87,7 +91,7 @@ export class SubmitResponseComponent implements OnInit, OnDestroy {
             pollID: this.poll._id,
             answers: this.qfa.value.map(item => {
                 return {
-                    question: item.question,
+                    questionID: item.id,
                     answer: item.response
                 } as Answer;
             })
@@ -115,5 +119,21 @@ export class SubmitResponseComponent implements OnInit, OnDestroy {
                 });
             }));
         }
+    }
+
+    private addQuestionFields(voterResponse) {
+        const answers = voterResponse?.answers;
+
+        this.poll.questions.forEach(item => {
+            const foundAnswer = answers ? answers.find(x => x.questionID == item._id).answer : '';
+
+            this.qfa.push(this.formBuilder.group({
+                id: item._id,
+                question: item.question,
+                type: item.type,
+                choices: [item.choices],
+                response: [foundAnswer, Validators.required]
+            }));
+        });
     }
 }
