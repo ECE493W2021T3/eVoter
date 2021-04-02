@@ -17,6 +17,7 @@ import { SystemInviteComponent } from '../system-invite/system-invite.component'
 export class PollInviteComponent implements OnInit, OnDestroy {
     public votersForm: FormGroup;
     public poll: Poll;
+    public invitedVoters: Voter[] = [];
     public voterList = [];
     public domainNames = [];
 
@@ -39,13 +40,18 @@ export class PollInviteComponent implements OnInit, OnDestroy {
             domainNames: [[]]
         });
 
-        this.subscription.add(this.userService.getRegisteredVoters().subscribe(voters => {
-            this.voterList = voters;
-            this.voterList.sort((a, b) => (a.email > b.email) ? 1 : ((b.email > a.email) ? -1 : 0));
-            this.domainNames = this.voterList
-                                    .map(x => x.email.replace(/.*@/, ""))
-                                    .filter((value, index, self) => self.indexOf(value) == index)
-                                    .sort();
+        this.subscription.add(this.pollService.getAssignedVoters(this.poll._id).subscribe(result => {
+            this.invitedVoters = result.sort((a, b) => (a.email > b.email) ? 1 : ((b.email > a.email) ? -1 : 0));
+
+            this.subscription.add(this.userService.getRegisteredVoters().subscribe(voters => {
+                const invitedVoterIDs = this.invitedVoters.map(x => x._id);
+                this.voterList = voters.filter(voter => !invitedVoterIDs.includes(voter._id));
+                this.voterList.sort((a, b) => (a.email > b.email) ? 1 : ((b.email > a.email) ? -1 : 0));
+                this.domainNames = this.voterList
+                                        .map(x => x.email.replace(/.*@/, ""))
+                                        .filter((value, index, self) => self.indexOf(value) == index)
+                                        .sort();
+            }));
         }));
     }
 
