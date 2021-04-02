@@ -90,3 +90,13 @@ mat-nav-list mat-icon {
     background: #ffffcc;
     padding: 0 10px;
 }
+
+.voters-container {
+    max-height: 100px;
+    overflow-y: scroll;
+    border: groove;
+    border-color: white;
+    border-radius: 5px;
+    padding: 5px;
+    margin-bottom: 10px;
+}

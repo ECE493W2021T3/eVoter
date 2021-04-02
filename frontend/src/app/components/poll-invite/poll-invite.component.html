@@ -1,12 +1,12 @@
 <form [formGroup]="votersForm"
       (ngSubmit)="onSubmit()"
       fxLayout="column"
-      fxLayoutGap="20px">
+      fxLayoutGap="10px">
     <h2 mat-dialog-title>Invite Voters To <span class="label">{{ poll.title }}</span></h2>
 
     <div *ngIf="voterList.length == 0" class="warning-container">
         <h4 fxLayoutAlign=" center"><mat-icon>warning</mat-icon> Warning</h4>
-        <p>There are no registered voters in the system.</p>
+        <p>There are no available voters to invite.</p>
     </div>
     
     <mat-form-field appearance="outline">
@@ -22,6 +22,13 @@
             <mat-option *ngFor="let voter of voterList" [value]="voter">{{ voter.email }}</mat-option>
         </mat-select>
     </mat-form-field>
+
+    <div *ngIf="invitedVoters.length > 0">
+        <span>List of voters already invited to <span class="label">{{ poll.title }}</span></span>
+        <div class="voters-container">
+            <div *ngFor="let voter of invitedVoters" style="margin: 5px">{{ voter.email }}</div>
+        </div>
+    </div>
 
     <div fxLayout="row" fxLayoutAlign="space-between center">
         <button mat-stroked-button color="primary" type="button" (click)="openInviteSystemDialog()">Voter not registered?</button>
