@@ -1,13 +1,18 @@
-<div *ngFor="let poll of invitedPolls; let i = index;">
+<div *ngFor="let item of invitedPolls; let i = index;">
     <mat-card style="margin: 20px 60px;">
         <div fxLayout="row" fxLayoutAlign="space-between center">
             <div fxLayout="column">
-                <h2>{{ poll.title }}</h2>
-                <span>Deadline: {{ poll.deadline | date: 'LLL d, yyyy, h:mm a' }}</span>
+                <h2>{{ item.poll.title }}</h2>
+                <span>Deadline: {{ item.poll.deadline | date: 'LLL d, yyyy, h:mm a' }}</span>
             </div>
-            <div fxLayout="row" fxLayoutGap="20px" fxLayoutAlign="center center">
-                <a *ngIf="showViewResults(poll)" routerLink="/poll-results">View Results</a>
-                <button mat-raised-button color="primary" [disabled]="isPastDeadline(poll.deadline)" (click)="openSubmitResponsePage(poll)">Vote Now</button>
+            <div fxLayout="column" fxLayoutGap="10px">
+                <div fxLayout="row" fxLayoutGap="20px" fxLayoutAlign="end center">
+                    <a *ngIf="showViewResults(item.poll)" routerLink="/poll-results">View Results</a>
+                    <button mat-raised-button color="primary" [disabled]="(item.responseID && item.poll.type == ELECTION) || isPastDeadline(item.poll.deadline)" (click)="openSubmitResponsePage(item)">
+                        {{ item.responseID && item.poll.type == SURVEY ? 'Edit Vote' : 'Vote Now' }}
+                    </button>
+                </div>
+                <span *ngIf="item.responseID">You have voted for this poll</span>
             </div>
         </div>
     </mat-card>

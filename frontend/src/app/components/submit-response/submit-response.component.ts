@@ -6,6 +6,7 @@ import { Subscription } from 'rxjs';
 import { COMMON } from 'src/app/helpers/common.const';
 import { Poll } from 'src/app/models/poll.model';
 import { Answer, VoterResponse } from 'src/app/models/response.model';
+import { ResponseService } from 'src/app/services/response.service';
 
 @Component({
     selector: 'app-submit-response',
@@ -23,6 +24,7 @@ export class SubmitResponseComponent implements OnInit, OnDestroy {
 
     constructor(
         private dialogRef: MatDialogRef<SubmitResponseComponent>,
+        private responseService: ResponseService,
         private formBuilder: FormBuilder,
         private snackBar: MatSnackBar,
         @Inject(MAT_DIALOG_DATA) public data: any) {
@@ -59,6 +61,17 @@ export class SubmitResponseComponent implements OnInit, OnDestroy {
             return;
         }
 
+        if (this.data.id && this.poll.type == COMMON.pollType.election) {
+            this.snackBar.open('Failed to submit response. Cannot edit a ballot', '', {
+                duration: 5000,
+                verticalPosition: 'top',
+                panelClass: ['error-snackbar']
+            });
+
+            this.dialogRef.close();
+            return;
+        }
+
         if (this.poll.deadline.getTime() <= new Date().getTime()) {
             this.snackBar.open('Failed to submit response. The poll deadline has already passed', '', {
                 duration: 5000,
@@ -80,6 +93,27 @@ export class SubmitResponseComponent implements OnInit, OnDestroy {
             })
         } as VoterResponse;
 
-
+        if (this.data.id) {
+            this.subscription.add(this.responseService.updateResponse(this.data.id, model.answers).subscribe(result => {
+                this.dialogRef.close();
+            }, error => {
+                this.snackBar.open('Failed to submit response.', '', {
+                    duration: 5000,
+                    verticalPosition: 'top',
+                    panelClass: ['error-snackbar']
+                });
+            }));
+        } else {
+            this.subscription.add(this.responseService.createResponse(model).subscribe(result => {
+                // result returns the created response id back to invited polls list to indicate that voter has responded
+                this.dialogRef.close(result.responseID);
+            }, error => {
+                this.snackBar.open('Failed to submit response.', '', {
+                    duration: 5000,
+                    verticalPosition: 'top',
+                    panelClass: ['error-snackbar']
+                });
+            }));
+        }
     }
 }

@@ -36,13 +36,23 @@ app.use('/users', usersRouter);
 app.use('/blockchain', blockchainRouter);
 
 /**
- * POST /poll
- * Purpose: creates a new poll
+ * POST /response
+ * Purpose: creates a new response
  */
-app.post('/poll', (req, res) => {
+app.post('/response', (req, res) => {
+    console.log(req.body);
+    res.send({ 'responseID': 'responseID' }); // send response id to client
+});
+
+/**
+ * PATCH /response
+ * Purpose: updates a response
+ */
+ app.patch('/response/:id', (req, res) => {
+    console.log(req.params.id);
     console.log(req.body);
     res.send({ 'message': 'updated successfully' });
-})
+});
 
 app.listen(3000, () => {
     console.log("Server is listening on port 3000");

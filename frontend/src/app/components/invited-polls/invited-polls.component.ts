@@ -1,7 +1,8 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Subscription } from 'rxjs';
-import { Poll } from 'src/app/models/poll.model';
+import { COMMON } from 'src/app/helpers/common.const';
+import { InvitedPoll, Poll } from 'src/app/models/poll.model';
 import { PollService } from 'src/app/services/poll.service';
 import { SubmitResponseComponent } from '../submit-response/submit-response.component';
 
@@ -11,7 +12,9 @@ import { SubmitResponseComponent } from '../submit-response/submit-response.comp
     styleUrls: ['./invited-polls.component.css']
 })
 export class InvitedPollsComponent implements OnInit, OnDestroy {
-    public invitedPolls: Poll[] = [];
+    public invitedPolls: InvitedPoll[] = [];
+    public ELECTION = COMMON.pollType.election;
+    public SURVEY = COMMON.pollType.survey;
 
     private subscription: Subscription = new Subscription();
 
@@ -20,8 +23,8 @@ export class InvitedPollsComponent implements OnInit, OnDestroy {
         private dialog: MatDialog) { }
 
     ngOnInit(): void {
-        this.subscription.add(this.pollService.getInvitedPolls().subscribe(polls => {
-            this.invitedPolls = this.sortByDeadline(polls);
+        this.subscription.add(this.pollService.getInvitedPolls().subscribe(invitedPolls => {
+            this.invitedPolls = this.sortByDeadline(invitedPolls);
         }));
     }
 
@@ -29,12 +32,22 @@ export class InvitedPollsComponent implements OnInit, OnDestroy {
         this.subscription.unsubscribe();
     }
 
-    openSubmitResponsePage(poll: Poll) {
-        this.dialog.open(SubmitResponseComponent, {
+    openSubmitResponsePage(invitedPoll: InvitedPoll) {
+        const responseDialogRef = this.dialog.open(SubmitResponseComponent, {
             minWidth: "800px",
-            data: { poll: poll },
+            data: {
+                id: invitedPoll.responseID,
+                poll: invitedPoll.poll
+            },
             disableClose: true
         });
+
+        this.subscription.add(responseDialogRef.afterClosed().subscribe(responseID => {
+            // Upon dialog close, update responseID to indicate that voter has responded
+            if (responseID) {
+                invitedPoll.responseID = responseID;
+            }
+        }));
     }
 
     showViewResults(poll: Poll) {
@@ -49,7 +62,7 @@ export class InvitedPollsComponent implements OnInit, OnDestroy {
         return deadline.getTime() <= new Date().getTime();
     }
 
-    private sortByDeadline(polls: Poll[]) {
-        return polls.sort((a, b) => new Date(b.deadline).getTime() - new Date(a.deadline).getTime());
+    private sortByDeadline(invitedPolls: InvitedPoll[]) {
+        return invitedPolls.sort((a, b) => new Date(b.poll.deadline).getTime() - new Date(a.poll.deadline).getTime());
     }
 }
