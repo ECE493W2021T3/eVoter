@@ -39,8 +39,28 @@ function sendEmail(email) {
   return true;
 }
 
+function sendRegistrationConfirmationEmail(baseURL, receiverEmail, receiverName, receiverConfirmationCode) {
+  const msg = {
+    intention:"Invitation",
+    to: receiverEmail,
+    from: {
+      email: "noreply.evoter@gmail.com",
+      name: "eVoter Support",
+    },
+    subject: `eVoter - Registration Confirmation for ${receiverName}`,
+    text: "using html", // using HTML instead of text, but text cannot be empty
+    html: `<h1>eVoter - Registration Confirmation for ${receiverName}</h1>
+            <h2>Hello ${receiverName},</h2>
+            <p>Thank you for registration. Please confirm your email by clicking on the following link:</p>
+            <a href=http://${baseURL}/users/confirm/${receiverConfirmationCode}> Click here</a>
+            </div>`,
+  };
+  return sendEmail(msg);
+}
+
 module.exports = {
   validateEmail,
   sendEmail,
-  setKey
+  setKey,
+  sendRegistrationConfirmationEmail
 };

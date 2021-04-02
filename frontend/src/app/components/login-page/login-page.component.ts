@@ -52,11 +52,19 @@ export class LoginPageComponent implements OnInit, OnDestroy {
                 }));
             }
         }, error => {
-            this.snackBar.open('User with entered credentials does not exist. Please try again.', '', {
+          if (error.error === "User not confirmed.") {
+              this.snackBar.open('User is required to confirm registration email before logging in. Please confirm using the link in the email and try again.', '', {
                 duration: 5000,
                 verticalPosition: 'top',
                 panelClass: ['error-snackbar']
-            });
+              });
+          } else {
+              this.snackBar.open('User with entered credentials does not exist. Please try again.', '', {
+                duration: 5000,
+                verticalPosition: 'top',
+                panelClass: ['error-snackbar']
+              });
+          }
         }));
     }
 }

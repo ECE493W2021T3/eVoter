@@ -1,28 +1,59 @@
 const router = require("express").Router();
+const config = require('config');
+const jwt = require('jsonwebtoken');
 const { User, validateUser } = require('../models/user');
 const { verifySession } = require("../middleware/verifySession");
 const { auth } = require("../middleware/auth");
 let network = require('../services/network');
+let { sendRegistrationConfirmationEmail } =require("../services/mailer");
 
 /**
  * POST /users
  * Purpose: Sign up
  */
 router.post('/', (req, res) => {
+    const confirmationCode = jwt.sign({email: req.body.email}, config.get('jwtPrivateKey'));
 
     let body = req.body;
+    body.confirmed = false; // user is not confirmed, until click link in email.
+    body.confirmationCode = confirmationCode;
 
     const { error } = validateUser(req.body);
     if (error) return res.status(400).send(error.details[0].message);
 
     let newUser = new User(body);
 
-    newUser
-        .save()
-        .then(() => { res.send({}); })
-        .catch((e) => { res.status(400).send(e); })
-})
+    // Send Registration Confirmation Email
+    let isSuccessful = sendRegistrationConfirmationEmail(req.get('host'), newUser.email, newUser.name, newUser.confirmationCode);
+    if (isSuccessful) {
+        newUser
+            .save()
+            .then(async () => {
+                await network.registerUser(newUser._id.toString());
+                res.send({}); 
+            })
+            .catch((e) => { res.status(400).send(e); })
+    } else {
+        res.status(400).send("Confirmation email sending failed.");
+    }
+});
 
+/**
+ * PATCH /users/:id/change-password
+ * Purpose: Updates the user's password
+ */
+router.get('/confirm/:confirmationCode', async (req, res) => {
+    const user = await User.findOne({ confirmationCode: req.params.confirmationCode }).select("-__v");
+    if (!user)
+        return res.status(404).send("The user with the given ConfirmationCode was not found.");
+
+    user.confirmed = true;
+    user.save()
+        .then(() => {
+            res.send({ 'message' : 'User is confirmed successfully, please go login.' });
+        })
+        .catch((e) => { res.status(400).send(e); });
+});
 
 /**
  * POST /users/login
@@ -45,10 +76,14 @@ router.post('/login', (req, res) => {
             // This is how to connect to Blockchain network with userID
             let connection = await network.connectToNetwork(user._id.toString());
 
-            res
-                .header('x-refresh-token', authTokens.refreshToken)
-                .header('x-access-token', authTokens.accessToken)
-                .send(user);
+            if (user.confirmed === true) {
+                res
+                    .header('x-refresh-token', authTokens.refreshToken)
+                    .header('x-access-token', authTokens.accessToken)
+                    .send(user);
+            } else {
+                res.status(400).send("User not confirmed.");
+            }
         })
     }).catch((e) => {
         res.status(400).send(e);
