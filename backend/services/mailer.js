@@ -58,9 +58,29 @@ function sendRegistrationConfirmationEmail(baseURL, receiverEmail, receiverName,
   return sendEmail(msg);
 }
 
+function sendRegistrationInvitationEmail(receiverEmail) {
+  const msg = {
+    intention:"Invitation",
+    to: receiverEmail,
+    from: {
+      email: "noreply.evoter@gmail.com",
+      name: "eVoter Support",
+    },
+    subject: `eVoter - Invitation to Sign Up eVoter`,
+    text: "using html", // using HTML instead of text, but text cannot be empty
+    html: `<h1>eVoter - Invitation to Sign Up eVoter</h1>
+            <h2>Hello,</h2>
+            <p>You are invited to a poll on eVoter. Please sign up an account:</p>
+            <a href=http://localhost:4200/signup> Click here</a>
+            </div>`,
+  };
+  return sendEmail(msg);
+}
+
 module.exports = {
   validateEmail,
   sendEmail,
   setKey,
-  sendRegistrationConfirmationEmail
+  sendRegistrationConfirmationEmail,
+  sendRegistrationInvitationEmail
 };

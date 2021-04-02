@@ -5,7 +5,8 @@ const { User, validateUser } = require('../models/user');
 const { verifySession } = require("../middleware/verifySession");
 const { auth } = require("../middleware/auth");
 let network = require('../services/network');
-let { sendRegistrationConfirmationEmail } =require("../services/mailer");
+let { sendRegistrationConfirmationEmail, 
+    sendRegistrationInvitationEmail } =require("../services/mailer");
 
 /**
  * POST /users
@@ -167,8 +168,25 @@ router.get('/voters', async (req, res) => {
  * Purpose: Sends a system registration email to unregistered voters
  */
 router.post('/send-registration-email', (req, res) => {
-    console.log(req.body);
-    res.send({ 'message': 'Emails sent successfully' });
+    // Send invitation to register email
+    const emails = req.body.emails;
+    let failed_emails = [];
+    if (Array.isArray(emails)) {
+        emails.forEach(email => {
+            let isSuccessful = sendRegistrationInvitationEmail(email);
+            if (!isSuccessful) {
+                failed_emails.push(email);
+            }
+        });
+        if (failed_emails.length === 0){
+            res.send({ 'message': 'All emails sent successfully' });
+        } else {
+            res.send({ 'message': 'Some emails failed to send',
+                        'failedEmails': failed_emails });
+        }
+    } else {
+        res.status(400).send("Incorrect emails format.");
+    }
 });
 
 module.exports = router;
