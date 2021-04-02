@@ -111,7 +111,7 @@ export class SubmitResponseComponent implements OnInit, OnDestroy {
                 } as VoterResponse;
 
                 if (this.data.id) {
-                    this.subscription.add(this.responseService.updateResponse(this.data.id, model.answers).subscribe(result => {
+                    this.subscription.add(this.responseService.updateResponse(this.data.id, { answers: model.answers }).subscribe(result => {
                         this.dialogRef.close();
                     }, error => {
                         this.snackBar.open('Failed to submit response.', '', {
