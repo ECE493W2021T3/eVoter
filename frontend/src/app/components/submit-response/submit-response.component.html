@@ -1,0 +1,34 @@
+<form [formGroup]="responseForm"
+      (ngSubmit)="onSubmit()"
+      fxLayout="column"
+      fxLayoutGap="20px">
+    <div fxLayout="row" fxFlex>
+        <h2 mat-dialog-title fxFlex>{{ poll.title }}</h2>
+        <div fxLayoutGap="10px">
+            <button mat-raised-button color="primary" type="submit" [disabled]="!responseForm.dirty && !data.id">Submit</button>
+            <button mat-dialog-close mat-raised-button type="button">Cancel</button>
+        </div>
+    </div>
+
+    <mat-dialog-content>
+        <div formArrayName="questions">
+            <div *ngFor="let item of qfa.controls; let i = index;">
+                <div [formGroupName]="i" fxLayout="column">
+                    <p class="label">{{ item.value.question }}</p>
+
+                    <mat-form-field *ngIf="item.value.type === SHORT_ANSWER">
+                        <input matInput required formControlName="response" placeholder="Answer">
+                        <mat-error *ngIf="item.controls.response.errors && item.controls.response.errors.required">Answer is required</mat-error>
+                    </mat-form-field>
+
+                    <div *ngIf="item.value.type === MULTIPLE_CHOICE">
+                        <mat-radio-group required formControlName="response" class="mc-container" fxLayout="column" fxLayoutGap="10px">
+                            <mat-radio-button *ngFor="let choice of item.value.choices" color="primary" [value]="choice">{{ choice }}</mat-radio-button>
+                        </mat-radio-group>
+                        <mat-error *ngIf="submitted && item.controls.response.errors && item.controls.response.errors.required">Answer is required</mat-error>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </mat-dialog-content>
+</form>

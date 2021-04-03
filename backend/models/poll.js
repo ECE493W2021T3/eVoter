@@ -1,5 +1,6 @@
 const Joi = require("joi");
 const mongoose = require("mongoose");
+var Enum = require('enum');
 
 function validateChoices (v){
   console.log(this.type); 
@@ -96,3 +97,4 @@ function validatePoll(poll) {
 }
 exports.Poll = Poll;
 exports.validatePoll = validatePoll;
+exports.PollType = new Enum({survey: 'Survey', election: 'Election'});

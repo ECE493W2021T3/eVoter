@@ -68,8 +68,13 @@ mat-nav-list mat-icon {
 }
 
 .label {
-    color: darkblue;
     font-weight: 500;
+}
+
+.mc-container {
+    border: 1px solid lightgray;
+    border-radius: 20px;
+    padding: 10px;
 }
 
 .warning-container {
