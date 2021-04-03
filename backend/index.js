@@ -11,6 +11,7 @@ require("./startup/mongoose")();
 // Router
 const pollRouter = require('./routes/poll');
 const usersRouter = require('./routes/users');
+const responseRouter = require('./routes/response');
 const blockchainRouter = require('./routes/blockchain');
 
 /* MIDDLEWARE  */
@@ -34,6 +35,7 @@ app.use(function (req, res, next) {
 app.use('/poll', pollRouter);
 app.use('/users', usersRouter);
 app.use('/blockchain', blockchainRouter);
+app.use('/response', responseRouter);
 
 /**
  * POST /response

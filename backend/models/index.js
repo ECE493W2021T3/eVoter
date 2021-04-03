@@ -1,11 +1,15 @@
 const { User } = require('./user');
-const { Poll, validatePoll } = require('./poll');
+const { Poll, validatePoll, PollType } = require('./poll');
 const { VoterAssignment, validateVoterAssignment } = require('./voter-assignment');
+const { Response, validateResponse } = require('./response');
 
 module.exports = {
     User,
     Poll,
     validatePoll,
     VoterAssignment,
-    validateVoterAssignment
+    validateVoterAssignment,
+    Response,
+    validateResponse,
+    PollType
 }
