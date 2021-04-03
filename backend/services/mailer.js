@@ -71,7 +71,7 @@ function sendRegistrationInvitationEmail(receiverEmail) {
     text: "using html", // using HTML instead of text, but text cannot be empty
     html: `<h1>eVoter - Invitation to Sign Up eVoter</h1>
             <h2>Hello,</h2>
-            <p>You are invited to a poll on eVoter. Please sign up an account:</p>
+            <p>You have been invited to sign up for an account on eVoter. Please sign up now!</p>
             <a href=http://localhost:4200/signup> Click here</a>
             </div>`,
   };
