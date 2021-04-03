@@ -55,6 +55,7 @@ function sendRegistrationConfirmationEmail(baseURL, receiverEmail, receiverName,
             <a href=http://${baseURL}/users/confirm/${receiverConfirmationCode}> Click here</a>
             </div>`,
   };
+  console.log(`http://${baseURL}/users/confirm/${receiverConfirmationCode}`);
   return sendEmail(msg);
 }
 
@@ -77,10 +78,30 @@ function sendRegistrationInvitationEmail(receiverEmail) {
   return sendEmail(msg);
 }
 
+function sendPollAssignmentEmail(userEmail, userName, pollTitle, pollType) {
+  const msg = {
+    intention:"Invitation",
+    to: userEmail,
+    from: {
+      email: "noreply.evoter@gmail.com",
+      name: "eVoter Support",
+    },
+    subject: `eVoter - You are assigned to the ${pollType} "${pollTitle}"`,
+    text: "using html", // using HTML instead of text, but text cannot be empty
+    html: `<h1>eVoter - You are assigned to the ${pollType} "${pollTitle}"</h1>
+            <h2>Hello ${userName},</h2>
+            <p>You are invited to the ${pollType}: "${pollTitle}" on eVoter. Please respond at the link below!</p>
+            <a href=http://localhost:4200/invited-polls> Click here</a>
+            </div>`,
+  };
+  return sendEmail(msg);
+}
+
 module.exports = {
   validateEmail,
   sendEmail,
   setKey,
   sendRegistrationConfirmationEmail,
-  sendRegistrationInvitationEmail
+  sendRegistrationInvitationEmail,
+  sendPollAssignmentEmail
 };

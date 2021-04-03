@@ -1,8 +1,9 @@
 const express = require("express");
 const router = express.Router();
-const { Poll, validatePoll, VoterAssignment, validateVoterAssignment } = require('../models');
+const { Poll, validatePoll, VoterAssignment, validateVoterAssignment, User } = require('../models');
 const { auth } = require('../middleware/auth');
 const {ObjectID} = require('mongodb');
+let { sendPollAssignmentEmail } =require("../services/mailer");
 
 // Blockchain Network
 const path = require('path');
@@ -238,11 +239,21 @@ router.post("/:id/voter-assignments", auth, async (req, res) =>{
             res.status(400).send(error.message);
             return;
         }
-      }
+    }
 
     VoterAssignment.insertMany(assignments)
-    .then(function(mongooseDocuments) {
-         res.status(200).send({ 'message': 'Voters assigned successfully'});
+    .then(async function(mongooseDocuments) {
+        // send poll assignment invitation email
+        for (var i = 0; i < assignments.length; i++) {
+            let user = await User.findOne({ _id: assignments[i].userID }).select("-__v");
+            let poll = await Poll.findOne({ _id: assignments[i].pollID }).select();
+            let userEmail = user.email;
+            let userName = user.name;
+            let pollTitle = poll.title;
+            let pollType = poll.type;
+            sendPollAssignmentEmail(userEmail, userName, pollTitle, pollType);
+        }
+        res.status(200).send({ 'message': 'Voters assigned successfully'});
     })
     .catch(function(err) {
         res.status(400).send(err.message);
