@@ -3,12 +3,14 @@ const router = express.Router();
 const { Poll, validatePoll, VoterAssignment, validateVoterAssignment, Response, User } = require('../models');
 const { auth } = require('../middleware/auth');
 const {ObjectID} = require('mongodb');
-let { sendPollAssignmentEmail } =require("../services/mailer");
+const { sendPollAssignmentEmail } =require("../services/mailer");
 
+const Joi = require("joi");
+const _ = require('lodash');
 // Blockchain Network
 const path = require('path');
 const fs = require('fs');
-let network = require('../services/network');
+const network = require('../services/network');
 const configPath = path.join(process.cwd(), './config/config.json');
 const configJSON = fs.readFileSync(configPath, 'utf8');
 const config = JSON.parse(configJSON);
@@ -82,6 +84,86 @@ router.get("/all-invited", auth, async (req, res) => {
     results= results.filter(ele => ele);
     res.send(results);
 });
+
+
+/**
+ * GET /poll/<:id>/poll-results
+ * Purpose: Get poll result
+ * Return: Result
+ */
+router.get("/:id/poll-results", auth, async (req, res) => {
+
+    const { error } = Joi.object({ responseID: Joi.objectId().required() }).validate({ responseID: req.params.id });
+    if (error) return res.status(400).send("Invalid Post ID");
+
+    let poll = await Poll.findById(req.params.id);
+    /**
+     * BlockChain: find Poll
+     */
+    if (!poll) return res.status(404).send("The poll with the given ID was not found.");
+
+    if(poll.isHiddenUntilDeadline){
+        if (Date.now() < Date.parse(poll.deadline))
+        res.status(401).send("Poll not ready yet");
+    }
+
+    if (!poll.canVotersSeeResults && (poll.host != req.userID)) {
+        res.status(403).send("Results for Host only");
+    }
+    let responses = await Response
+                    .find({pollID : req.params.id})
+                    .populate("voterID");
+    if (!responses){
+        /**
+         * BlockChain: find responses
+         */
+    }
+
+    let questions = {}; //create dictionary for further processing
+    poll.questions.forEach( question =>{
+        const model = {
+            _id: question._id,
+            type: question.type,
+            question: question.question,
+            choices: {},
+            answers: []
+        };
+        questions[question._id] = model;
+    })
+
+    responses.forEach(response =>{
+        response.answers.forEach( answer => {
+            // collect answers
+            questions[answer.questionID].answers.push(answer.answer);
+        })
+    });
+
+    // count anawers
+    // Note: even short answers are counted
+    questions = Object.values(questions).map(question => {
+        question['choices'] = _.countBy(question.answers);
+        return question;
+    });
+    // Extract Voter from User
+    let voted = responses.map(
+        x => {
+            return {
+                responseID: x.id,
+                userID: poll.isAnonymousModeOn ? null : x.voterID._id,
+                name:   poll.isAnonymousModeOn ? null : x.voterID.name,
+                email:  poll.isAnonymousModeOn ? null : x.voterID.email
+            };
+        }
+    );
+
+    const result = {
+        pollID: poll._id,
+        questions: questions,
+        voted: voted
+    }
+    res.send(result);
+});
+
 /**
  * GET /poll/<:id>
  * Purpose: Get one poll by ID
