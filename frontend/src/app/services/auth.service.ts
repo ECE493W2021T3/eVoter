@@ -26,8 +26,9 @@ export class AuthService {
             shareReplay(),
             tap((res: HttpResponse<any>) => {
                 // the auth tokens will be in the header of this response
-                if (res.body.is2FAEnabled) {
-                    localStorage.setItem('user-id', res.body._id);
+                if (res.body.secret && res.body.userID) {
+                    localStorage.setItem('user-id', res.body.userID);
+                    localStorage.setItem('otp-secret', res.body.secret);
                     this.router.navigate(['/verify-tfa']);
                 } else {
                     this.setSession(res.body, res.headers.get('x-access-token'), res.headers.get('x-refresh-token'));
@@ -49,7 +50,11 @@ export class AuthService {
     }
 
     verify2FA(code: string): Observable<any> {
-        return this.baseService.auth(`users/${localStorage.getItem('user-id')}/verify-2FA`, { code }).pipe(
+        const data = {
+            code: code,
+            secret: localStorage.getItem('otp-secret')
+        };
+        return this.baseService.auth(`users/${localStorage.getItem('user-id')}/verify-2FA`, data).pipe(
             shareReplay(),
             tap(res => {
                 this.setSession(res.body, res.headers.get('x-access-token'), res.headers.get('x-refresh-token'));
@@ -99,6 +104,7 @@ export class AuthService {
 
     private removeSession() {
         localStorage.removeItem('user-id');
+        localStorage.removeItem('otp-secret');
         localStorage.removeItem('userProfile');
         localStorage.removeItem('x-access-token');
         localStorage.removeItem('x-refresh-token');

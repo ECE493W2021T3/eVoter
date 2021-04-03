@@ -4,8 +4,7 @@ const { verifySession } = require("../middleware/verifySession");
 const { auth } = require("../middleware/auth");
 let network = require('../services/network');
 const { sendOTPEmail } = require("../services/mailer");
-
-var otp = generateOTP();
+const speakeasy = require("speakeasy");
 
 /**
  * POST /users
@@ -52,8 +51,15 @@ router.post('/', (req, res) => {
 router.post('/login', (req, res) => {
     User.findByCredentials(req.body.email, req.body.password).then((user) => {
         if (user.is2FAEnabled) {
+            const secret = speakeasy.generateSecret({ length: 20 });
+            const otp = speakeasy.totp({
+                secret: secret.base32,
+                encoding: "base32",
+                step: 320
+            });
+
             if (sendOTPEmail(user.email, user.name, otp)) {
-                res.send(user);
+                res.send({ secret: secret.base32, userID: user._id });
             } else {
                 return res.status(400).send("Failed to send one-time password");
             }
@@ -84,7 +90,14 @@ router.post('/login', (req, res) => {
 });
 
 router.post('/:id/verify-2FA', async (req, res) => {
-    if (req.body.code == otp) {
+    const isVerified = speakeasy.totp.verify({
+        secret: req.body.secret,
+        encoding: 'base32',
+        token: req.body.code,
+        step: 320
+      });
+
+    if (isVerified) {
         const user = await User.findById(req.params.id).select("-__v");
         if (!user)
             return res.status(404).send("The user with the given ID was not found.");
@@ -95,7 +108,6 @@ router.post('/:id/verify-2FA', async (req, res) => {
             });
         }).then(async (authTokens) => {
             let connection = await network.connectToNetwork(user._id.toString());
-            otp = generateOTP(); // refresh otp
 
             res
                 .header('x-refresh-token', authTokens.refreshToken)
@@ -187,12 +199,5 @@ router.post('/send-registration-email', (req, res) => {
     console.log(req.body);
     res.send({ 'message': 'Emails sent successfully' });
 });
-
-function generateOTP() {
-    var passcode = Math.random();
-    passcode = passcode * 1000000;
-    passcode = parseInt(passcode);
-    return passcode;
-}
 
 module.exports = router;
