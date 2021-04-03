@@ -1,6 +1,10 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
+import { COMMON } from 'src/app/helpers/common.const';
+import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
     selector: 'app-verify-tfa',
@@ -13,7 +17,10 @@ export class VerifyTfaComponent implements OnInit, OnDestroy {
     private subscription: Subscription = new Subscription();
 
     constructor(
-        private formBuilder: FormBuilder) { }
+        private formBuilder: FormBuilder,
+        private authService: AuthService,
+        private router: Router,
+        private snackBar: MatSnackBar) { }
 
     ngOnInit(): void {
         this.TFAForm = this.formBuilder.group({
@@ -32,5 +39,23 @@ export class VerifyTfaComponent implements OnInit, OnDestroy {
         if (this.TFAForm.invalid || this.TFAForm.pending) {
             return;
         }
+
+        this.subscription.add(this.authService.verify2FA(this.tf.code.value).subscribe(result => {
+            this.subscription.add(this.authService.userProfile.subscribe(userProfile => {
+                if (userProfile) {
+                    if (userProfile.role == COMMON.role.admin) {
+                        this.router.navigate(['/hosted-polls']);
+                    } else {
+                        this.router.navigate(['/invited-polls']);
+                    }
+                }
+            }));
+        }, error => {
+            this.snackBar.open('One-time passcode entered is invalid. Please try again.', '', {
+                duration: 5000,
+                verticalPosition: 'top',
+                panelClass: ['error-snackbar']
+            });
+        }));
     }
 }

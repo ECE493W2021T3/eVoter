@@ -3,6 +3,9 @@ const { User, validateUser } = require('../models/user');
 const { verifySession } = require("../middleware/verifySession");
 const { auth } = require("../middleware/auth");
 let network = require('../services/network');
+const { sendOTPEmail } = require("../services/mailer");
+
+var otp = generateOTP();
 
 /**
  * POST /users
@@ -39,7 +42,7 @@ router.post('/', (req, res) => {
                 .send(newUser);
             })
         .catch((e) => { res.status(400).send(e); })
-})
+});
 
 
 /**
@@ -49,7 +52,11 @@ router.post('/', (req, res) => {
 router.post('/login', (req, res) => {
     User.findByCredentials(req.body.email, req.body.password).then((user) => {
         if (user.is2FAEnabled) {
-            res.send(user);
+            if (sendOTPEmail(user.email, user.name, otp)) {
+                res.send(user);
+            } else {
+                return res.status(400).send("Failed to send one-time password");
+            }
         } else {
             return user.createSession().then((refreshToken) => {
                 // Session created successfully - refreshToken returned.
@@ -74,6 +81,30 @@ router.post('/login', (req, res) => {
     }).catch((e) => {
         res.status(400).send(e);
     });
+});
+
+router.post('/:id/verify-2FA', async (req, res) => {
+    if (req.body.code == otp) {
+        const user = await User.findById(req.params.id).select("-__v");
+        if (!user)
+            return res.status(404).send("The user with the given ID was not found.");
+
+        user.createSession().then((refreshToken) => {
+            return user.generateAccessAuthToken().then((accessToken) => {
+                return { accessToken, refreshToken }
+            });
+        }).then(async (authTokens) => {
+            let connection = await network.connectToNetwork(user._id.toString());
+            otp = generateOTP(); // refresh otp
+
+            res
+                .header('x-refresh-token', authTokens.refreshToken)
+                .header('x-access-token', authTokens.accessToken)
+                .send(user);
+        });
+    } else {
+        return res.status(400).send("One-time passcode is invalid");
+    }
 });
 
 /**
@@ -156,5 +187,12 @@ router.post('/send-registration-email', (req, res) => {
     console.log(req.body);
     res.send({ 'message': 'Emails sent successfully' });
 });
+
+function generateOTP() {
+    var passcode = Math.random();
+    passcode = passcode * 1000000;
+    passcode = parseInt(passcode);
+    return passcode;
+}
 
 module.exports = router;

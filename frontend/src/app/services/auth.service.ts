@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { shareReplay, tap } from 'rxjs/operators';
+import { share, shareReplay, tap } from 'rxjs/operators';
 import { BaseService } from './base.service';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { User, UserProfile } from '../models/user.model';
@@ -27,6 +27,7 @@ export class AuthService {
             tap((res: HttpResponse<any>) => {
                 // the auth tokens will be in the header of this response
                 if (res.body.is2FAEnabled) {
+                    localStorage.setItem('user-id', res.body._id);
                     this.router.navigate(['/verify-tfa']);
                 } else {
                     this.setSession(res.body, res.headers.get('x-access-token'), res.headers.get('x-refresh-token'));
@@ -45,6 +46,15 @@ export class AuthService {
                 console.log("Successfully signed up and now logged in!");
             })
         )
+    }
+
+    verify2FA(code: string): Observable<any> {
+        return this.baseService.auth(`users/${localStorage.getItem('user-id')}/verify-2FA`, { code }).pipe(
+            shareReplay(),
+            tap(res => {
+                this.setSession(res.body, res.headers.get('x-access-token'), res.headers.get('x-refresh-token'));
+            })
+        );
     }
 
     logout() {
@@ -88,6 +98,7 @@ export class AuthService {
     }
 
     private removeSession() {
+        localStorage.removeItem('user-id');
         localStorage.removeItem('userProfile');
         localStorage.removeItem('x-access-token');
         localStorage.removeItem('x-refresh-token');
