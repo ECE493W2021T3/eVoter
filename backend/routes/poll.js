@@ -247,6 +247,31 @@ router.post("/:id/voter-assignments", auth, async (req, res) =>{
         for (var i = 0; i < assignments.length; i++) {
             let user = await User.findOne({ _id: assignments[i].userID }).select("-__v");
             let poll = await Poll.findOne({ _id: assignments[i].pollID }).select();
+            if (!poll) {
+                // Otherwise find in Blockchain
+                let connection = await network.connectToNetwork(appAdmin);
+                let response = await network.invoke(connection, true, 'queryPollById', req.params.id);
+                let queryResponse = await JSON.parse(response);
+                if (queryResponse.length == 0) {
+                    // Not found in both DB and Blockchain
+                    return res.status(404).send("The poll with the given ID was not found.");
+                } else {
+                    // found in Blockchain
+                    let blockchain_poll = queryResponse[0].Record;
+                    poll = new Poll({
+                        _id: ObjectID.createFromHexString(blockchain_poll.pollID),
+                        title: blockchain_poll.title,
+                        type: blockchain_poll.pollType,
+                        host: blockchain_poll.host,
+                        deadline: blockchain_poll.deadline,
+                        accessLevel: blockchain_poll.accessLevel,
+                        isAnonymousModeOn: blockchain_poll.isAnonymousModeOn,
+                        isHiddenUntilDeadline: blockchain_poll.isHiddenUntilDeadline,
+                        canVotersSeeResults: blockchain_poll.canVotersSeeResults,
+                        questions: blockchain_poll.questions
+                    });
+                }
+            }
             let userEmail = user.email;
             let userName = user.name;
             let pollTitle = poll.title;
