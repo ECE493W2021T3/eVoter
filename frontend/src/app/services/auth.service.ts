@@ -26,8 +26,12 @@ export class AuthService {
             shareReplay(),
             tap((res: HttpResponse<any>) => {
                 // the auth tokens will be in the header of this response
-                this.setSession(res.body, res.headers.get('x-access-token'), res.headers.get('x-refresh-token'));
-                console.log("LOGGED IN!");
+                if (res.body.is2FAEnabled) {
+                    this.router.navigate(['/verify-tfa']);
+                } else {
+                    this.setSession(res.body, res.headers.get('x-access-token'), res.headers.get('x-refresh-token'));
+                    console.log("LOGGED IN!");
+                }
             })
         );
     }

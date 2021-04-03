@@ -42,15 +42,15 @@ export class LoginPageComponent implements OnInit, OnDestroy {
         }
 
         this.subscription.add(this.authService.login(this.lf.email.value, this.lf.password.value).subscribe((res: HttpResponse<any>) => {
-            if (res.status === 200) {
-                this.subscription.add(this.authService.userProfile.subscribe(userProfile => {
+            this.subscription.add(this.authService.userProfile.subscribe(userProfile => {
+                if (userProfile) {
                     if (userProfile.role == COMMON.role.admin) {
                         this.router.navigate(['/hosted-polls']);
                     } else {
                         this.router.navigate(['/invited-polls']);
                     }
-                }));
-            }
+                }
+            }));
         }, error => {
             this.snackBar.open('User with entered credentials does not exist. Please try again.', '', {
                 duration: 5000,
