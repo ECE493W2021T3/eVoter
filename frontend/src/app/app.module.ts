@@ -23,6 +23,8 @@ import { ChangePasswordComponent } from './components/change-password/change-pas
 import { PollDetailsDialogComponent } from './components/poll-details-dialog/poll-details-dialog.component';
 import { PollInviteComponent } from './components/poll-invite/poll-invite.component';
 import { SystemInviteComponent } from './components/system-invite/system-invite.component';
+import { SubmitResponseComponent } from './components/submit-response/submit-response.component';
+import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component';
 import { VerifyTfaComponent } from './components/verify-tfa/verify-tfa.component';
 
 @NgModule({
@@ -40,6 +42,8 @@ import { VerifyTfaComponent } from './components/verify-tfa/verify-tfa.component
         PollDetailsDialogComponent,
         PollInviteComponent,
         SystemInviteComponent,
+        SubmitResponseComponent,
+        ConfirmDialogComponent,
         VerifyTfaComponent
     ],
     imports: [

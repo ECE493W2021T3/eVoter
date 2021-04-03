@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const { Poll, validatePoll, VoterAssignment, validateVoterAssignment } = require('../models');
+const { Poll, validatePoll, VoterAssignment, validateVoterAssignment, Response } = require('../models');
 const { auth } = require('../middleware/auth');
 const {ObjectID} = require('mongodb');
 
@@ -56,16 +56,31 @@ router.get("/all-hosted", auth, async (req, res) => {
  * Return: [Polls]
  */
 router.get("/all-invited", auth, async (req, res) => {
-    console.log(req.userID);
-    let polls = await VoterAssignment.find({ userID: req.userID }).populate('pollID').select("-__v");
-    polls = polls.map(
-        poll => {
-            return poll.pollID;
+    const polls = await VoterAssignment.find({ userID: req.userID }).populate('pollID');
+    let results = await Promise.all(polls.map(async ele => {
+        
+        let poll = ele.pollID
+        if(!poll) {
+            /**
+             * Blockchain find Poll
+             */
+            return null
+        };
+        let response = null;
+        try {
+            response = await Response.findOne({pollID: poll._id, voterID:req.userID});
+        } catch(err) {
+            console.log(err); //If err, keep null.
         }
-    );
-    res.send(polls);
+        const model ={
+            poll: poll, 
+            responseID: response ? response._id : null
+        }
+         return model
+    }));
+    results= results.filter(ele => ele);
+    res.send(results);
 });
-
 /**
  * GET /poll/<:id>
  * Purpose: Get one poll by ID
@@ -232,7 +247,6 @@ router.post("/:id/voter-assignments", auth, async (req, res) =>{
     );
 
     for (var i = 0; i < assignments.length; i++) {
-        console.log(assignments[i]);
         const { error } = validateVoterAssignment(assignments[i]);
         if (error)  {
             res.status(400).send(error.message);
