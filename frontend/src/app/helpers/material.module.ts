@@ -17,6 +17,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatChipsModule } from '@angular/material/chips';
+import { MatRadioModule } from '@angular/material/radio';
 
 @NgModule({
 	declarations: [],
@@ -38,7 +39,8 @@ import { MatChipsModule } from '@angular/material/chips';
 		MatDatepickerModule,
 		MatTooltipModule,
 		MatDialogModule,
-		MatChipsModule
+		MatChipsModule,
+		MatRadioModule
 	],
 	exports: [
 		MatSidenavModule,
@@ -57,7 +59,8 @@ import { MatChipsModule } from '@angular/material/chips';
 		MatDatepickerModule,
 		MatTooltipModule,
 		MatDialogModule,
-		MatChipsModule
+		MatChipsModule,
+		MatRadioModule
 	]
 })
 export class MaterialModule { }

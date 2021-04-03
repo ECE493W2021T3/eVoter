@@ -25,3 +25,15 @@ export class Poll {
         }
     }
 }
+
+export class InvitedPoll {
+    poll: Poll;
+    responseID: string; // Indication of whether or not voter has responded. Useful for disabling edit for elections and getting survey responses.
+
+    constructor(response: any) {
+        if (response) {
+            this.poll = new Poll(response.poll);
+            this.responseID = response.responseID;
+        }
+    }
+}

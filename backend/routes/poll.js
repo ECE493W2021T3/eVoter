@@ -56,14 +56,60 @@ router.get("/all-hosted", auth, async (req, res) => {
  * Return: [Polls]
  */
 router.get("/all-invited", auth, async (req, res) => {
-    console.log(req.userID);
-    let polls = await VoterAssignment.find({ userID: req.userID }).populate('pollID').select("-__v");
-    polls = polls.map(
-        poll => {
-            return poll.pollID;
-        }
-    );
-    res.send(polls);
+    // console.log(req.userID);
+    // let polls = await VoterAssignment.find({ userID: req.userID }).populate('pollID').select("-__v");
+    // polls = polls.map(
+    //     poll => {
+    //         return poll.pollID;
+    //     }
+    // );
+    // res.send(polls);
+
+    // hardcoded for frontend testing
+    let invitedPolls = [{
+        poll: {
+            _id: 'surveypollid',
+            title: 'Survey Title',
+            type: 'Survey',
+            accessLevel: 'Invite Only',
+            deadline: new Date('2021-04-05T23:45:00.000Z'),
+            isAnonymousModeOn: false,
+            isHiddenUntilDeadline: false,
+            canVotersSeeResults: true,
+            questions: [
+            { _id: 'id1', type: 'Short Answer', question: 'Short answer 1', choices: [] },
+            { _id: 'id2', type: 'Multiple Choice', question: 'MCQ 1', choices: ["option 1", "option2"] },
+            { _id: 'id3', type: 'Multiple Choice', question: 'MCQ 2', choices: ["option 1", "option2"] },
+            { _id: 'id4', type: 'Short Answer', question: 'Short answer q2', choices: [] }
+        ]},
+        responseID: 'responseID1'
+    }, {
+        poll: {
+            _id: 'electionpollid',
+            title: 'Election 2021 Poll',
+            type: 'Election',
+            accessLevel: 'Public',
+            deadline: new Date('2021-04-28T00:15:00.000Z'),
+            isAnonymousModeOn: true,
+            isHiddenUntilDeadline: false,
+            canVotersSeeResults: false,
+            questions: [
+            {
+                _id: "id5",
+                type: 'Multiple Choice',
+                question: 'Presidential candidates',
+                choices: ["biden", "trump"]
+            },
+            {
+                _id: "id6",
+                type: 'Multiple Choice',
+                question: 'Vice President',
+                choices: ["option 1", "option2"]
+            }
+        ]},
+        responseID: ""
+      }];
+      res.send(invitedPolls);
 });
 
 /**

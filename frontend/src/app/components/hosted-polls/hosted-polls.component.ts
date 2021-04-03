@@ -16,18 +16,6 @@ import { PollDetailsDialogComponent } from '../poll-details-dialog/poll-details-
 export class HostedPollsComponent implements OnInit, OnDestroy {
     public PRIVATE = COMMON.accessLevel.private;
     public hostedPolls: Poll[] = [];
-    public displayedColumns: string[] = [
-        'title',
-        'type',
-        'deadline',
-        'accessLevel',
-        'anonimity',
-        'hiddenTillDeadline',
-        'canVotersSeeResults',
-        'inviteVoters',
-        'seePresentation',
-        'endPoll'
-    ];
 
     private subscription: Subscription = new Subscription();
 
