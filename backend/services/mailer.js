@@ -51,7 +51,7 @@ function sendOTPEmail(userEmail, userName, otp) {
     text: "using html", // using HTML instead of text, but text cannot be empty
     html: `<h1>eVoter - One-Time Passcode</h1>
             <h2>Hello ${userName},</h2>
-            <p>Please use the following one-time passcode to complete your login process:</p>
+            <p>Please use the following one-time passcode to complete your login process. The code expires in 5 minutes:</p>
             <h2>${otp}</h2>
             <br/>`
   };

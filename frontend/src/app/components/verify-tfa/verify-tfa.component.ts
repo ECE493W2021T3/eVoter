@@ -51,7 +51,7 @@ export class VerifyTfaComponent implements OnInit, OnDestroy {
                 }
             }));
         }, error => {
-            this.snackBar.open('One-time passcode entered is invalid. Please try again.', '', {
+            this.snackBar.open('One-time passcode is invalid. Please try logging in again to generate a new code.', '', {
                 duration: 5000,
                 verticalPosition: 'top',
                 panelClass: ['error-snackbar']

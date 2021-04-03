@@ -58,6 +58,10 @@ export class AuthService {
             shareReplay(),
             tap(res => {
                 this.setSession(res.body, res.headers.get('x-access-token'), res.headers.get('x-refresh-token'));
+
+                // Remove storage used for two factor authentication
+                localStorage.removeItem('user-id');
+                localStorage.removeItem('otp-secret');
             })
         );
     }
