@@ -78,8 +78,7 @@ export class SignupPageComponent implements OnInit, OnDestroy {
         } as User;
 
         this.subscription.add(this.authService.signup(model).subscribe(result => {
-            const route = this.rf.isHostingPolls.value ? '/hosted-polls' : '/invited-polls';
-            this.router.navigate([route]);
+            this.router.navigate(['/login']);
         }, error =>{
             this.snackBar.open('User with entered email already exists.', '', {
                 duration: 5000,

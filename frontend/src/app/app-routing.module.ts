@@ -14,6 +14,7 @@ import { VerifyTfaComponent } from './components/verify-tfa/verify-tfa.component
 const routes: Routes = [
     { path: '', redirectTo: '', pathMatch: 'full', canActivate: [RedirectGuard] },
     { path: 'login', component: LoginPageComponent },
+    { path: 'login/:confirmationCode', component: LoginPageComponent },
     { path: 'signup', component: SignupPageComponent },
     { path: 'change-password', component: ChangePasswordComponent },
     { path: 'verify-tfa', component: VerifyTfaComponent },

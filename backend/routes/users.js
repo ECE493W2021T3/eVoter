@@ -1,48 +1,62 @@
 const router = require("express").Router();
+const config = require('config');
+const jwt = require('jsonwebtoken');
 const { User, validateUser } = require('../models/user');
 const { verifySession } = require("../middleware/verifySession");
 const { auth } = require("../middleware/auth");
-let network = require('../services/network');
-const { sendOTPEmail } = require("../services/mailer");
 const speakeasy = require("speakeasy");
+let network = require('../services/network');
+let { sendRegistrationConfirmationEmail, 
+      sendRegistrationInvitationEmail,
+      sendOTPEmail } = require("../services/mailer");
 
 /**
  * POST /users
  * Purpose: Sign up
  */
 router.post('/', (req, res) => {
+    const confirmationCode = jwt.sign({email: req.body.email}, config.get('jwtPrivateKey'));
 
     let body = req.body;
+    body.confirmed = false; // user is not confirmed, until click link in email.
+    body.confirmationCode = confirmationCode;
 
     const { error } = validateUser(req.body);
     if (error) return res.status(400).send(error.details[0].message);
 
     let newUser = new User(body);
 
-    newUser
-        .save()
-        .then(() => { return newUser.createSession(); })
-        .then((refreshToken) => {
-            // Session created successfully - refreshToken returned.
-            // now we geneate an access auth token for the user
-            return newUser.generateAccessAuthToken().then((accessToken) => {
-                // access auth token generated successfully, now we return an object containing the auth tokens
-                return { accessToken, refreshToken }
-            });
-        })
-        .then(async (authTokens) => {
-            // Sign up user in Blockchain and add to wallet
-            await network.registerUser(newUser._id.toString());
-
-            // Set JWT tokens
-            res
-                .header('x-refresh-token', authTokens.refreshToken)
-                .header('x-access-token', authTokens.accessToken)
-                .send(newUser);
+    // Send Registration Confirmation Email
+    let isSuccessful = sendRegistrationConfirmationEmail(newUser.email, newUser.name, newUser.confirmationCode);
+    if (isSuccessful) {
+        newUser
+            .save()
+            .then(async () => {
+                await network.registerUser(newUser._id.toString());
+                res.send({}); 
             })
-        .catch((e) => { res.status(400).send(e); })
+            .catch((e) => { res.status(400).send(e); })
+    } else {
+        res.status(400).send("Confirmation email sending failed.");
+    }
 });
 
+/**
+ * GET /users/confirm/:confirmationCode
+ * Purpose: Confirms a user's email address.
+ */
+router.get('/confirm/:confirmationCode', async (req, res) => {
+    const user = await User.findOne({ confirmationCode: req.params.confirmationCode }).select("-__v");
+    if (!user)
+        return res.status(404).send("The user with the given ConfirmationCode was not found.");
+
+    user.confirmed = true;
+    user.save()
+        .then(() => {
+            res.send({ 'message' : 'User is confirmed successfully, please go login.' });
+        })
+        .catch((e) => { res.status(400).send(e); });
+});
 
 /**
  * POST /users/login
@@ -50,39 +64,43 @@ router.post('/', (req, res) => {
  */
 router.post('/login', (req, res) => {
     User.findByCredentials(req.body.email, req.body.password).then((user) => {
-        if (user.is2FAEnabled) {
-            const secret = speakeasy.generateSecret({ length: 20 });
-            const otp = speakeasy.totp({
-                secret: secret.base32,
-                encoding: "base32",
-                step: 320
-            });
+        if (user.confirmed === true) {
+            if (user.is2FAEnabled) {
+                const secret = speakeasy.generateSecret({ length: 20 });
+                const otp = speakeasy.totp({
+                    secret: secret.base32,
+                    encoding: "base32",
+                    step: 320
+                });
 
-            if (sendOTPEmail(user.email, user.name, otp)) {
-                res.send({ secret: secret.base32, userID: user._id });
+                if (sendOTPEmail(user.email, user.name, otp)) {
+                    res.send({ secret: secret.base32, userID: user._id });
+                } else {
+                    return res.status(400).send("Failed to send one-time password");
+                }
             } else {
-                return res.status(400).send("Failed to send one-time password");
+                return user.createSession().then((refreshToken) => {
+                    // Session created successfully - refreshToken returned.
+                    // now we geneate an access auth token for the user
+
+                    return user.generateAccessAuthToken().then((accessToken) => {
+                        // access auth token generated successfully, now we return an object containing the auth tokens
+                        return { accessToken, refreshToken }
+                    });
+                }).then(async (authTokens) => {
+                    // Now we construct and send the response to the user with their auth tokens in the header and the user object in the body
+
+                    // This is how to connect to Blockchain network with userID
+                    let connection = await network.connectToNetwork(user._id.toString());
+                    
+                    res
+                        .header('x-refresh-token', authTokens.refreshToken)
+                        .header('x-access-token', authTokens.accessToken)
+                        .send(user);
+                });
             }
         } else {
-            return user.createSession().then((refreshToken) => {
-                // Session created successfully - refreshToken returned.
-                // now we geneate an access auth token for the user
-
-                return user.generateAccessAuthToken().then((accessToken) => {
-                    // access auth token generated successfully, now we return an object containing the auth tokens
-                    return { accessToken, refreshToken }
-                });
-            }).then(async (authTokens) => {
-                // Now we construct and send the response to the user with their auth tokens in the header and the user object in the body
-
-                // This is how to connect to Blockchain network with userID
-                let connection = await network.connectToNetwork(user._id.toString());
-
-                res
-                    .header('x-refresh-token', authTokens.refreshToken)
-                    .header('x-access-token', authTokens.accessToken)
-                    .send(user);
-            });
+            res.status(400).send("User not confirmed.");
         }
     }).catch((e) => {
         res.status(400).send(e);
@@ -196,8 +214,25 @@ router.get('/voters', async (req, res) => {
  * Purpose: Sends a system registration email to unregistered voters
  */
 router.post('/send-registration-email', (req, res) => {
-    console.log(req.body);
-    res.send({ 'message': 'Emails sent successfully' });
+    // Send invitation to register email
+    const emails = req.body.emails;
+    let failed_emails = [];
+    if (Array.isArray(emails)) {
+        emails.forEach(email => {
+            let isSuccessful = sendRegistrationInvitationEmail(email);
+            if (!isSuccessful) {
+                failed_emails.push(email);
+            }
+        });
+        if (failed_emails.length === 0){
+            res.send({ 'message': 'All emails sent successfully' });
+        } else {
+            res.send({ 'message': 'Some emails failed to send',
+                        'failedEmails': failed_emails });
+        }
+    } else {
+        res.status(400).send("Incorrect emails format.");
+    }
 });
 
 module.exports = router;

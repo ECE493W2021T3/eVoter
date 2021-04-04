@@ -43,8 +43,7 @@ export class AuthService {
             shareReplay(),
             tap(res => {
                 // the auth tokens will be in the header of this response
-                this.setSession(res.body, res.headers.get('x-access-token'), res.headers.get('x-refresh-token'));
-                console.log("Successfully signed up and now logged in!");
+                console.log("Successfully signed up!");
             })
         )
     }

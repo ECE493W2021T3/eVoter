@@ -1,8 +1,9 @@
 const express = require("express");
 const router = express.Router();
-const { Poll, validatePoll, VoterAssignment, validateVoterAssignment, Response } = require('../models');
+const { Poll, validatePoll, VoterAssignment, validateVoterAssignment, Response, User } = require('../models');
 const { auth } = require('../middleware/auth');
 const {ObjectID} = require('mongodb');
+let { sendPollAssignmentEmail } =require("../services/mailer");
 
 // Blockchain Network
 const path = require('path');
@@ -252,11 +253,46 @@ router.post("/:id/voter-assignments", auth, async (req, res) =>{
             res.status(400).send(error.message);
             return;
         }
-      }
+    }
 
     VoterAssignment.insertMany(assignments)
-    .then(function(mongooseDocuments) {
-         res.status(200).send({ 'message': 'Voters assigned successfully'});
+    .then(async function(mongooseDocuments) {
+        // send poll assignment invitation email
+        for (var i = 0; i < assignments.length; i++) {
+            let user = await User.findOne({ _id: assignments[i].userID }).select("-__v");
+            let poll = await Poll.findOne({ _id: assignments[i].pollID }).select();
+            if (!poll) {
+                // Otherwise find in Blockchain
+                let connection = await network.connectToNetwork(appAdmin);
+                let response = await network.invoke(connection, true, 'queryPollById', req.params.id);
+                let queryResponse = await JSON.parse(response);
+                if (queryResponse.length == 0) {
+                    // Not found in both DB and Blockchain
+                    return res.status(404).send("The poll with the given ID was not found.");
+                } else {
+                    // found in Blockchain
+                    let blockchain_poll = queryResponse[0].Record;
+                    poll = new Poll({
+                        _id: ObjectID.createFromHexString(blockchain_poll.pollID),
+                        title: blockchain_poll.title,
+                        type: blockchain_poll.pollType,
+                        host: blockchain_poll.host,
+                        deadline: blockchain_poll.deadline,
+                        accessLevel: blockchain_poll.accessLevel,
+                        isAnonymousModeOn: blockchain_poll.isAnonymousModeOn,
+                        isHiddenUntilDeadline: blockchain_poll.isHiddenUntilDeadline,
+                        canVotersSeeResults: blockchain_poll.canVotersSeeResults,
+                        questions: blockchain_poll.questions
+                    });
+                }
+            }
+            let userEmail = user.email;
+            let userName = user.name;
+            let pollTitle = poll.title;
+            let pollType = poll.type;
+            sendPollAssignmentEmail(userEmail, userName, pollTitle, pollType);
+        }
+        res.status(200).send({ 'message': 'Voters assigned successfully'});
     })
     .catch(function(err) {
         res.status(400).send(err.message);
