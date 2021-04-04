@@ -1,4 +1,5 @@
 {
-    "jwtPrivateKey": "51778657246321226641fsdklafjasdkljfsklfjd7148924065"
+    "jwtPrivateKey": "51778657246321226641fsdklafjasdkljfsklfjd7148924065",
+    "angular_server": "http://localhost:4200/"
 }
   

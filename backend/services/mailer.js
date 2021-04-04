@@ -1,5 +1,6 @@
 const sgMail = require("@sendgrid/mail");
 const Joi = require("joi");
+const config = require('config');
 
 function setKey(){
   sgMail.setApiKey(process.env.SENDGRID_API_KEY);
@@ -52,7 +53,7 @@ function sendRegistrationConfirmationEmail(receiverEmail, receiverName, receiver
     html: `<h1>eVoter - Registration Confirmation for ${receiverName}</h1>
             <h2>Hello ${receiverName},</h2>
             <p>Thank you for registration. Please confirm your email by clicking on the following link:</p>
-            <a href=http://localhost:4200/login/${receiverConfirmationCode}> Click here</a>
+            <a href=${config.get('angular_server')}login/${receiverConfirmationCode}> Click here</a>
             </div>`,
   };
 
@@ -72,7 +73,7 @@ function sendRegistrationInvitationEmail(receiverEmail) {
     html: `<h1>eVoter - Invitation to Sign Up eVoter</h1>
             <h2>Hello,</h2>
             <p>You have been invited to sign up for an account on eVoter. Please sign up now!</p>
-            <a href=http://localhost:4200/signup> Click here</a>
+            <a href=${config.get('angular_server')}signup> Click here</a>
             </div>`,
   };
   return sendEmail(msg);
@@ -91,7 +92,7 @@ function sendPollAssignmentEmail(userEmail, userName, pollTitle, pollType) {
     html: `<h1>eVoter - You are assigned to the ${pollType} "${pollTitle}"</h1>
             <h2>Hello ${userName},</h2>
             <p>You are invited to the ${pollType}: "${pollTitle}" on eVoter. Please respond at the link below!</p>
-            <a href=http://localhost:4200/invited-polls> Click here</a>
+            <a href=${config.get('angular_server')}invited-polls> Click here</a>
             </div>`,
   };
   return sendEmail(msg);
