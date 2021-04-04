@@ -18,6 +18,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatRadioModule } from '@angular/material/radio';
+import { MatDividerModule } from '@angular/material/divider';
 
 @NgModule({
 	declarations: [],
@@ -40,7 +41,8 @@ import { MatRadioModule } from '@angular/material/radio';
 		MatTooltipModule,
 		MatDialogModule,
 		MatChipsModule,
-		MatRadioModule
+		MatRadioModule,
+		MatDividerModule
 	],
 	exports: [
 		MatSidenavModule,
@@ -60,7 +62,8 @@ import { MatRadioModule } from '@angular/material/radio';
 		MatTooltipModule,
 		MatDialogModule,
 		MatChipsModule,
-		MatRadioModule
+		MatRadioModule,
+		MatDividerModule
 	]
 })
 export class MaterialModule { }

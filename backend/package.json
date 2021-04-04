@@ -21,6 +21,7 @@
     "fabric-ca-client": "~1.4.2",
     "fabric-client": "^1.4.10",
     "fabric-network": "~1.4.2",
+    "generate-password": "^1.6.0",
     "joi": "^17.4.0",
     "joi-objectid": "^3.0.1",
     "jsonwebtoken": "^8.5.0",

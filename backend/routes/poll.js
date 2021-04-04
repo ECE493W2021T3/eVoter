@@ -4,6 +4,7 @@ const { Poll, validatePoll, VoterAssignment, validateVoterAssignment, Response, 
 const { auth } = require('../middleware/auth');
 const {ObjectID} = require('mongodb');
 const { sendPollAssignmentEmail } =require("../services/mailer");
+const codeGenerator = require('generate-password');
 
 const Joi = require("joi");
 const _ = require('lodash');
@@ -201,6 +202,30 @@ router.get("/:id", auth, async (req, res) => {
 });
 
 /**
+ * GET /poll/public/:accessCode
+ * Purpose: Gets a poll by access code
+ * Return: { Poll, resultID }
+ */
+router.get("/public/:accessCode", auth, async (req, res) => {
+    const poll = await Poll.findOne({ accessCode: req.params.accessCode });
+
+    if (!poll) res.status(404).send("The poll with the given access code was not found");
+
+    let response = null;
+    try {
+        response = await Response.findOne({pollID: poll._id, voterID: req.userID});
+    } catch(err) {
+        console.log(err); //If err, keep null.
+    }
+    const model ={
+        poll: poll,
+        responseID: response ? response._id : null
+    }
+
+    res.send(model);
+});
+
+/**
  * POST /poll/
  * Purpose: Posts a Poll
  * Return: Poll
@@ -209,6 +234,20 @@ router.post("/", auth, async (req, res) => {
 
     const { error } = validatePoll(req.body);
     if (error) return res.status(400).send(error.details[0].message);
+
+    var accessCode;
+    if (req.body.accessLevel == "Public") {
+        while (true) {
+            accessCode = codeGenerator.generate({
+                length: 10,
+                numbers: true
+            });
+
+            // Check if there is already a poll with the generated access code.
+            const existingPoll = await Poll.find({ accessCode: accessCode });
+            if (!existingPoll || existingPoll.length == 0) break;
+        }
+    }
 
     const poll = new Poll({
         title: req.body.title,
@@ -219,7 +258,8 @@ router.post("/", auth, async (req, res) => {
         isAnonymousModeOn: req.body.isAnonymousModeOn,
         isHiddenUntilDeadline: req.body.isHiddenUntilDeadline,
         canVotersSeeResults: req.body.canVotersSeeResults,
-        questions: req.body.questions
+        questions: req.body.questions,
+        accessCode: accessCode
     });
 
     if (req.body.type == "Election") {

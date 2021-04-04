@@ -4,6 +4,7 @@
         <span><span class="label">Type:</span> {{ poll.type }}</span>
         <span><span class="label">Deadline:</span> {{ poll.deadline | date: 'LLL d, yyyy, h:mm a' }}</span>
         <span><span class="label">Access Level:</span> {{ poll.accessLevel }}</span>
+        <span *ngIf="poll.accessCode"><span class="label">Acces Code:</span> {{ poll.accessCode }}</span>
     </div>
     <div fxLayout="column" fxLayoutGap="10px">
         <span><span class="label">Anonymous mode?</span> {{ poll.isAnonymousModeOn ? 'Yes' : 'No' }}</span>

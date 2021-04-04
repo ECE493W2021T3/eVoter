@@ -1,6 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { Subscription } from 'rxjs';
 import { COMMON } from 'src/app/helpers/common.const';
 import { InvitedPoll, Poll } from 'src/app/models/poll.model';
@@ -14,6 +15,7 @@ import { SubmitResponseComponent } from '../submit-response/submit-response.comp
 })
 export class InvitedPollsComponent implements OnInit, OnDestroy {
     public invitedPolls: InvitedPoll[] = [];
+    public publicPoll: InvitedPoll;
     public ELECTION = COMMON.pollType.election;
     public SURVEY = COMMON.pollType.survey;
     public accessCode = new FormControl();
@@ -22,6 +24,7 @@ export class InvitedPollsComponent implements OnInit, OnDestroy {
 
     constructor(
         private pollService: PollService,
+        private snackBar: MatSnackBar,
         private dialog: MatDialog) { }
 
     ngOnInit(): void {
@@ -35,7 +38,21 @@ export class InvitedPollsComponent implements OnInit, OnDestroy {
     }
 
     onAccessCodeSearch() {
-        console.log(this.accessCode.value)
+        if (!this.accessCode.value) {
+            this.publicPoll = null;
+            return;
+        }
+
+        this.subscription.add(this.pollService.getPublicPoll(this.accessCode.value).subscribe(result => {
+            this.publicPoll = result;
+        }, error => {
+            this.publicPoll = null;
+            this.snackBar.open(`Could not find poll with access code ${this.accessCode.value}.`, '', {
+                duration: 5000,
+                verticalPosition: 'top',
+                panelClass: ['error-snackbar']
+            });
+        }));
     }
 
     openSubmitResponsePage(invitedPoll: InvitedPoll) {
