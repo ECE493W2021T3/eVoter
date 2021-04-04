@@ -25,7 +25,7 @@ router.post('/', (req, res) => {
     let newUser = new User(body);
 
     // Send Registration Confirmation Email
-    let isSuccessful = sendRegistrationConfirmationEmail(req.get('host'), newUser.email, newUser.name, newUser.confirmationCode);
+    let isSuccessful = sendRegistrationConfirmationEmail(newUser.email, newUser.name, newUser.confirmationCode);
     if (isSuccessful) {
         newUser
             .save()
@@ -40,8 +40,8 @@ router.post('/', (req, res) => {
 });
 
 /**
- * PATCH /users/:id/change-password
- * Purpose: Updates the user's password
+ * GET /users/confirm/:confirmationCode
+ * Purpose: Confirms a user's email address.
  */
 router.get('/confirm/:confirmationCode', async (req, res) => {
     const user = await User.findOne({ confirmationCode: req.params.confirmationCode }).select("-__v");

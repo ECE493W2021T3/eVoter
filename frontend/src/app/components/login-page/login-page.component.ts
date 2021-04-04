@@ -1,11 +1,12 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { AuthService } from 'src/app/services/auth.service';
 import { HttpResponse } from '@angular/common/http';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { COMMON } from 'src/app/helpers/common.const';
+import { UserService } from 'src/app/services/user.service';
 
 @Component({
     selector: 'app-login-page',
@@ -14,12 +15,15 @@ import { COMMON } from 'src/app/helpers/common.const';
 })
 export class LoginPageComponent implements OnInit, OnDestroy {
     public loginForm: FormGroup;
+
     private subscription: Subscription = new Subscription();
 
     constructor(
         private formBuilder: FormBuilder,
         private snackBar: MatSnackBar,
         private authService: AuthService,
+        private userService: UserService,
+        private route: ActivatedRoute,
         private router: Router) { }
 
     ngOnInit() {
@@ -27,6 +31,18 @@ export class LoginPageComponent implements OnInit, OnDestroy {
             email: ['', [Validators.required, Validators.email]],
             password: ['', Validators.required]
         });
+
+        this.subscription.add(this.route.params.subscribe(params => {
+            if (params.confirmationCode) {
+                this.subscription.add(this.userService.confirmEmail(params.confirmationCode).subscribe(result => {
+                    this.snackBar.open('Thank you for confirming your email. Please login now.', '', {
+                        duration: 5000,
+                        verticalPosition: 'top',
+                        panelClass: ['success-snackbar']
+                      });
+                }));
+            }
+        }));
     }
 
     ngOnDestroy(): void {

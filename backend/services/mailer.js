@@ -39,7 +39,7 @@ function sendEmail(email) {
   return true;
 }
 
-function sendRegistrationConfirmationEmail(baseURL, receiverEmail, receiverName, receiverConfirmationCode) {
+function sendRegistrationConfirmationEmail(receiverEmail, receiverName, receiverConfirmationCode) {
   const msg = {
     intention:"Invitation",
     to: receiverEmail,
@@ -52,10 +52,10 @@ function sendRegistrationConfirmationEmail(baseURL, receiverEmail, receiverName,
     html: `<h1>eVoter - Registration Confirmation for ${receiverName}</h1>
             <h2>Hello ${receiverName},</h2>
             <p>Thank you for registration. Please confirm your email by clicking on the following link:</p>
-            <a href=http://${baseURL}/users/confirm/${receiverConfirmationCode}> Click here</a>
+            <a href=http://localhost:4200/login/${receiverConfirmationCode}> Click here</a>
             </div>`,
   };
-  console.log(`http://${baseURL}/users/confirm/${receiverConfirmationCode}`);
+
   return sendEmail(msg);
 }
 

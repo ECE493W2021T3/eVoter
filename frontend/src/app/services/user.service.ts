@@ -22,6 +22,10 @@ export class UserService {
         return this.baseService.post('users/send-registration-email', { emails });
     }
 
+    public confirmEmail(confirmationCode: string): Observable<any> {
+        return this.baseService.get(`users/confirm/${confirmationCode}`);
+    }
+
     public get2FAConfig(): Observable<boolean> {
         return this.baseService.get('users/me/2FA');
     }

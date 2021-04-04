@@ -13,6 +13,7 @@ import { ChangePasswordComponent } from './components/change-password/change-pas
 const routes: Routes = [
     { path: '', redirectTo: '', pathMatch: 'full', canActivate: [RedirectGuard] },
     { path: 'login', component: LoginPageComponent },
+    { path: 'login/:confirmationCode', component: LoginPageComponent },
     { path: 'signup', component: SignupPageComponent },
     { path: 'change-password', component: ChangePasswordComponent },
     { path: 'new-poll', component: NewPollComponent, canActivate: [AuthGuard], data: { title: 'Create New Poll' } },
