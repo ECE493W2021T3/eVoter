@@ -1,4 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { FormControl } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { Subscription } from 'rxjs';
 import { COMMON } from 'src/app/helpers/common.const';
@@ -15,6 +16,7 @@ export class InvitedPollsComponent implements OnInit, OnDestroy {
     public invitedPolls: InvitedPoll[] = [];
     public ELECTION = COMMON.pollType.election;
     public SURVEY = COMMON.pollType.survey;
+    public accessCode = new FormControl();
 
     private subscription: Subscription = new Subscription();
 
@@ -30,6 +32,10 @@ export class InvitedPollsComponent implements OnInit, OnDestroy {
 
     ngOnDestroy(): void {
         this.subscription.unsubscribe();
+    }
+
+    onAccessCodeSearch() {
+        console.log(this.accessCode.value)
     }
 
     openSubmitResponsePage(invitedPoll: InvitedPoll) {
