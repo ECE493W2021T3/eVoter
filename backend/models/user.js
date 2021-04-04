@@ -18,6 +18,8 @@ const userJoi = Joi.object({
     role:Joi.string().required().valid("Voter", "Admin"),
     password:Joi.string().min(8).max(255).required(),
     is2FAEnabled: Joi.boolean().required(),
+    confirmed: Joi.boolean().required(),
+    confirmationCode: Joi.string().required(),
     securityQuestions: Joi.array().items(questionJoi).required().length(3)
 });
 
@@ -65,6 +67,8 @@ const UserSchema = new mongoose.Schema({
         minlength: 8
     },
     is2FAEnabled: {type: Boolean, required: true},
+    confirmed: {type: Boolean, required: true},
+    confirmationCode : {type: String, required: true},
     securityQuestions: { 
         type: [QuestionSchema], 
         required: true, 
