@@ -25,6 +25,9 @@ import { PollInviteComponent } from './components/poll-invite/poll-invite.compon
 import { SystemInviteComponent } from './components/system-invite/system-invite.component';
 import { SubmitResponseComponent } from './components/submit-response/submit-response.component';
 import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component';
+import { NgxChartsModule } from '@swimlane/ngx-charts';
+import { PieChartComponent } from './components/pie-chart/pie-chart.component';
+import { BarChartComponent } from './components/bar-chart/bar-chart.component';
 
 @NgModule({
     declarations: [
@@ -42,7 +45,9 @@ import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dial
         PollInviteComponent,
         SystemInviteComponent,
         SubmitResponseComponent,
-        ConfirmDialogComponent
+        ConfirmDialogComponent,
+        PieChartComponent,
+        BarChartComponent,
     ],
     imports: [
         BrowserModule,
@@ -53,7 +58,8 @@ import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dial
         FlexLayoutModule,
         FormsModule,
         ReactiveFormsModule,
-        MatNativeDateModule
+        MatNativeDateModule,
+        NgxChartsModule
     ],
     providers: [
         AuthGuard,
