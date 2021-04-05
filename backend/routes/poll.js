@@ -26,8 +26,8 @@ router.get("/all-hosted", auth, async (req, res) => {
 
     // Election Type Go through Blockchain
     let connection = await network.connectToNetwork(req.userID);
-    let response = await network.invoke(connection, true, 'queryAllHostedPoll', req.userID);
-    let blockchain_polls = await JSON.parse(response);
+    let invoke_response = await network.invoke(connection, true, 'queryAllHostedPoll', req.userID);
+    let blockchain_polls = await JSON.parse(invoke_response);
 
     blockchain_polls.forEach(function (item, index) {
         let blockchain_poll = item.Record;
@@ -174,9 +174,8 @@ router.get("/:id", auth, async (req, res) => {
     let poll = await Poll.findById(req.params.id).select("-__v");
     if (!poll) {
         // Otherwise find in Blockchain
-        let connection = await network.connectToNetwork(appAdmin);
-        let response = await network.invoke(connection, true, 'queryPollById', req.params.id);
-        let queryResponse = await JSON.parse(response);
+        let invoke_response = await network.invoke(connection, true, 'queryPollById', req.params.id);
+        let queryResponse = await JSON.parse(invoke_response);
         if (queryResponse.length == 0) {
             // Not found in both DB and Blockchain
             return res.status(404).send("The poll with the given ID was not found.");
@@ -241,7 +240,7 @@ router.post("/", auth, async (req, res) => {
         args = [args];
 
         let connection = await network.connectToNetwork(req.userID);
-        let response = await network.invoke(connection, false, 'createPoll', args);
+        let invoke_response = await network.invoke(connection, false, 'createPoll', args);
     } else {
         // Save to DB
         await poll.save();
@@ -259,9 +258,8 @@ router.patch("/:id", auth, async (req, res) => {
     let poll = await Poll.findOneAndUpdate({ _id: req.params.id }, { $set: req.body }, { new: true });
     if (!poll){
         // Otherwise find in Blockchain
-        let connection = await network.connectToNetwork(appAdmin);
-        let response = await network.invoke(connection, true, 'queryPollById', req.params.id);
-        let queryResponse = await JSON.parse(response);
+        let invoke_response = await network.invoke(connection, true, 'queryPollById', req.params.id);
+        let queryResponse = await JSON.parse(invoke_response);
         if (queryResponse.length == 0) {
             // Not found in both DB and Blockchain
             return res.status(404).send("The poll with the given ID was not found.");
@@ -304,8 +302,7 @@ router.patch("/:id", auth, async (req, res) => {
             args = JSON.stringify(args);
             args = [args];
 
-            let connection = await network.connectToNetwork(poll_json.host);
-            let response = await network.invoke(connection, false, 'updatePoll', args);
+            let invoke_response = await network.invoke(connection, false, 'updatePoll', args);
 
             poll = new Poll(poll_json);
         }
@@ -345,9 +342,8 @@ router.post("/:id/voter-assignments", auth, async (req, res) =>{
             let poll = await Poll.findOne({ _id: assignments[i].pollID }).select();
             if (!poll) {
                 // Otherwise find in Blockchain
-                let connection = await network.connectToNetwork(appAdmin);
-                let response = await network.invoke(connection, true, 'queryPollById', req.params.id);
-                let queryResponse = await JSON.parse(response);
+                let invoke_response = await network.invoke(connection, true, 'queryPollById', req.params.id);
+                let queryResponse = await JSON.parse(invoke_response);
                 if (queryResponse.length == 0) {
                     // Not found in both DB and Blockchain
                     return res.status(404).send("The poll with the given ID was not found.");
