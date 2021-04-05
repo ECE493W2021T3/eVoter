@@ -187,8 +187,14 @@ class MyAssetContract extends Contract {
             args.deadline, args.accessLevel, args.isAnonymousModeOn, args.isHiddenUntilDeadline,
             args.canVotersSeeResults, args.questions);
 
-        await ctx.stub.putState(args.pollID, Buffer.from(JSON.stringify(poll)));
-        return poll;
+        let validated = await poll.validateNewPoll(ctx);
+        if (validated) {
+            await ctx.stub.putState(args.pollID, Buffer.from(JSON.stringify(poll)));
+            return poll;
+        } else {
+            console.log('This pollID already exist');
+            throw new Error('This pollID already exist');
+        }
     }
 
     /**
@@ -208,8 +214,14 @@ class MyAssetContract extends Contract {
                 args.deadline, args.accessLevel, args.isAnonymousModeOn, args.isHiddenUntilDeadline,
                 args.canVotersSeeResults, args.questions);
 
-            await ctx.stub.putState(args.pollID, Buffer.from(JSON.stringify(poll)));
-            return poll;
+            let validated = await poll.validateUpdatePoll(ctx);
+            if (validated) {
+                await ctx.stub.putState(args.pollID, Buffer.from(JSON.stringify(poll)));
+                return poll;
+            } else {
+                console.log('This pollID does not exist');
+                throw new Error('This pollID does not exist');
+            }
         }
     }
 
@@ -286,8 +298,20 @@ class MyAssetContract extends Contract {
         let response = await new Response(ctx, args.responseID,
             args.pollID, args.voterID, args.answers);
 
-        await ctx.stub.putState(args.responseID, Buffer.from(JSON.stringify(response)));
-        return response;
+        let error_code = await response.validateNewResponse(ctx);
+        if (error_code === 0) {
+            await ctx.stub.putState(args.responseID, Buffer.from(JSON.stringify(response)));
+            return response;
+        } else if (error_code === 1) {
+            console.log('This responseID already exist');
+            throw new Error('This responseID already exist');
+        } else if (error_code === 2) {
+            console.log('This pollID does not exist');
+            throw new Error('This pollID does not exist');
+        } else {
+            console.log('Invalid Error Code');
+            throw new Error('Invalid Error Code');
+        }
     }
 
     // ------End of Response Methods------

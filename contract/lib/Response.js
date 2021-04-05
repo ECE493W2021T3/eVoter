@@ -22,19 +22,7 @@ class Response {
             delete this.__isContract;
         }
 
-        let error_code = this.validateNewResponse(ctx);
-        if (error_code === 0) {
-            return this;
-        } else if (error_code === 1) {
-            console.log('This responseID already exist');
-            throw new Error('This responseID already exist');
-        } else if (error_code === 2) {
-            console.log('This pollID does not exist');
-            throw new Error('This pollID does not exist');
-        } else {
-            console.log('Invalid Error Code');
-            throw new Error('Invalid Error Code');
-        }
+        return this;
     }
 
     /**
