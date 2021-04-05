@@ -62,12 +62,34 @@ router.get("/all-invited", auth, async (req, res) => {
     const polls = await VoterAssignment.find({ userID: req.userID }).populate('pollID');
     let results = await Promise.all(polls.map(async ele => {
         
-        let poll = ele.pollID
+        let poll = ele.pollID;
         if(!poll) {
-            /**
-             * Blockchain find Poll
-             */
-            return null
+            // retrieve pollID from DB
+            let voterAssignment = await VoterAssignment.findOne({ _id: ele._id }).select("-__v");
+            let pollID = voterAssignment.pollID.toString();
+            // Poll not found in DB, go find in Blockchain
+            let connection = await network.connectToNetwork(req.userID);
+            let invoke_response = await network.invoke(connection, true, 'queryPollById', pollID);
+            let queryResponse = await JSON.parse(invoke_response);
+            if (queryResponse.length == 0) {
+                // Not found in both DB and Blockchain
+                return null;
+            } else {
+                // found in Blockchain
+                let blockchain_poll = queryResponse[0].Record;
+                poll = new Poll({
+                    _id: ObjectID.createFromHexString(blockchain_poll.pollID),
+                    title: blockchain_poll.title,
+                    type: blockchain_poll.pollType,
+                    host: blockchain_poll.host,
+                    deadline: blockchain_poll.deadline,
+                    accessLevel: blockchain_poll.accessLevel,
+                    isAnonymousModeOn: blockchain_poll.isAnonymousModeOn,
+                    isHiddenUntilDeadline: blockchain_poll.isHiddenUntilDeadline,
+                    canVotersSeeResults: blockchain_poll.canVotersSeeResults,
+                    questions: blockchain_poll.questions
+                });
+            }
         };
         let response = null;
         try {
@@ -75,11 +97,37 @@ router.get("/all-invited", auth, async (req, res) => {
         } catch(err) {
             console.log(err); //If err, keep null.
         }
+        if(!response) {
+            // Response not found in DB, try find in Blockchain
+            let args = {
+                pollID: poll._id,
+                voterID: req.userID
+            };
+            args = JSON.stringify(args);
+            args = [args];
+            let connection = await network.connectToNetwork(req.userID);
+            let invoke_response = await network.invoke(connection, true, 'queryResponseByArgs', args);
+            let queryResponse = await JSON.parse(invoke_response);
+            if (queryResponse.length == 0) {
+                // Not found in both DB and Blockchain
+                response = null;
+            } else {
+                // found in Blockchain
+                let blockchain_response = queryResponse[0].Record;
+                response = new Response({
+                    _id: ObjectID.createFromHexString(blockchain_response.responseID),
+                    pollID: blockchain_response.pollID,
+                    voterID: blockchain_response.voterID,
+                    answers: blockchain_response.answers,
+                });
+            }
+        }
+
         const model ={
             poll: poll, 
             responseID: response ? response._id : null
         }
-         return model
+        return model
     }));
     results= results.filter(ele => ele);
     res.send(results);
@@ -97,10 +145,31 @@ router.get("/:id/poll-results", auth, async (req, res) => {
     if (error) return res.status(400).send("Invalid Post ID");
 
     let poll = await Poll.findById(req.params.id);
-    /**
-     * BlockChain: find Poll
-     */
-    if (!poll) return res.status(404).send("The poll with the given ID was not found.");
+    if (!poll){
+        // Otherwise find Poll in Blockchain
+        let connection = await network.connectToNetwork(req.userID);
+        let invoke_response = await network.invoke(connection, true, 'queryPollById', req.params.id);
+        let queryResponse = await JSON.parse(invoke_response);
+        if (queryResponse.length == 0) {
+            // Not found in both DB and Blockchain
+            return res.status(404).send("The poll with the given ID was not found.");
+        } else {
+            // found in Blockchain
+            let blockchain_poll = queryResponse[0].Record;
+            poll = new Poll({
+                _id: ObjectID.createFromHexString(blockchain_poll.pollID),
+                title: blockchain_poll.title,
+                type: blockchain_poll.pollType,
+                host: blockchain_poll.host,
+                deadline: blockchain_poll.deadline,
+                accessLevel: blockchain_poll.accessLevel,
+                isAnonymousModeOn: blockchain_poll.isAnonymousModeOn,
+                isHiddenUntilDeadline: blockchain_poll.isHiddenUntilDeadline,
+                canVotersSeeResults: blockchain_poll.canVotersSeeResults,
+                questions: blockchain_poll.questions
+            });
+        }
+    }
 
     if(poll.isHiddenUntilDeadline){
         if (Date.now() < Date.parse(poll.deadline))
@@ -113,10 +182,23 @@ router.get("/:id/poll-results", auth, async (req, res) => {
     let responses = await Response
                     .find({pollID : req.params.id})
                     .populate("voterID");
-    if (!responses){
-        /**
-         * BlockChain: find responses
-         */
+    if (Array.isArray(responses) && responses.length === 0){
+        let connection = await network.connectToNetwork(req.userID);
+        let invoke_response = await network.invoke(connection, true, 'queryAllResponsesForPoll', req.params.id);
+        let blockchain_responses = await JSON.parse(invoke_response);
+
+        blockchain_responses.forEach(function (item, index) {
+            let blockchain_response = item.Record;
+            let response = new Response({
+                _id: ObjectID.createFromHexString(blockchain_response.responseID),
+                pollID: blockchain_response.pollID,
+                voterID: blockchain_response.voterID,
+                answers: blockchain_response.answers,
+            });
+            response = response.populate("voterID").execPopulate();
+            responses.push(response);
+        });
+        responses = await Promise.all(responses);
     }
 
     let questions = {}; //create dictionary for further processing
