@@ -174,6 +174,7 @@ router.get("/:id", auth, async (req, res) => {
     let poll = await Poll.findById(req.params.id).select("-__v");
     if (!poll) {
         // Otherwise find in Blockchain
+        let connection = await network.connectToNetwork(req.userID);
         let invoke_response = await network.invoke(connection, true, 'queryPollById', req.params.id);
         let queryResponse = await JSON.parse(invoke_response);
         if (queryResponse.length == 0) {
@@ -258,6 +259,7 @@ router.patch("/:id", auth, async (req, res) => {
     let poll = await Poll.findOneAndUpdate({ _id: req.params.id }, { $set: req.body }, { new: true });
     if (!poll){
         // Otherwise find in Blockchain
+        let connection = await network.connectToNetwork(req.userID);
         let invoke_response = await network.invoke(connection, true, 'queryPollById', req.params.id);
         let queryResponse = await JSON.parse(invoke_response);
         if (queryResponse.length == 0) {
@@ -302,6 +304,7 @@ router.patch("/:id", auth, async (req, res) => {
             args = JSON.stringify(args);
             args = [args];
 
+            let connection = await network.connectToNetwork(req.userID);
             let invoke_response = await network.invoke(connection, false, 'updatePoll', args);
 
             poll = new Poll(poll_json);
@@ -342,6 +345,7 @@ router.post("/:id/voter-assignments", auth, async (req, res) =>{
             let poll = await Poll.findOne({ _id: assignments[i].pollID }).select();
             if (!poll) {
                 // Otherwise find in Blockchain
+                let connection = await network.connectToNetwork(req.userID);
                 let invoke_response = await network.invoke(connection, true, 'queryPollById', req.params.id);
                 let queryResponse = await JSON.parse(invoke_response);
                 if (queryResponse.length == 0) {
