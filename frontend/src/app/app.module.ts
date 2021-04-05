@@ -25,6 +25,9 @@ import { PollInviteComponent } from './components/poll-invite/poll-invite.compon
 import { SystemInviteComponent } from './components/system-invite/system-invite.component';
 import { SubmitResponseComponent } from './components/submit-response/submit-response.component';
 import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component';
+import { NgxChartsModule } from '@swimlane/ngx-charts';
+import { PieChartComponent } from './components/pie-chart/pie-chart.component';
+import { BarChartComponent } from './components/bar-chart/bar-chart.component';
 import { VerifyTfaComponent } from './components/verify-tfa/verify-tfa.component';
 
 @NgModule({
@@ -44,6 +47,8 @@ import { VerifyTfaComponent } from './components/verify-tfa/verify-tfa.component
         SystemInviteComponent,
         SubmitResponseComponent,
         ConfirmDialogComponent,
+        PieChartComponent,
+        BarChartComponent,
         VerifyTfaComponent
     ],
     imports: [
@@ -55,7 +60,8 @@ import { VerifyTfaComponent } from './components/verify-tfa/verify-tfa.component
         FlexLayoutModule,
         FormsModule,
         ReactiveFormsModule,
-        MatNativeDateModule
+        MatNativeDateModule,
+        NgxChartsModule
     ],
     providers: [
         AuthGuard,
