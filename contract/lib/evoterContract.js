@@ -174,6 +174,24 @@ class MyAssetContract extends Contract {
     }
 
     /**
+     * backend route: GET /poll/:accessCode
+     * Get all the poll by accessCode
+     * @param {*} ctx
+     * @param {*} accessCode
+     * @returns poll
+     */
+     async queryPollByAccessCode(ctx, accessCode) {
+        let queryString = {
+            selector: {
+                type: 'poll',
+                accessCode: accessCode
+            }
+        };
+        let queryResults = await this.queryWithQueryString(ctx, JSON.stringify(queryString));
+        return queryResults;
+    }
+
+    /**
      * backend route: POST /poll/
      * Create Poll
      * @param {*} ctx
@@ -184,7 +202,7 @@ class MyAssetContract extends Contract {
         args = JSON.parse(args);
         let poll = await new Poll(ctx, args.pollID, args.title, args.host, args.pollType,
             args.deadline, args.accessLevel, args.isAnonymousModeOn, args.isHiddenUntilDeadline,
-            args.canVotersSeeResults, args.questions);
+            args.canVotersSeeResults, args.questions, args.accessCode);
 
         await ctx.stub.putState(args.pollID, Buffer.from(JSON.stringify(poll)));
         return poll;
@@ -205,7 +223,7 @@ class MyAssetContract extends Contract {
         } else {
             let poll = await new Poll(ctx, args.pollID, args.title, args.host, args.pollType,
                 args.deadline, args.accessLevel, args.isAnonymousModeOn, args.isHiddenUntilDeadline,
-                args.canVotersSeeResults, args.questions);
+                args.canVotersSeeResults, args.questions, args.accessCode);
 
             await ctx.stub.putState(args.pollID, Buffer.from(JSON.stringify(poll)));
             return poll;

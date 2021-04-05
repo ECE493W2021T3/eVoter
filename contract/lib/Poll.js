@@ -14,12 +14,13 @@ class Poll {
      * @param {*} isHiddenUntilDeadline
      * @param {*} canVotersSeeResults
      * @param {*} questions
+     * @param {*} accessCode
      * @returns Poll
      */
     constructor(ctx, pollID,
         title, host, pollType, deadline, accessLevel,
         isAnonymousModeOn, isHiddenUntilDeadline, canVotersSeeResults,
-        questions) {
+        questions, accessCode) {
         this.pollID = pollID;
         this.title = title;
         this.host = host;
@@ -30,6 +31,7 @@ class Poll {
         this.isHiddenUntilDeadline = isHiddenUntilDeadline;
         this.canVotersSeeResults = canVotersSeeResults;
         this.questions = questions;
+        this.accessCode = accessCode;
 
         this.type = 'poll';
         if (this.__isContract) {

@@ -42,7 +42,8 @@ router.get("/all-hosted", auth, async (req, res) => {
             isAnonymousModeOn: blockchain_poll.isAnonymousModeOn,
             isHiddenUntilDeadline: blockchain_poll.isHiddenUntilDeadline,
             canVotersSeeResults: blockchain_poll.canVotersSeeResults,
-            questions: blockchain_poll.questions
+            questions: blockchain_poll.questions,
+            accessCode: blockchain_poll.accessCode
         });
         election_polls.push(poll);
     });
@@ -194,7 +195,8 @@ router.get("/:id", auth, async (req, res) => {
                 isAnonymousModeOn: blockchain_poll.isAnonymousModeOn,
                 isHiddenUntilDeadline: blockchain_poll.isHiddenUntilDeadline,
                 canVotersSeeResults: blockchain_poll.canVotersSeeResults,
-                questions: blockchain_poll.questions
+                questions: blockchain_poll.questions,
+                accessCode: blockchain_poll.accessCode
             });
         }
     }
@@ -207,16 +209,45 @@ router.get("/:id", auth, async (req, res) => {
  * Return: { Poll, resultID }
  */
 router.get("/public/:accessCode", auth, async (req, res) => {
-    const poll = await Poll.findOne({ accessCode: req.params.accessCode });
+    let poll = await Poll.findOne({ accessCode: req.params.accessCode });
 
-    if (!poll) res.status(404).send("The poll with the given access code was not found");
+    if (!poll) {
+        // Otherwise find in Blockchain
+        let connection = await network.connectToNetwork(appAdmin);
+        let response = await network.invoke(connection, true, 'queryPollByAccessCode', req.params.accessCode);
+        let queryResponse = await JSON.parse(response);
+        if (queryResponse.length == 0) {
+            // Not found in both DB and Blockchain
+            return res.status(404).send("The poll with the given access code was not found.");
+        } else {
+            // found in Blockchain
+            let blockchain_poll = queryResponse[0].Record;
+            poll = new Poll({
+                _id: ObjectID.createFromHexString(blockchain_poll.pollID),
+                title: blockchain_poll.title,
+                type: blockchain_poll.pollType,
+                host: blockchain_poll.host,
+                deadline: blockchain_poll.deadline,
+                accessLevel: blockchain_poll.accessLevel,
+                isAnonymousModeOn: blockchain_poll.isAnonymousModeOn,
+                isHiddenUntilDeadline: blockchain_poll.isHiddenUntilDeadline,
+                canVotersSeeResults: blockchain_poll.canVotersSeeResults,
+                questions: blockchain_poll.questions,
+                accessCode: blockchain_poll.accessCode
+            });
+        }
+    }
 
     let response = null;
     try {
         response = await Response.findOne({pollID: poll._id, voterID: req.userID});
     } catch(err) {
+        /**
+         * Find response in blockchain
+         */
         console.log(err); //If err, keep null.
     }
+
     const model ={
         poll: poll,
         responseID: response ? response._id : null
@@ -275,7 +306,8 @@ router.post("/", auth, async (req, res) => {
             isAnonymousModeOn: poll_json.isAnonymousModeOn,
             isHiddenUntilDeadline: poll_json.isHiddenUntilDeadline,
             canVotersSeeResults: poll_json.canVotersSeeResults,
-            questions: poll_json.questions
+            questions: poll_json.questions,
+            accessCode: poll_json.accessCode
         };
         args = JSON.stringify(args);
         args = [args];
@@ -318,7 +350,8 @@ router.patch("/:id", auth, async (req, res) => {
                 isAnonymousModeOn: blockchain_poll.isAnonymousModeOn,
                 isHiddenUntilDeadline: blockchain_poll.isHiddenUntilDeadline,
                 canVotersSeeResults: blockchain_poll.canVotersSeeResults,
-                questions: blockchain_poll.questions
+                questions: blockchain_poll.questions,
+                accessCode: blockchain_poll.accessCode
             }
             
             // update the poll json
@@ -339,7 +372,8 @@ router.patch("/:id", auth, async (req, res) => {
                 isAnonymousModeOn: poll_json.isAnonymousModeOn,
                 isHiddenUntilDeadline: poll_json.isHiddenUntilDeadline,
                 canVotersSeeResults: poll_json.canVotersSeeResults,
-                questions: poll_json.questions
+                questions: poll_json.questions,
+                accessCode: poll_json.accessCode
             };
             args = JSON.stringify(args);
             args = [args];
@@ -404,7 +438,8 @@ router.post("/:id/voter-assignments", auth, async (req, res) =>{
                         isAnonymousModeOn: blockchain_poll.isAnonymousModeOn,
                         isHiddenUntilDeadline: blockchain_poll.isHiddenUntilDeadline,
                         canVotersSeeResults: blockchain_poll.canVotersSeeResults,
-                        questions: blockchain_poll.questions
+                        questions: blockchain_poll.questions,
+                        accessCode: blockchain_poll.accessCode
                     });
                 }
             }
