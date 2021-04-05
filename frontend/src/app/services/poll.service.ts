@@ -15,6 +15,10 @@ export class PollService {
         return this.baseService.post('poll', data);
     }
 
+    public getPoll(pollID: string): Observable<any> {
+        return this.baseService.get(`poll/${pollID}`);
+    }
+
     public getHostedPolls(): Observable<Poll[]> {
         return this.baseService.get('poll/all-hosted')
             .pipe(map((res: Object[]) => res.map(o => new Poll(o))));
@@ -36,5 +40,9 @@ export class PollService {
 
     public getAssignedVoters(pollID: string): Observable<Voter[]> {
         return this.baseService.get(`poll/${pollID}/voter-assignments`);
+    }
+
+    public getResults(pollID: string): Observable<any> {
+        return this.baseService.get(`poll/${pollID}/poll-results`);
     }
 }
