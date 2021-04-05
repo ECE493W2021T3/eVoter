@@ -135,3 +135,9 @@ export const SECURITY_QUESTION_3: ICommonValue[] = [
         value: COMMON.securityQuestionSet3.q4
     }
 ]
+
+export const CHART_COLOR_SCHEME = {
+    domain: ['#e9724d', '#d6d727', '#92cad1', 
+             '#79ccb3','#868686','#dad2cb','#bdc9b8',
+             '#ffe08d','#ff9a5b','#63afae']
+};
