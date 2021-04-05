@@ -8,6 +8,7 @@ const { Contract } = require('fabric-contract-api');
 
 // import models
 let Poll = require('./Poll.js');
+let Response = require('./Response.js');
 
 class MyAssetContract extends Contract {
 
@@ -213,6 +214,84 @@ class MyAssetContract extends Contract {
     }
 
     // ------End of Poll Methods------
+
+    // ------Start of Response Methods------
+
+    /**
+     * backend route: GET /response/:id
+     * Get the response with responseID
+     * @param {*} ctx
+     * @param {*} responseID
+     * @returns response
+     */
+    async queryResponseById(ctx, responseID) {
+        let queryString = {
+            selector: {
+                type: 'response',
+                responseID: responseID
+            }
+        };
+        let queryResults = await this.queryWithQueryString(ctx, JSON.stringify(queryString));
+        return queryResults;
+    }
+
+    /**
+     * backend route: GET /poll/all-invited
+     * Query Response
+     * @param {*} ctx
+     * @param {*} args
+     * @returns response
+     */
+    async queryResponseByArgs(ctx, args) {
+        args = JSON.parse(args);
+
+        let queryString = {
+            selector: {
+                type: 'response',
+                pollID: args.pollID,
+                voterID: args.voterID
+            }
+        };
+        let queryResults = await this.queryWithQueryString(ctx, JSON.stringify(queryString));
+        return queryResults;
+    }
+
+    /**
+     * backend route: GET /poll/<:id>/poll-results
+     * Get all the Responses for pollID
+     * @param {*} ctx
+     * @param {*} pollID id of the the poll
+     * @returns Responses
+     */
+    async queryAllResponsesForPoll(ctx, pollID) {
+        let queryString = {
+            selector: {
+                type: 'response',
+                pollID: pollID
+            }
+        };
+        let queryResults = await this.queryWithQueryString(ctx, JSON.stringify(queryString));
+        return queryResults;
+    }
+
+    /**
+     * backend route: POST /response/
+     * Create Response
+     * @param {*} ctx
+     * @param {*} args
+     * @returns response
+     */
+    async createResponse(ctx, args) {
+        args = JSON.parse(args);
+        let response = await new Response(ctx, args.responseID,
+            args.pollID, args.voterID, args.answers);
+
+        await ctx.stub.putState(args.responseID, Buffer.from(JSON.stringify(response)));
+        return response;
+    }
+
+    // ------End of Response Methods------
+
 }
 
 module.exports = MyAssetContract;
