@@ -28,6 +28,7 @@ import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dial
 import { NgxChartsModule } from '@swimlane/ngx-charts';
 import { PieChartComponent } from './components/pie-chart/pie-chart.component';
 import { BarChartComponent } from './components/bar-chart/bar-chart.component';
+import { VerifyTfaComponent } from './components/verify-tfa/verify-tfa.component';
 
 @NgModule({
     declarations: [
@@ -48,6 +49,7 @@ import { BarChartComponent } from './components/bar-chart/bar-chart.component';
         ConfirmDialogComponent,
         PieChartComponent,
         BarChartComponent,
+        VerifyTfaComponent
     ],
     imports: [
         BrowserModule,

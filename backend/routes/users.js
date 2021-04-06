@@ -4,9 +4,11 @@ const jwt = require('jsonwebtoken');
 const { User, validateUser } = require('../models/user');
 const { verifySession } = require("../middleware/verifySession");
 const { auth } = require("../middleware/auth");
+const speakeasy = require("speakeasy");
 let network = require('../services/network');
 let { sendRegistrationConfirmationEmail, 
-    sendRegistrationInvitationEmail } =require("../services/mailer");
+      sendRegistrationInvitationEmail,
+      sendOTPEmail } = require("../services/mailer");
 
 /**
  * POST /users
@@ -61,35 +63,79 @@ router.get('/confirm/:confirmationCode', async (req, res) => {
  * Purpose: Login
  */
 router.post('/login', (req, res) => {
-
     User.findByCredentials(req.body.email, req.body.password).then((user) => {
-        return user.createSession().then((refreshToken) => {
-            // Session created successfully - refreshToken returned.
-            // now we geneate an access auth token for the user
+        if (user.confirmed === true) {
+            if (user.is2FAEnabled) {
+                const secret = speakeasy.generateSecret({ length: 20 });
+                const otp = speakeasy.totp({
+                    secret: secret.base32,
+                    encoding: "base32",
+                    step: 320
+                });
 
-            return user.generateAccessAuthToken().then((accessToken) => {
-                // access auth token generated successfully, now we return an object containing the auth tokens
-                return { accessToken, refreshToken }
-            });
-        }).then(async (authTokens) => {
-            // Now we construct and send the response to the user with their auth tokens in the header and the user object in the body
-
-            // This is how to connect to Blockchain network with userID
-            let connection = await network.connectToNetwork(user._id.toString());
-
-            if (user.confirmed === true) {
-                res
-                    .header('x-refresh-token', authTokens.refreshToken)
-                    .header('x-access-token', authTokens.accessToken)
-                    .send(user);
+                if (sendOTPEmail(user.email, user.name, otp)) {
+                    res.send({ secret: secret.base32, userID: user._id });
+                } else {
+                    return res.status(400).send("Failed to send one-time password");
+                }
             } else {
-                res.status(400).send("User not confirmed.");
+                return user.createSession().then((refreshToken) => {
+                    // Session created successfully - refreshToken returned.
+                    // now we geneate an access auth token for the user
+
+                    return user.generateAccessAuthToken().then((accessToken) => {
+                        // access auth token generated successfully, now we return an object containing the auth tokens
+                        return { accessToken, refreshToken }
+                    });
+                }).then(async (authTokens) => {
+                    // Now we construct and send the response to the user with their auth tokens in the header and the user object in the body
+
+                    // This is how to connect to Blockchain network with userID
+                    let connection = await network.connectToNetwork(user._id.toString());
+                    
+                    res
+                        .header('x-refresh-token', authTokens.refreshToken)
+                        .header('x-access-token', authTokens.accessToken)
+                        .send(user);
+                });
             }
-        })
+        } else {
+            res.status(400).send("User not confirmed.");
+        }
     }).catch((e) => {
         res.status(400).send(e);
     });
-})
+});
+
+router.post('/:id/verify-2FA', async (req, res) => {
+    const isVerified = speakeasy.totp.verify({
+        secret: req.body.secret,
+        encoding: 'base32',
+        token: req.body.code,
+        step: 320
+      });
+
+    if (isVerified) {
+        const user = await User.findById(req.params.id).select("-__v");
+        if (!user)
+            return res.status(404).send("The user with the given ID was not found.");
+
+        user.createSession().then((refreshToken) => {
+            return user.generateAccessAuthToken().then((accessToken) => {
+                return { accessToken, refreshToken }
+            });
+        }).then(async (authTokens) => {
+            let connection = await network.connectToNetwork(user._id.toString());
+
+            res
+                .header('x-refresh-token', authTokens.refreshToken)
+                .header('x-access-token', authTokens.accessToken)
+                .send(user);
+        });
+    } else {
+        return res.status(400).send("One-time passcode is invalid");
+    }
+});
 
 /**
  * GET /users/by-email/:email
