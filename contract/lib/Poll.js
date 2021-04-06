@@ -38,20 +38,24 @@ class Poll {
             delete this.__isContract;
         }
 
-        if (this.validatePoll(ctx)) {
-            return this;
-        } else {
-            console.log('This pollID already exist');
-            throw new Error('This pollID already exist');
-        }
+        return this;
     }
 
-    async validatePoll(ctx) {
+    async validateNewPoll(ctx) {
         const buffer = await ctx.stub.getState(this.pollID);
         if (!!buffer && buffer.length > 0) {
             return false;
         } else {
             return true;
+        }
+    }
+
+    async validateUpdatePoll(ctx) {
+        const buffer = await ctx.stub.getState(this.pollID);
+        if (!!buffer && buffer.length > 0) {
+            return true;
+        } else {
+            return false;
         }
     }
 }
