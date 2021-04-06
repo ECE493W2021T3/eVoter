@@ -1,3 +1,5 @@
+import { Answer } from "./response.model";
+
 export class PollResult {
     pollID: string;
     questions: QuestionResult[];
@@ -17,6 +19,7 @@ export class Voted {
     responseID: string;
     name: string;
     email: string;
+    answers: Answer[];
 }
 
 export class ChartData {
