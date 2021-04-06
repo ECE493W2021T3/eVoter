@@ -92,4 +92,8 @@ export class PollResultsComponent implements OnInit, OnDestroy {
             }
         });
     }
+
+    exportResponses() {
+
+    }
 }

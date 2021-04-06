@@ -2,6 +2,7 @@
     <div fxFlex="30" fxLayout="column" fxLayoutAlign="center center">
         <h1>{{ poll?.title }}</h1>
         <span>Total number of submitted responses: {{ voters.length }}</span>
+        <button mat-stroked-button style="margin-top: 10px;" (click)="exportResponses()">Export responses</button>
 
         <div *ngIf="!poll?.isAnonymousModeOn" style="margin-top: 30px; width: 80%;">
             <h3>Responded voters:</h3>
