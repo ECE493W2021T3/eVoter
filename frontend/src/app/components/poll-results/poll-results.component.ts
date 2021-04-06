@@ -7,6 +7,7 @@ import { COMMON } from 'src/app/helpers/common.const';
 import { ChartChoice, ChartData, Voted } from 'src/app/models/poll-result.model';
 import { Poll } from 'src/app/models/poll.model';
 import { PollService } from 'src/app/services/poll.service';
+import { SocketService } from 'src/app/services/socket.service';
 import { VoterResponseComponent } from '../voter-response/voter-response.component';
 
 @Component({
@@ -28,46 +29,21 @@ export class PollResultsComponent implements OnInit, OnDestroy {
     constructor(
         private route: ActivatedRoute,
         private pollService: PollService,
+        private socketService: SocketService,
         private dialog: MatDialog) { }
 
     ngOnInit(): void {
+        this.subscription.add(this.socketService.listen("updateCharts").subscribe(res => {
+            if (res == this.poll?._id) {
+                this.updateChartData();
+            }
+        }));
+
         this.subscription.add(this.route.params.subscribe(params => {
             if (params.pollID) {
                 this.subscription.add(this.pollService.getPoll(params.pollID).subscribe(poll => {
                     this.poll = poll;
-
-                    this.subscription.add(this.pollService.getResults(params.pollID).subscribe(result => {
-                        this.voters = result.voted;
-
-                        for (let question of result.questions) {
-                            if (question.type == COMMON.questionType.shortAnswer) {
-                                continue;
-                            }
-
-                            const pollQuestion = this.poll.questions.find(x => x._id == question._id);
-                            const choices = pollQuestion.choices.map(choice => {
-                                return {
-                                    name: choice,
-                                    value: question.choices[choice] ?? 0
-                                } as ChartChoice;
-                            });
-
-                            const model = {
-                                questionID: question._id,
-                                question: question.question,
-                                choices: choices
-                            } as ChartData;
-
-                            this.chartData.push(model);
-                        }
-
-                        if (this.chartData.length > 0) {
-                            // Initially populate the charts with values from the first question
-                            this.selectedQuestion.setValue(this.chartData[0].questionID);
-                            this.question = this.chartData[0].question;
-                            this.choices = this.chartData[0].choices;
-                        }
-                    }));
+                    this.updateChartData();
                 }));
             }
         }));
@@ -95,5 +71,41 @@ export class PollResultsComponent implements OnInit, OnDestroy {
 
     exportResponses() {
 
+    }
+
+    private updateChartData() {
+        this.subscription.add(this.pollService.getResults(this.poll._id).subscribe(result => {
+            this.chartData = [];
+            this.voters = result.voted;
+
+            for (let question of result.questions) {
+                if (question.type == COMMON.questionType.shortAnswer) {
+                    continue;
+                }
+
+                const pollQuestion = this.poll.questions.find(x => x._id == question._id);
+                const choices = pollQuestion.choices.map(choice => {
+                    return {
+                        name: choice,
+                        value: question.choices[choice] ?? 0
+                    } as ChartChoice;
+                });
+
+                const model = {
+                    questionID: question._id,
+                    question: question.question,
+                    choices: choices
+                } as ChartData;
+
+                this.chartData.push(model);
+            }
+
+            if (this.chartData.length > 0) {
+                // Initially populate the charts with values from the first question
+                this.selectedQuestion.setValue(this.chartData[0].questionID);
+                this.question = this.chartData[0].question;
+                this.choices = this.chartData[0].choices;
+            }
+        }));
     }
 }

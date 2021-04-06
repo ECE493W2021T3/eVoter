@@ -4,7 +4,7 @@
         <span>Total number of submitted responses: {{ voters.length }}</span>
         <button mat-stroked-button style="margin-top: 10px;" (click)="exportResponses()">Export responses</button>
 
-        <div *ngIf="!poll?.isAnonymousModeOn" style="margin-top: 30px; width: 80%;">
+        <div *ngIf="!poll?.isAnonymousModeOn && voters.length > 0" style="margin-top: 30px; width: 80%;">
             <h3>Responded voters:</h3>
             <div *ngFor="let voter of voters; let lastItem = last;" style="text-align: center">
                 <a (click)="openVoterResponseDialog(voter)" style="color: lightseagreen; cursor: pointer;">{{ voter.email }}</a>
