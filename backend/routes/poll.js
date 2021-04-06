@@ -89,7 +89,8 @@ router.get("/all-invited", auth, async (req, res) => {
                     isAnonymousModeOn: blockchain_poll.isAnonymousModeOn,
                     isHiddenUntilDeadline: blockchain_poll.isHiddenUntilDeadline,
                     canVotersSeeResults: blockchain_poll.canVotersSeeResults,
-                    questions: blockchain_poll.questions
+                    questions: blockchain_poll.questions,
+                    accessCode: blockchain_poll.accessCode
                 });
             }
         };
@@ -168,7 +169,8 @@ router.get("/:id/poll-results", auth, async (req, res) => {
                 isAnonymousModeOn: blockchain_poll.isAnonymousModeOn,
                 isHiddenUntilDeadline: blockchain_poll.isHiddenUntilDeadline,
                 canVotersSeeResults: blockchain_poll.canVotersSeeResults,
-                questions: blockchain_poll.questions
+                questions: blockchain_poll.questions,
+                accessCode: blockchain_poll.accessCode
             });
         }
     }
@@ -296,8 +298,8 @@ router.get("/public/:accessCode", auth, async (req, res) => {
     if (!poll) {
         // Otherwise find in Blockchain
         let connection = await network.connectToNetwork(appAdmin);
-        let response = await network.invoke(connection, true, 'queryPollByAccessCode', req.params.accessCode);
-        let queryResponse = await JSON.parse(response);
+        let invoke_response = await network.invoke(connection, true, 'queryPollByAccessCode', req.params.accessCode);
+        let queryResponse = await JSON.parse(invoke_response);
         if (queryResponse.length == 0) {
             // Not found in both DB and Blockchain
             return res.status(404).send("The poll with the given access code was not found.");
@@ -324,10 +326,33 @@ router.get("/public/:accessCode", auth, async (req, res) => {
     try {
         response = await Response.findOne({pollID: poll._id, voterID: req.userID});
     } catch(err) {
-        /**
-         * Find response in blockchain
-         */
         console.log(err); //If err, keep null.
+    }
+
+    if (!response) {
+        // Response not found in DB, try find in Blockchain
+        let args = {
+            pollID: poll._id,
+            voterID: req.userID
+        };
+        args = JSON.stringify(args);
+        args = [args];
+        let connection = await network.connectToNetwork(req.userID);
+        let invoke_response = await network.invoke(connection, true, 'queryResponseByArgs', args);
+        let queryResponse = await JSON.parse(invoke_response);
+        if (queryResponse.length == 0) {
+            // Not found in both DB and Blockchain
+            response = null;
+        } else {
+            // found in Blockchain
+            let blockchain_response = queryResponse[0].Record;
+            response = new Response({
+                _id: ObjectID.createFromHexString(blockchain_response.responseID),
+                pollID: blockchain_response.pollID,
+                voterID: blockchain_response.voterID,
+                answers: blockchain_response.answers,
+            });
+        }
     }
 
     const model ={
