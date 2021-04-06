@@ -1,6 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { FormControl } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
+import { COMMON } from 'src/app/helpers/common.const';
+import { ChartChoice, ChartData } from 'src/app/models/poll-result.model';
 import { Poll } from 'src/app/models/poll.model';
 import { PollService } from 'src/app/services/poll.service';
 
@@ -9,49 +12,15 @@ import { PollService } from 'src/app/services/poll.service';
     templateUrl: './poll-results.component.html',
     styleUrls: ['./poll-results.component.css']
 })
-export class PollResultsComponent implements OnInit {
+export class PollResultsComponent implements OnInit, OnDestroy {
     public poll: Poll;
     public question: string;
     public choices = [];
+    public chartData: ChartData[] = [];
+    public size = [800, 300];
+    public selectedQuestion = new FormControl();
 
     private subscription: Subscription = new Subscription();
-
-    // choices = [
-    //     {
-    //         name: "Germany",
-    //         value: 8940000
-    //     },
-    //     {
-    //         name: "USA",
-    //         value: 5000000
-    //     },
-    //     {
-    //         name: "France",
-    //         value: 7200000
-    //     },
-    //     {
-    //         name: "UK",
-    //         value: 6200000
-    //     },
-    //     {
-    //         name: "Germany2",
-    //         value: 8940000
-    //     },
-    //     {
-    //         name: "USA2",
-    //         value: 5000000
-    //     },
-    //     {
-    //         name: "France2",
-    //         value: 7200000
-    //     },
-    //     {
-    //         name: "UK2",
-    //         value: 6200000
-    //     }
-    // ];
-    // question = "what is the question?";
-    // size = [800, 600]
 
     constructor(
         private route: ActivatedRoute,
@@ -62,14 +31,49 @@ export class PollResultsComponent implements OnInit {
             if (params.pollID) {
                 this.subscription.add(this.pollService.getPoll(params.pollID).subscribe(poll => {
                     this.poll = poll;
-                    console.log(poll);
 
                     this.subscription.add(this.pollService.getResults(params.pollID).subscribe(result => {
-                        console.log(result)
+                        for (let question of result.questions) {
+                            if (question.type == COMMON.questionType.shortAnswer) {
+                                continue;
+                            }
+
+                            const pollQuestion = this.poll.questions.find(x => x._id == question._id);
+                            const choices = pollQuestion.choices.map(choice => {
+                                return {
+                                    name: choice,
+                                    value: question.choices[choice] ?? 0
+                                } as ChartChoice;
+                            });
+
+                            const model = {
+                                questionID: question._id,
+                                question: question.question,
+                                choices: choices
+                            } as ChartData;
+
+                            this.chartData.push(model);
+                        }
+
+                        if (this.chartData.length > 0) {
+                            // Initially populate the charts with values from the first question
+                            this.selectedQuestion.setValue(this.chartData[0].questionID);
+                            this.question = this.chartData[0].question;
+                            this.choices = this.chartData[0].choices;
+                        }
                     }));
                 }));
             }
         }));
     }
 
+    ngOnDestroy(): void {
+        this.subscription.unsubscribe();
+    }
+
+    onQuestionChange() {
+        const chartData = this.chartData.find(x => x.questionID == this.selectedQuestion.value);
+        this.question = chartData.question;
+        this.choices = chartData.choices;
+    }
 }

@@ -1,6 +1,20 @@
-<div fxLayoutAlign="center">
+<div fxLayout="column" fxLayoutAlign="center center">
     <h1>{{ poll?.title }}</h1>
+    <mat-form-field>
+        <mat-label>Select a multiple choice question</mat-label>
+        <mat-select [formControl]="selectedQuestion" (selectionChange)="onQuestionChange()">
+            <mat-option *ngFor="let data of chartData" [value]="data.questionID">{{ data.question }}</mat-option>
+        </mat-select>
+    </mat-form-field>
 </div>
 
-<app-pie-chart [size]="size" [choices]="choices" [question]="question"></app-pie-chart>
-<app-bar-chart [size]="size" [choices]="choices" [question]="question"></app-bar-chart>
+<div fxLayoutAlign="center">
+    <div fxLayout="column" fxLayoutGap="20px;" *ngIf="chartData.length > 0">
+        <app-pie-chart [size]="size" [choices]="choices" [question]="question"></app-pie-chart>
+        <app-bar-chart [size]="size" [choices]="choices" [question]="question"></app-bar-chart>
+    </div>
+
+    <div *ngIf="chartData.length == 0">
+        <h3>No multiple choice questions to display</h3>
+    </div>
+</div>
