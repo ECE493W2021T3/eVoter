@@ -177,11 +177,11 @@ router.get("/:id/poll-results", auth, async (req, res) => {
 
     if(poll.isHiddenUntilDeadline){
         if (Date.now() < Date.parse(poll.deadline))
-        res.status(401).send("Poll not ready yet");
+        return res.status(401).send("Poll not ready yet");
     }
 
     if (!poll.canVotersSeeResults && (poll.host != req.userID)) {
-        res.status(403).send("Results for Host only");
+        return res.status(403).send("Results for Host only");
     }
     let responses = await Response
                     .find({pollID : req.params.id})
@@ -237,7 +237,8 @@ router.get("/:id/poll-results", auth, async (req, res) => {
                 responseID: x.id,
                 userID: poll.isAnonymousModeOn ? null : x.voterID._id,
                 name:   poll.isAnonymousModeOn ? null : x.voterID.name,
-                email:  poll.isAnonymousModeOn ? null : x.voterID.email
+                email:  poll.isAnonymousModeOn ? null : x.voterID.email,
+                answers: x.answers
             };
         }
     );
@@ -247,7 +248,7 @@ router.get("/:id/poll-results", auth, async (req, res) => {
         questions: questions,
         voted: voted
     }
-    res.send(result);
+    return res.send(result);
 });
 
 /**
