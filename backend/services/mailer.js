@@ -98,11 +98,31 @@ function sendPollAssignmentEmail(userEmail, userName, pollTitle, pollType) {
   return sendEmail(msg);
 }
 
+function sendOTPEmail(userEmail, userName, otp) {
+  const msg = {
+    intention:"2FA",
+    to: userEmail,
+    from: {
+      email: "noreply.evoter@gmail.com",
+      name: "eVoter Support",
+    },
+    subject: `eVoter - One-Time Passcode for Two-Factor Authentication`,
+    text: "using html", // using HTML instead of text, but text cannot be empty
+    html: `<h1>eVoter - One-Time Passcode</h1>
+            <h2>Hello ${userName},</h2>
+            <p>Please use the following one-time passcode to complete your login process. The code expires in 5 minutes:</p>
+            <h2>${otp}</h2>
+            <br/>`
+  };
+  return sendEmail(msg);
+}
+
 module.exports = {
   validateEmail,
   sendEmail,
   setKey,
   sendRegistrationConfirmationEmail,
   sendRegistrationInvitationEmail,
-  sendPollAssignmentEmail
+  sendPollAssignmentEmail,
+  sendOTPEmail
 };
