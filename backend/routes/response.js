@@ -107,7 +107,8 @@ const appAdmin = config.appAdmin;
                 isAnonymousModeOn: blockchain_poll.isAnonymousModeOn,
                 isHiddenUntilDeadline: blockchain_poll.isHiddenUntilDeadline,
                 canVotersSeeResults: blockchain_poll.canVotersSeeResults,
-                questions: blockchain_poll.questions
+                questions: blockchain_poll.questions,
+                accessCode: blockchain_poll.accessCode
             });
         }
     }

@@ -158,6 +158,11 @@ export class NewPollComponent implements OnInit, OnDestroy {
         // Add a choice only if the new question type is multiple choice and the choices list is empty
         if (event.value == this.MULTIPLE_CHOICE && item.controls.choices.length == 0) {
             this.addChoice(item);
+        // If question type is short answer, delete any present choices fields
+        } else if (event.value == this.SHORT_ANSWER && item.controls.choices.length > 0) {
+            for (var i = 0; i < item.controls.choices.length; i++) {
+                this.deleteChoice(item, i);
+            }
         }
     }
 

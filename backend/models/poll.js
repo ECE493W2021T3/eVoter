@@ -71,7 +71,8 @@ const Poll = mongoose.model("Poll",
     isAnonymousModeOn: {type: Boolean, required: true},
     isHiddenUntilDeadline: {type: Boolean, required: true},
     canVotersSeeResults: {type: Boolean, required: true},
-    questions: { type: [Question], required: true, validate: v => Array.isArray(v) && v.length > 0 }
+    questions: { type: [Question], required: true, validate: v => Array.isArray(v) && v.length > 0 },
+    accessCode: {type: String, required: false}
   })
 );
 
@@ -90,6 +91,7 @@ const pollSchema = Joi.object({
   isHiddenUntilDeadline: Joi.boolean().required(),
   canVotersSeeResults: Joi.boolean().required(),
   questions: Joi.array().items(questionSchema).required().min(1),
+  accessCode: Joi.string()
 });
 
 function validatePoll(poll) {
