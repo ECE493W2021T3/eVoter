@@ -15,6 +15,11 @@ export class PollService {
         return this.baseService.post('poll', data);
     }
 
+    public getPublicPoll(accessCode: string): Observable<InvitedPoll> {
+        return this.baseService.get(`poll/public/${accessCode}`)
+            .pipe(map(res => new InvitedPoll(res)));
+    }
+
     public getHostedPolls(): Observable<Poll[]> {
         return this.baseService.get('poll/all-hosted')
             .pipe(map((res: Object[]) => res.map(o => new Poll(o))));

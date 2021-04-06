@@ -10,6 +10,7 @@ export class Poll {
     isHiddenUntilDeadline: boolean;
     canVotersSeeResults: boolean;
     questions: Question[];
+    accessCode: string;
 
     constructor(response: any) {
         if (response) {
@@ -22,6 +23,7 @@ export class Poll {
             this.isHiddenUntilDeadline = response.isHiddenUntilDeadline;
             this.canVotersSeeResults = response.canVotersSeeResults;
             this.questions = response.questions;
+            this.accessCode = response.accessCode;
         }
     }
 }
