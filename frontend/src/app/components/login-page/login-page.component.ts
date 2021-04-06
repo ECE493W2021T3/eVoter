@@ -58,15 +58,15 @@ export class LoginPageComponent implements OnInit, OnDestroy {
         }
 
         this.subscription.add(this.authService.login(this.lf.email.value, this.lf.password.value).subscribe((res: HttpResponse<any>) => {
-            if (res.status === 200) {
-                this.subscription.add(this.authService.userProfile.subscribe(userProfile => {
+            this.subscription.add(this.authService.userProfile.subscribe(userProfile => {
+                if (userProfile) {
                     if (userProfile.role == COMMON.role.admin) {
                         this.router.navigate(['/hosted-polls']);
                     } else {
                         this.router.navigate(['/invited-polls']);
                     }
-                }));
-            }
+                }
+            }));
         }, error => {
           if (error.error === "User not confirmed.") {
               this.snackBar.open('User is required to confirm registration email before logging in. Please confirm using the link in the email and try again.', '', {
