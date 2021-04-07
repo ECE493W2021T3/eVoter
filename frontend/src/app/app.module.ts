@@ -29,6 +29,7 @@ import { NgxChartsModule } from '@swimlane/ngx-charts';
 import { PieChartComponent } from './components/pie-chart/pie-chart.component';
 import { BarChartComponent } from './components/bar-chart/bar-chart.component';
 import { VerifyTfaComponent } from './components/verify-tfa/verify-tfa.component';
+import { CsvDownloaderComponent } from './components/csv-downloader/csv-downloader.component';
 
 @NgModule({
     declarations: [
@@ -49,7 +50,8 @@ import { VerifyTfaComponent } from './components/verify-tfa/verify-tfa.component
         ConfirmDialogComponent,
         PieChartComponent,
         BarChartComponent,
-        VerifyTfaComponent
+        VerifyTfaComponent,
+        CsvDownloaderComponent
     ],
     imports: [
         BrowserModule,
