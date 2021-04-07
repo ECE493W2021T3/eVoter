@@ -23,6 +23,7 @@
     "@angular/platform-browser-dynamic": "~11.2.3",
     "@angular/router": "~11.2.3",
     "@swimlane/ngx-charts": "^17.0.1",
+    "angular2-csv": "0.2.5",
     "core-js": "^3.9.0",
     "moment": "^2.29.1",
     "rxjs": "~6.6.6",
