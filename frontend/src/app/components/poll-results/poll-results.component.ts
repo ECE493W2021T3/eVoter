@@ -1,60 +1,127 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { FormControl } from '@angular/forms';
+import { MatDialog } from '@angular/material/dialog';
+import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
+import { COMMON } from 'src/app/helpers/common.const';
+import { ChartChoice, ChartData, Voted } from 'src/app/models/poll-result.model';
+import { Poll } from 'src/app/models/poll.model';
 import { PollService } from 'src/app/services/poll.service';
+import { SocketService } from 'src/app/services/socket.service';
+import { VoterResponseComponent } from '../voter-response/voter-response.component';
 
 @Component({
     selector: 'app-poll-results',
     templateUrl: './poll-results.component.html',
     styleUrls: ['./poll-results.component.css']
 })
-export class PollResultsComponent implements OnInit {
+export class PollResultsComponent implements OnInit, OnDestroy {
+    public poll: Poll;
+    public chartData: ChartData[] = [];
+    public voters: Voted[] = [];
+    public selectedQuestion = new FormControl();
+
+    // Chart arguments
+    public question: string;
+    public choices = [];
+    public size = [800, 300];
+
+    // CSV arguments
+    public fileName: string;
+    public title: string;
+    public questions: string[];
+    public responses = [];
 
     private subscription: Subscription = new Subscription();
-    public pollResults:any;                 // JSON
-// -----------for charts                    
-    public mcq: any[];                      // Array for MCQ questions
-    private choices: any;                   // Data passes to charts
-    private question: string;               // Question String passed to charts
-    size = [800, 600]                       // Size of Charts
-// -----------for CSV
-    title="title line shows in CSV sheet";  // title line shows in CSV sheet
-    private questions: string[];                 // header for CSV
-    private responses = [];                 // responses from Voters, shows as lines in CSV
-    fileName="seriousPoll2";                // CSV file name "seriousPoll2.csv"
 
     constructor(
-        private pollService: PollService
-    ){}
+        private route: ActivatedRoute,
+        private pollService: PollService,
+        private socketService: SocketService,
+        private dialog: MatDialog) { }
 
     ngOnInit(): void {
+        this.subscription.add(this.socketService.listen("updateCharts").subscribe(res => {
+            if (res == this.poll?._id) {
+                this.updateChartData();
+            }
+        }));
 
-        this.subscription.add(this.pollService.getPollResults("606bda054577254b10c34e04").subscribe(results => {
-            this.pollResults = results;
-            this.mcq = this.pollResults.questions
-                            .filter(question => question.type =="Multiple Choice")
-                            .map(ele => {
-                                return {
-                                    question: ele.question,
-                                    choices: Object.entries(ele.choices)
-                                                .map(choice => {
-                                                        return {    name: choice[0],
-                                                                    value: choice[1]
-                                                        }
-                                                })
-                                }
-                            });
-            this.question = this.mcq[0].question;
-            this.choices = this.mcq[0].choices;
-            // ----------------------------
-            this.questions = this.pollResults.questions.map(ele => ele.question);
-            this.responses = this.pollResults.voted.map(ele =>{
-                let result ={ voter: ele.name };
+        this.subscription.add(this.route.params.subscribe(params => {
+            if (params.pollID) {
+                this.subscription.add(this.pollService.getPoll(params.pollID).subscribe(poll => {
+                    this.poll = poll;
+                    this.fileName = this.poll.title + "_Results";
+                    this.title = this.poll.title;
+                    this.questions = this.poll.questions.map(x => x.question);
+
+                    this.updateChartData();
+                }));
+            }
+        }));
+    }
+
+    ngOnDestroy(): void {
+        this.subscription.unsubscribe();
+    }
+
+    onQuestionChange() {
+        const chartData = this.chartData.find(x => x.questionID == this.selectedQuestion.value);
+        this.question = chartData.question;
+        this.choices = chartData.choices;
+    }
+
+    openVoterResponseDialog(voter: Voted) {
+        this.dialog.open(VoterResponseComponent, {
+            minWidth: "600px",
+            data: {
+                voter: voter,
+                poll: this.poll
+            }
+        });
+    }
+
+    private updateChartData() {
+        this.subscription.add(this.pollService.getResults(this.poll._id).subscribe(result => {
+            this.chartData = [];
+            this.voters = result.voted;
+            this.responses = this.voters.map(ele =>{
+                let result = ele.name ? { voter: ele.name } : {};
                 for (let i = 0; i < ele.answers.length; i++) {
                     // The sequence of element in Object does matter, CSV libary depends on it
                     result["answer".concat(i.toString())] = ele.answers[i].answer;
                 }
                 return result;
             });
+
+            for (let question of result.questions) {
+                if (question.type == COMMON.questionType.shortAnswer) {
+                    continue;
+                }
+
+                const pollQuestion = this.poll.questions.find(x => x._id == question._id);
+                const choices = pollQuestion.choices.map(choice => {
+                    return {
+                        name: choice,
+                        value: question.choices[choice] ?? 0
+                    } as ChartChoice;
+                });
+
+                const model = {
+                    questionID: question._id,
+                    question: question.question,
+                    choices: choices
+                } as ChartData;
+
+                this.chartData.push(model);
+            }
+
+            if (this.chartData.length > 0) {
+                // Initially populate the charts with values from the first question
+                this.selectedQuestion.setValue(this.chartData[0].questionID);
+                this.question = this.chartData[0].question;
+                this.choices = this.chartData[0].choices;
+            }
         }));
     }
 }

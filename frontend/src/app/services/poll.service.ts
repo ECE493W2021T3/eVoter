@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { PollResult } from '../models/poll-result.model';
 import { InvitedPoll, Poll } from '../models/poll.model';
 import { Voter } from '../models/user.model';
 import { BaseService } from './base.service';
@@ -15,6 +16,10 @@ export class PollService {
         return this.baseService.post('poll', data);
     }
 
+    public getPoll(pollID: string): Observable<any> {
+        return this.baseService.get(`poll/${pollID}`);
+    }
+    
     public getPublicPoll(accessCode: string): Observable<InvitedPoll> {
         return this.baseService.get(`poll/public/${accessCode}`)
             .pipe(map(res => new InvitedPoll(res)));
@@ -43,7 +48,7 @@ export class PollService {
         return this.baseService.get(`poll/${pollID}/voter-assignments`);
     }
 
-    public getPollResults(pollID: string): Observable<Voter[]> {
+    public getResults(pollID: string): Observable<PollResult> {
         return this.baseService.get(`poll/${pollID}/poll-results`);
     }
 }

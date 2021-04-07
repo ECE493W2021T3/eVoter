@@ -1,0 +1,9 @@
+<h2 mat-dialog-title>{{ voter.name }}'s Responses</h2>
+<mat-dialog-content>
+    <div fxLayout="column" fxLayoutGap="20px">
+        <div *ngFor="let response of responses">
+            <h4>Question: {{ response.question }}</h4>
+            <span>Answer: {{ response.answer }}</span>
+        </div>
+    </div>
+</mat-dialog-content>

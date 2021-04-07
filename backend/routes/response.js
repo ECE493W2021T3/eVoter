@@ -69,6 +69,9 @@ const appAdmin = config.appAdmin;
     );
 
     if (!response)  return res.status(404).send("Could not find Response with ID provided");
+
+    req.io.emit('updateCharts', response.pollID);
+
     return res.send({responseID: response._id})
 });
 
@@ -120,7 +123,7 @@ const appAdmin = config.appAdmin;
 
         let response = new Response(body);
         await response.save().catch((e) => { res.status(400).send(e); });
-        return res.send({responseID: response._id});
+        res.send({responseID: response._id});
     } else if (poll.type == PollType.election) {
         // save Response for Election Poll to Blockchain
         let response = new Response(body);
@@ -138,10 +141,12 @@ const appAdmin = config.appAdmin;
         let connection = await network.connectToNetwork(req.userID);
         let invoke_response = await network.invoke(connection, false, 'createResponse', args);
 
-        return res.send({responseID: response._id});
+        res.send({responseID: response._id});
     } else {
         return res.status(404).send("Invalid Poll Type.");
     }
+
+    req.io.emit('updateCharts', poll._id);
 });
 
 module.exports = router;

@@ -4,6 +4,8 @@ const bodyParser = require('body-parser');
 
 const express = require('express');
 const app = express();
+const http = require('http').createServer(app);
+const io = require('socket.io')(http, { cors: { origin: '*' } });
 
 // Setup mongoose
 require("./startup/mongoose")();
@@ -28,6 +30,12 @@ app.use(function (req, res, next) {
     next();
 });
 
+// SOCKET MIDDLEWARE
+app.use(function(req, res, next) {
+    req.io = io;
+    next();
+});
+
 /* END MIDDLEWARE  */
 
 /* ROUTE HANDLERS */
@@ -35,46 +43,6 @@ app.use('/poll', pollRouter);
 app.use('/users', usersRouter);
 app.use('/response', responseRouter);
 
-/**
- * POST /response
- * Purpose: creates a new response
- */
-app.post('/response', (req, res) => {
-    console.log(req.body);
-    res.send({ 'responseID': 'responseID' }); // send new response id to client
-});
-
-/**
- * PATCH /response/:id
- * Purpose: updates a response
- */
- app.patch('/response/:id', (req, res) => {
-    console.log(req.params.id);
-    console.log(req.body);
-    res.send({ 'message': 'updated successfully' });
-});
-
-/**
- * GET /response/:id
- * Purpose: gets a response by id
- */
-app.get('/response/:id', (req, res) => {
-    // hardcoded for frontend testing
-    let response = {
-        _id: "responseID1",
-        pollID: "surveypollid",
-        voterID: "voterID",
-        answers: [
-            { questionID: "id1", answer: "test" },
-            { questionID: "id2", answer: "option 1" },
-            { questionID: "id3", answer: "option2" },
-            { questionID: "id4", answer: "something" }
-        ]
-    };
-
-    res.send(response);
-});
-
-app.listen(3000, () => {
+http.listen(3000, () => {
     console.log("Server is listening on port 3000");
-})
+});

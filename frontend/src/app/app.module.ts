@@ -30,6 +30,7 @@ import { PieChartComponent } from './components/pie-chart/pie-chart.component';
 import { BarChartComponent } from './components/bar-chart/bar-chart.component';
 import { VerifyTfaComponent } from './components/verify-tfa/verify-tfa.component';
 import { CsvDownloaderComponent } from './components/csv-downloader/csv-downloader.component';
+import { VoterResponseComponent } from './components/voter-response/voter-response.component';
 
 @NgModule({
     declarations: [
@@ -51,7 +52,8 @@ import { CsvDownloaderComponent } from './components/csv-downloader/csv-download
         PieChartComponent,
         BarChartComponent,
         VerifyTfaComponent,
-        CsvDownloaderComponent
+        CsvDownloaderComponent,
+        VoterResponseComponent
     ],
     imports: [
         BrowserModule,

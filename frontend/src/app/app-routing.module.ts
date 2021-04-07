@@ -21,7 +21,7 @@ const routes: Routes = [
     { path: 'new-poll', component: NewPollComponent, canActivate: [AuthGuard], data: { title: 'Create New Poll' } },
     { path: 'hosted-polls', component: HostedPollsComponent, canActivate: [AuthGuard], data: { title: 'My Hosted Polls' } },
     { path: 'invited-polls', component: InvitedPollsComponent, canActivate: [AuthGuard], data: { title: 'Invited Polls' } },
-    { path: 'poll-results', component: PollResultsComponent, canActivate: [AuthGuard], data: { title: 'Poll Results' } },
+    { path: 'poll-results/:pollID', component: PollResultsComponent, canActivate: [AuthGuard], data: { title: 'Poll Results' } },
     { path: '**', redirectTo: '/login' }
 ];
 

@@ -20,7 +20,7 @@
                 </div>
                 <div fxLayout="column" fxLayoutGap="10px">
                     <div fxLayout="row" fxLayoutGap="20px" fxLayoutAlign="end center">
-                        <a *ngIf="showViewResults(publicPoll.poll)" routerLink="/poll-results">View Results</a>
+                        <a *ngIf="showViewResults(publicPoll.poll)" [routerLink]="['/poll-results', publicPoll.poll._id]">View Results</a>
                         <button mat-raised-button color="primary" [disabled]="(publicPoll.responseID && publicPoll.poll.type == ELECTION) || isPastDeadline(publicPoll.poll.deadline)" (click)="openSubmitResponsePage(publicPoll)">
                             {{ publicPoll.responseID && publicPoll.poll.type == SURVEY ? 'Edit Vote' : 'Vote Now' }}
                         </button>
@@ -44,7 +44,7 @@
                 </div>
                 <div fxLayout="column" fxLayoutGap="10px">
                     <div fxLayout="row" fxLayoutGap="20px" fxLayoutAlign="end center">
-                        <a *ngIf="showViewResults(item.poll)" routerLink="/poll-results">View Results</a>
+                        <a *ngIf="showViewResults(item.poll)" [routerLink]="['/poll-results', item.poll._id]">View Results</a>
                         <button mat-raised-button color="primary" [disabled]="(item.responseID && item.poll.type == ELECTION) || isPastDeadline(item.poll.deadline)" (click)="openSubmitResponsePage(item)">
                             {{ item.responseID && item.poll.type == SURVEY ? 'Edit Vote' : 'Vote Now' }}
                         </button>

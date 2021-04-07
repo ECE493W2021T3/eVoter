@@ -1,3 +1,35 @@
-<app-csv-downloader [fileName]="fileName" [responses]="responses" [title]="title" [questions]="questions" [fileName]="fileName"></app-csv-downloader>
-<app-pie-chart [size]="size" [choices]="choices" [question]="question"></app-pie-chart>
-<app-bar-chart [size]="size" [choices]="choices" [question]="question"></app-bar-chart>
+<div fxLayout="row" style="min-height: 100%;">
+    <div fxFlex="30" fxLayout="column" fxLayoutAlign="center center">
+        <h1>{{ poll?.title }}</h1>
+        <span>Total number of submitted responses: {{ voters.length }}</span>
+        <app-csv-downloader  style="margin-top: 10px;" [fileName]="fileName" [responses]="responses" [title]="title" [questions]="questions" [isAnonymous]="poll?.isAnonymousModeOn"></app-csv-downloader>
+
+        <div *ngIf="!poll?.isAnonymousModeOn && voters.length > 0" style="margin-top: 30px; width: 80%;">
+            <h3>Responded voters:</h3>
+            <div *ngFor="let voter of voters; let lastItem = last;" style="text-align: center">
+                <a (click)="openVoterResponseDialog(voter)" style="color: lightseagreen; cursor: pointer;">{{ voter.email }}</a>
+                <mat-divider style="margin: 10px 0;" *ngIf="!lastItem"></mat-divider>
+            </div>
+        </div>
+    </div>
+
+    <div fxFlex="70" fxLayoutAlign="center center">
+        <div fxLayout="column" *ngIf="chartData.length > 0">
+            <mat-form-field style="margin-top: 20px; width: 50%;">
+                <mat-label>Select a multiple choice question</mat-label>
+                <mat-select [formControl]="selectedQuestion" (selectionChange)="onQuestionChange()">
+                    <mat-option *ngFor="let data of chartData" [value]="data.questionID">{{ data.question }}</mat-option>
+                </mat-select>
+            </mat-form-field>
+
+            <div fxLayoutGap="20px;">
+                <app-pie-chart [size]="size" [choices]="choices" [question]="question"></app-pie-chart>
+                <app-bar-chart [size]="size" [choices]="choices" [question]="question"></app-bar-chart>
+            </div>
+        </div>
+
+        <div *ngIf="chartData.length == 0">
+            <h3>No multiple choice questions to display</h3>
+        </div>
+    </div>
+</div>
