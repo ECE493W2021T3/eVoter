@@ -17,12 +17,20 @@ import { VoterResponseComponent } from '../voter-response/voter-response.compone
 })
 export class PollResultsComponent implements OnInit, OnDestroy {
     public poll: Poll;
-    public question: string;
-    public choices = [];
     public chartData: ChartData[] = [];
     public voters: Voted[] = [];
-    public size = [800, 300];
     public selectedQuestion = new FormControl();
+
+    // Chart arguments
+    public question: string;
+    public choices = [];
+    public size = [800, 300];
+
+    // CSV arguments
+    public fileName: string;
+    public title: string;
+    public questions: string[];
+    public responses = [];
 
     private subscription: Subscription = new Subscription();
 
@@ -43,6 +51,10 @@ export class PollResultsComponent implements OnInit, OnDestroy {
             if (params.pollID) {
                 this.subscription.add(this.pollService.getPoll(params.pollID).subscribe(poll => {
                     this.poll = poll;
+                    this.fileName = this.poll.title + "_Results";
+                    this.title = this.poll.title;
+                    this.questions = this.poll.questions.map(x => x.question);
+
                     this.updateChartData();
                 }));
             }
@@ -69,14 +81,18 @@ export class PollResultsComponent implements OnInit, OnDestroy {
         });
     }
 
-    exportResponses() {
-
-    }
-
     private updateChartData() {
         this.subscription.add(this.pollService.getResults(this.poll._id).subscribe(result => {
             this.chartData = [];
             this.voters = result.voted;
+            this.responses = this.voters.map(ele =>{
+                let result = ele.name ? { voter: ele.name } : {};
+                for (let i = 0; i < ele.answers.length; i++) {
+                    // The sequence of element in Object does matter, CSV libary depends on it
+                    result["answer".concat(i.toString())] = ele.answers[i].answer;
+                }
+                return result;
+            });
 
             for (let question of result.questions) {
                 if (question.type == COMMON.questionType.shortAnswer) {
