@@ -1,4 +1,4 @@
-<div fxLayout="row" style="min-height: 100%;">
+<div fxLayout="row" style="min-height: 100%; padding-left: 20px;">
     <div fxFlex="30" fxLayout="column" fxLayoutAlign="center center">
         <h1>{{ poll?.title }}</h1>
         <span>Total number of submitted responses: {{ voters.length }}</span>
@@ -6,7 +6,7 @@
 
         <div *ngIf="!poll?.isAnonymousModeOn && voters.length > 0" style="margin-top: 30px; width: 80%;">
             <h3>Responded voters:</h3>
-            <div *ngFor="let voter of voters; let lastItem = last;" style="text-align: center">
+            <div *ngFor="let voter of voters; let lastItem = last;">
                 <a (click)="openVoterResponseDialog(voter)" style="color: lightseagreen; cursor: pointer;">{{ voter.email }}</a>
                 <mat-divider style="margin: 10px 0;" *ngIf="!lastItem"></mat-divider>
             </div>

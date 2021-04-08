@@ -15,9 +15,9 @@ export class AppComponent implements OnInit, OnDestroy {
     private subscription: Subscription = new Subscription();
     public userProfile: UserProfile;
     public routes= [];
-    public isExpanded = true;
-    public isCollapsible = false;
-    public sidenavWidth = 250;
+    public isExpanded = false;
+    public isCollapsible = true;
+    public sidenavWidth = 76;
 
     constructor(
         private authService: AuthService,
