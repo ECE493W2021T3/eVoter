@@ -6,9 +6,14 @@
                  [ngClass]="{ 'side-nav-shadow' : isExpanded }"
                  (mouseover)="expandSidenav()"
                  (mouseleave)="collapseSidenav()">
-        <div fxLayout="row" fxLayoutAlign="space-between center" [style.visibility]="isExpanded ? 'visible' : 'hidden'">
-            <h1 style="margin: 20px;">eVoter</h1>
-            <button mat-icon-button (click)="isCollapsible = !isCollapsible">
+        <div fxLayout="row" fxLayoutAlign="space-between center">
+            <div fxLayout="row" fxLayoutAlign=" center">
+                <img src="../assets/evoter-icon.png"
+                     [style.width]="isExpanded ? '100px' : '60px'"
+                     [style.margin]="isExpanded ? '0' : '-15px 0 0 10px'">
+                <h1 fxFlexAlign="end" style="margin: 0 0 15px -40px;" [style.visibility]="isExpanded ? 'visible' : 'hidden'">eVoter</h1>
+            </div>
+            <button mat-icon-button fxFlexAlign="end" style="margin: 1.34em 0;" (click)="isCollapsible = !isCollapsible" [style.visibility]="isExpanded ? 'visible' : 'hidden'">
                 <mat-icon *ngIf="isCollapsible">panorama_fish_eye</mat-icon>
                 <mat-icon *ngIf="!isCollapsible">radio_button_checked</mat-icon>
             </button>
@@ -24,7 +29,7 @@
                 <mat-icon>settings</mat-icon>
                 <span *ngIf="isExpanded">Settings</span>
             </mat-list-item>
-            <mat-list-item (click)="logout()">
+            <mat-list-item style="position: absolute; bottom: 0;" (click)="logout()">
                 <mat-icon>logout</mat-icon>
                 <span *ngIf="isExpanded">Logout</span>
             </mat-list-item>
