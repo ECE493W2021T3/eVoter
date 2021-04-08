@@ -7,8 +7,11 @@
                  (mouseover)="expandSidenav()"
                  (mouseleave)="collapseSidenav()">
         <div fxLayout="row" fxLayoutAlign="space-between center" [style.visibility]="isExpanded ? 'visible' : 'hidden'">
-            <h1 style="margin: 20px;">eVoter</h1>
-            <button mat-icon-button (click)="isCollapsible = !isCollapsible">
+            <div fxLayout="row" fxLayoutAlign=" center">
+                <img src="../assets/evoter-icon.png" style="width: 100px; height: auto;">
+                <h1 fxFlexAlign="end" style="margin: 0 0 15px -40px;">eVoter</h1>
+            </div>
+            <button mat-icon-button fxFlexAlign="end" style="margin: 1.34em 0;" (click)="isCollapsible = !isCollapsible">
                 <mat-icon *ngIf="isCollapsible">panorama_fish_eye</mat-icon>
                 <mat-icon *ngIf="!isCollapsible">radio_button_checked</mat-icon>
             </button>
