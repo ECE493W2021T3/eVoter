@@ -22,23 +22,12 @@ describe('SignupPageComponent', () => {
         fixture.detectChanges();
     });
 
-    it('form should be invalid', () => {
-        component.rf.name.setValue('');
-        component.rf.email.setValue('');
-        component.rf.isHostingPolls.setValue(false);
-        component.rf.is2FAEnabled.setValue(false);
+    afterAll(() => {
+        clearForm();
+    });
 
-        const passwords = component.rf.passwords as FormGroup;
-        passwords.controls.password.setValue('');
-        passwords.controls.confirmPassword.setValue('');
-
-        const securityQuestions = component.sfa.controls;
-        securityQuestions.forEach(control => {
-            const c = control as FormGroup;
-            c.controls.question.setValue('');
-            c.controls.answer.setValue('');
-        });
-
+    it('empty form should be invalid', () => {
+        clearForm();
         expect(component.registrationForm.valid).toBeFalsy();
     });
 
@@ -62,7 +51,7 @@ describe('SignupPageComponent', () => {
         expect(component.registrationForm.valid).toBeFalsy();
     });
 
-    it('email should be invalid', () => {
+    it('invalid email should be flagged', () => {
         fillValidForm();
         expect(component.registrationForm.valid).toBeTruthy();
         
@@ -77,7 +66,7 @@ describe('SignupPageComponent', () => {
         // TODO: test using mock service
     });
 
-    const fillValidForm = function () {
+    const fillValidForm = function() {
         component.rf.name.setValue('Name');
         component.rf.email.setValue('email@test.com');
         component.rf.isHostingPolls.setValue(false);
@@ -94,4 +83,22 @@ describe('SignupPageComponent', () => {
             c.controls.answer.setValue('security answer');
         });
     };
+
+    const clearForm = function() {
+        component.rf.name.setValue('');
+        component.rf.email.setValue('');
+        component.rf.isHostingPolls.setValue(false);
+        component.rf.is2FAEnabled.setValue(false);
+
+        const passwords = component.rf.passwords as FormGroup;
+        passwords.controls.password.setValue('');
+        passwords.controls.confirmPassword.setValue('');
+
+        const securityQuestions = component.sfa.controls;
+        securityQuestions.forEach(control => {
+            const c = control as FormGroup;
+            c.controls.question.setValue('');
+            c.controls.answer.setValue('');
+        });
+    }
 });
