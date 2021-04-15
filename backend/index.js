@@ -43,6 +43,8 @@ app.use('/poll', pollRouter);
 app.use('/users', usersRouter);
 app.use('/response', responseRouter);
 
-http.listen(3000, () => {
+const server = http.listen(3000, () => {
     console.log("Server is listening on port 3000");
 });
+
+module.exports = server;

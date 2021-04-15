@@ -1,6 +1,6 @@
 {
     "jwtPrivateKey": "51778657246321226641fsdklafjasdkljfsklfjd7148924065",
     "angular_server": "http://localhost:4200/",
-    "db":"mongodb://localhost:27017/eVoter"
+    "db":"mongodb://localhost:27017/eVoter_test"
 }
   

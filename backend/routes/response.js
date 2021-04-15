@@ -21,7 +21,7 @@ const appAdmin = config.appAdmin;
  * Return: Response
  */
  router.get("/:id", auth, async (req, res) => {
-    const { error } = Joi.object({ responseID: Joi.objectId().required() }).validate({ responseID: req.params.id });
+    const { error } = Joi.object({ responseID: Joi.required() }).validate({ responseID: req.params.id });
     if (error) return res.status(400).send("Invalid Response ID");
 
     let response = await Response.findById(req.params.id).select("-__v");
@@ -56,7 +56,7 @@ const appAdmin = config.appAdmin;
  */
  router.patch("/:id", auth, async (req, res) => {
 
-    const { error } = Joi.object({ responseID: Joi.objectId().required() }).validate({ responseID: req.params.id });
+    const { error } = Joi.object({ responseID: Joi.required() }).validate({ responseID: req.params.id });
     if (error) return res.status(400).send("Invalid Response ID");
 
     let response = await Response.findOneAndUpdate(
