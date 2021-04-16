@@ -1,7 +1,6 @@
 const Joi = require("joi");
 const mongoose = require("mongoose");
 
-
 Answer = new mongoose.Schema({
   questionID: {
     type: String,
@@ -45,13 +44,13 @@ const ResponseSchema = new mongoose.Schema({
 });
 
 const answerJoi = Joi.object({ 
-  questionID: Joi.objectId().required(),
+  questionID: Joi.required(),
   answer: Joi.string().min(1).max(255).required()
 })
 
 const responseJoi = Joi.object({
-  pollID:Joi.objectId().required(),
-  voterID:Joi.objectId().required(),
+  pollID:Joi.required(),
+  voterID:Joi.required(),
   answers: Joi.array().items(answerJoi).required().min(1)
 });
 

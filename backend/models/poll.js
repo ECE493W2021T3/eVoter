@@ -3,7 +3,6 @@ const mongoose = require("mongoose");
 var Enum = require('enum');
 
 function validateChoices (v){
-  console.log(this.type); 
   return (this.type === "Multiple Choice" && Array.isArray(v) && v.length > 0) || this.type !== "Multiple Choice" 
 }
 

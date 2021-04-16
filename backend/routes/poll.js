@@ -144,7 +144,7 @@ router.get("/all-invited", auth, async (req, res) => {
  */
 router.get("/:id/poll-results", auth, async (req, res) => {
 
-    const { error } = Joi.object({ responseID: Joi.objectId().required() }).validate({ responseID: req.params.id });
+    const { error } = Joi.object({ responseID: Joi.required() }).validate({ responseID: req.params.id });
     if (error) return res.status(400).send("Invalid Post ID");
 
     let poll = await Poll.findById(req.params.id);
@@ -430,7 +430,7 @@ router.post("/", auth, async (req, res) => {
 });
 
 /**
- * POST /poll/<:id>
+ * Patch /poll/<:id>
  * Purpose: Update Poll
  * Return: Poll
  */

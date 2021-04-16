@@ -25,8 +25,8 @@ const VoterAssignmentSchema = new mongoose.Schema({
 VoterAssignmentSchema.index({ pollID: 1, userID: -1 } , { unique: true });
 
 const VoterAssignmentJoi = Joi.object({
-    pollID:Joi.objectId().required(),
-    userID:Joi.objectId().required(),
+    pollID:Joi.required(),
+    userID:Joi.required(),
 });
   
 function validateVoterAssignment(assign) {
