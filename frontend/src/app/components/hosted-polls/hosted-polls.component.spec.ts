@@ -36,6 +36,14 @@ describe('HostedPollsComponent', () => {
         expect(isPastDeadline).toBeTruthy();
     }));
 
+    it('test view results', fakeAsync(() => {
+        initializePolls();
+        expect(component.hostedPolls.length == 1).toBeTruthy();
+
+        const viewResults = component.showViewResults(component.hostedPolls[0]);
+        expect(viewResults).toBeTruthy();
+    }));
+
     const initializePolls = function() {
         let pollService = fixture.debugElement.injector.get(PollService);
         spyOn(pollService, "getHostedPolls").and.callFake(() => {
