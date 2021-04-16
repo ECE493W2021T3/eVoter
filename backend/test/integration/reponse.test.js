@@ -68,9 +68,9 @@ describe('/response', () =>{
     });
 
     afterEach(async ()=>{
-        await Poll.remove({});
-        await Response.remove({});
-        await User.remove({});
+        await Poll.deleteMany({});
+        await Response.deleteMany({});
+        await User.deleteMany({});
         server.close();
     });
 

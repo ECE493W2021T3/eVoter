@@ -58,9 +58,9 @@ describe('/poll', () =>{
     });
 
     afterEach(async ()=>{
-        await Poll.remove({});
-        await Response.remove({});
-        await User.remove({});
+        await Poll.deleteMany({});
+        await Response.deleteMany({});
+        await User.deleteMany({});
         server.close();
     });
 
@@ -184,7 +184,7 @@ describe('/poll', () =>{
 
         it('assign voters , 200', async () => {
             let res =  await request(server).post('/poll').set('x-access-token', accessToken).send(poll);
-            await User.remove({});
+            await User.deleteMany({});
 
             const newUser = new User(userModel)
             await newUser.save();
@@ -204,7 +204,7 @@ describe('/poll', () =>{
 
         it('get voters , 200', async () => {
             let res =  await request(server).post('/poll').set('x-access-token', accessToken).send(poll);
-            await User.remove({});
+            await User.deleteMany({});
             const newUser = new User(userModel)
             await newUser.save();
             const assignments = [{ "_id": newUser._id, "email": "test19@gmail.com" }];
