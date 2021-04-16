@@ -1,0 +1,36 @@
+{
+  "accessCode": "y8VMGJqkRv",
+  "accessLevel": "Public",
+  "canVotersSeeResults": false,
+  "deadline": "2021-06-24T16:45:00.000Z",
+  "host": "6072ef632908098928cdad17",
+  "isAnonymousModeOn": true,
+  "isHiddenUntilDeadline": false,
+  "pollID": "60762e05f281ca860ea22671",
+  "pollType": "Election",
+  "questions": [
+   {
+    "_id": "60762e05f281ca860ea22673",
+    "choices": [
+     "Python",
+     "Rust",
+     "Java",
+     "C++"
+    ],
+    "question": "What is your favorite language?",
+    "type": "Multiple Choice"
+   },
+   {
+    "_id": "60762e05f281ca860ea22672",
+    "choices": [
+     "Greeat",
+     "Not bad",
+     "Wonderful!"
+    ],
+    "question": "How are you feelng today?",
+    "type": "Multiple Choice"
+   }
+  ],
+  "title": "Demo Election 2021",
+  "type": "poll"
+}
