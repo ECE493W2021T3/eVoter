@@ -181,7 +181,7 @@ class MyAssetContract extends Contract {
      * @param {*} accessCode
      * @returns poll
      */
-     async queryPollByAccessCode(ctx, accessCode) {
+    async queryPollByAccessCode(ctx, accessCode) {
         let queryString = {
             selector: {
                 type: 'poll',
