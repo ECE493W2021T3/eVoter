@@ -133,7 +133,6 @@ describe('/response', () =>{
         });
 
         it('valid input, 200', async () => {
-            Response.remove({});
             poll['title']="PATCH /response/:id";
             const pollSaved =  await new Poll(poll).save();
             response["pollID"] = pollSaved._id;
