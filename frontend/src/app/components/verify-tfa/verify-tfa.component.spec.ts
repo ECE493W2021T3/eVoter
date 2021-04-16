@@ -26,7 +26,7 @@ describe('VerifyTfaComponent', () => {
         expect(component.TFAForm.valid).toBeFalsy();
     });
 
-    it('valid form should go to homepage', fakeAsync(() => {
+    it('valid form should call onSubmit', fakeAsync(() => {
         component.tf.code.setValue(123456);
         expect(component.TFAForm.valid).toBeTruthy();
         

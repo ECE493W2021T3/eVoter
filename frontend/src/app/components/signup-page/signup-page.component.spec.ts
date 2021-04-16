@@ -1,32 +1,17 @@
 import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { FormGroup } from '@angular/forms';
-import { Router } from '@angular/router';
-import { Observable, of } from 'rxjs';
 import { imports } from 'src/app/app.imports';
-import { User } from 'src/app/models/user.model';
-import { AuthService } from 'src/app/services/auth.service';
 
 import { SignupPageComponent } from './signup-page.component';
 
 describe('SignupPageComponent', () => {
     let component: SignupPageComponent;
     let fixture: ComponentFixture<SignupPageComponent>;
-    // let router: Router;
-    // let authService: AuthService;
-
-    // class MockAuthService {
-    //     signup(model) {
-    //         return true;
-    //     }
-    // }
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({
             declarations: [SignupPageComponent],
-            imports: imports,
-            // providers: [
-            //     { provide: AuthService, useClass: MockAuthService }
-            // ]
+            imports: imports
         })
             .compileComponents();
     }));
@@ -35,9 +20,6 @@ describe('SignupPageComponent', () => {
         fixture = TestBed.createComponent(SignupPageComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
-        
-        // router = TestBed.inject(Router);
-        // authService = TestBed.inject(AuthService);
     });
 
     afterAll(() => {
@@ -82,15 +64,12 @@ describe('SignupPageComponent', () => {
         expect(component.registrationForm.valid).toBeTruthy();
         
         spyOn(component, 'onSubmit');
-        // const navigateSpy = spyOn(router, 'navigate');
         
         let button = fixture.debugElement.nativeElement.querySelector('button');
         button.click();
         tick();
 
         expect(component.onSubmit).toHaveBeenCalled();
-        // spyOn(authService, 'signup').and.returnValue(of(true));
-        // expect(navigateSpy).toHaveBeenCalledWith(['/login']);
     }));
 
     const fillValidForm = function() {
