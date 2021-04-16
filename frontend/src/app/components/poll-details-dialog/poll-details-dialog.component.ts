@@ -13,7 +13,6 @@ export class PollDetailsDialogComponent implements OnInit {
     constructor(
         @Inject(MAT_DIALOG_DATA) public data: any) {
         this.poll = data.poll;
-        console.log(this.poll);
     }
 
     ngOnInit(): void {

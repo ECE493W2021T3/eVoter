@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { imports } from 'src/app/app.imports';
 
 import { VerifyTfaComponent } from './verify-tfa.component';
@@ -26,10 +26,14 @@ describe('VerifyTfaComponent', () => {
         expect(component.TFAForm.valid).toBeFalsy();
     });
 
-    it('valid form should go to homepage', () => {
+    it('valid form should go to homepage', fakeAsync(() => {
         component.tf.code.setValue(123456);
         expect(component.TFAForm.valid).toBeTruthy();
-
-        // TODO: test using mock service
-    });
+        
+        spyOn(component, 'onSubmit');
+        let button = fixture.debugElement.nativeElement.querySelector('button');
+        button.click();
+        tick();
+        expect(component.onSubmit).toHaveBeenCalled();
+    }));
 });
